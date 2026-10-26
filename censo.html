@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>População de 18 a 34 anos em São Paulo (Censo 2022)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{
+  /* layout: single reading column, one result table, source block */
+  --bg:#f3f6f9; --card:#ffffff; --fg:#14232f; --muted:#5a6b78; --line:#d5dee6;
+  --accent:#0b6e8a; --accent-soft:#e1f1f6; --total:#fff3d6;
+  --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1a22; --card:#162530; --fg:#e6eef3; --muted:#9db0bd; --line:#27394599;
+  --accent:#5cc3de; --accent-soft:#17323d; --total:#3a3015; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a22; --card:#162530; --fg:#e6eef3; --muted:#9db0bd; --line:#27394599;
+  --accent:#5cc3de; --accent-soft:#17323d; --total:#3a3015; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;
+  padding-block:32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+h1{font-size:clamp(1.5rem,4vw,2rem);line-height:1.2;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;min-width:0}
+h2{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:.8rem;color:var(--muted);font-weight:600}
+td:last-child,th:last-child{text-align:right}
+tr.sum td{background:var(--total);font-weight:700;border-bottom:0}
+.big{font-size:2rem;font-weight:700;color:var(--accent);margin:0}
+p{margin:0 0 10px}
+ol{margin:0;padding-left:20px}
+li{margin-bottom:6px}
+a{color:var(--accent);overflow-wrap:anywhere}
+code{font-family:var(--mono);font-size:.82rem;background:var(--accent-soft);padding:2px 6px;border-radius:4px;overflow-wrap:anywhere}
+small{color:var(--muted)}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600;700&display=swap">
+
+</head>
+<body>
+<main>
+  <header>
+    <h1>População de 18 a 34 anos no município de São Paulo</h1>
+    <p class="sub">Censo Demográfico 2022, IBGE. Projeto Trident Fresh Wave.</p>
+  </header>
+
+  <section class="card">
+    <h2>Resultado</h2>
+    <p class="big">2.913.302 pessoas</p>
+    <p><small>Soma das idades de 18 a 34 anos, ambos os sexos, residentes no município de São Paulo (SP).</small></p>
+  </section>
+
+  <section class="card">
+    <h2>Por idade</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Idade</th><th>Pessoas</th></tr></thead>
+        <tbody>
+          <tr><td>18 anos</td><td>150.853</td></tr>
+          <tr><td>19 anos</td><td>145.877</td></tr>
+          <tr><td>20 a 24 anos</td><td>845.139</td></tr>
+          <tr><td>25 a 29 anos</td><td>882.865</td></tr>
+          <tr><td>30 a 34 anos</td><td>888.568</td></tr>
+          <tr class="sum"><td>Total de 18 a 34 anos</td><td>2.913.302</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px"><small>Para comparar: a população total do município é de 11.451.999 pessoas. A faixa de 18 a 34 anos representa cerca de 25,4% do total.</small></p>
+  </section>
+
+  <section class="card">
+    <h2>Fonte e como conferir</h2>
+    <p><strong>Tabela 9514</strong>: População residente, por sexo, idade e forma de declaração da idade. IBGE, Censo Demográfico 2022 (dados do universo).</p>
+    <ol>
+      <li>Abra a tabela no SIDRA: <a href="https://sidra.ibge.gov.br/tabela/9514" target="_blank" rel="noopener">sidra.ibge.gov.br/tabela/9514</a></li>
+      <li>Em Unidade Territorial, escolha Município e selecione São Paulo (SP).</li>
+      <li>Em Idade, marque 18 anos, 19 anos, 20 a 24, 25 a 29 e 30 a 34 anos, e consulte.</li>
+    </ol>
+    <p style="margin-top:12px">Consulta direta ao banco de dados do IBGE, com os mesmos valores (dados em texto):<br>
+    <a href="https://apisidra.ibge.gov.br/values/t/9514/n6/3550308/v/93/p/2022/c2/6794/c286/113635/c287/100362,6575,6576,93087,93088,93089?formato=json" target="_blank" rel="noopener">API do SIDRA, tabela 9514, município 3550308</a></p>
+    <p><small>Consultado em 25/10/2026.</small></p>
+  </section>
+</main>
+
+</body>
+</html>
