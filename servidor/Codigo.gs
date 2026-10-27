@@ -9,8 +9,8 @@ var ITENS = {
   chiclete: { nome: 'Chiclete Trident',     custo: 20 },
   chaveiro: { nome: 'Chaveiro Fresh Wave',  custo: 60 },
   mochila:  { nome: 'Mochila Trident',      custo: 1000 },
-  celular:  { nome: 'Celular novo',         custo: 50000 },
-  console:  { nome: 'Console de videogame', custo: 75000 },
+  celular:  { nome: 'iPhone 17',            custo: 50000 },
+  console:  { nome: 'PS5', custo: 75000 },
   notebook: { nome: 'Notebook',             custo: 100000 },
   pc:       { nome: 'Computador gamer',     custo: 150000 }
 };
