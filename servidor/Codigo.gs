@@ -6,7 +6,7 @@ var TZ = 'America/Sao_Paulo';
 var DESCARTAVEIS = ['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','temp-mail.org','yopmail.com','trashmail.com','throwawaymail.com','sharklasers.com','getnada.com','maildrop.cc','dispostable.com','fakeinbox.com','mohmal.com','emailondeck.com'];
 var ITENS = {
   kit:      { nome: 'Kit 5 sabores',        custo: 200 },
-  chiclete: { nome: 'Chiclete Trident',     custo: 20 },
+  chiclete: { nome: 'Chiclete Trident',     custo: 120 },
   chaveiro: { nome: 'Chaveiro Fresh Wave',  custo: 60 },
   mochila:  { nome: 'Mochila Trident',      custo: 1000 },
   celular:  { nome: 'iPhone 17',            custo: 50000 },
