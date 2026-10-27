@@ -119,7 +119,7 @@ input:focus,button:focus-visible{outline:3px solid rgba(31,96,160,.45);outline-o
     <p class="link"><button type="button" id="sair">Sair</button></p>
   </div>
 
-  <p class="note">Demonstração da Lojinha Fresh Wave, projeto de Propaganda e Marketing, UNIP. Saldo, itens e pontos são exemplos, e nada do que for digitado é salvo ou enviado.</p>
+  <p class="note">Demonstração da Lojinha Fresh Wave, projeto de Propaganda e Marketing, UNIP. Os dados informados ficam guardados apenas para a ação do projeto e podem ser apagados a pedido do participante. Os itens e valores são exemplos.</p>
 </main>
 <div class="toast" id="toast" hidden role="status"></div>
 <script>
@@ -130,12 +130,14 @@ var ITENS=[
  {id:'chaveiro',nome:'Chaveiro Fresh Wave',sub:'Em acrílico, com argola',custo:60,a:'#fff4a8',b:'#d9b820',img:'<img class="prod" src="clube/chaveiro.png" alt="">'},
  {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:300,a:'#d6f0fb',b:'#3e9b3a',img:'<img class="prod" src="clube/mochila.png" alt="">'}
 ];
-var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';/* endereço do app da web (Apps Script); vazio = modo demonstração local */
-var KEY='fw_loja_v1',BONUS=60;
-var st={saldo:0,hist:[],usada:false};
-try{var sv=JSON.parse(localStorage.getItem(KEY)||'null');if(sv&&typeof sv.saldo==='number')st=sv}catch(e){}
-try{if(/[?&]reset=1/.test(location.search)){localStorage.removeItem(KEY);st={saldo:0,hist:[],usada:false}}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
+var st={email:'',nome:'',saldo:0,hist:[],usada:false};
+function chamar(p){
+  var q=Object.keys(p).map(function(k){return k+'='+encodeURIComponent(p[k])}).join('&');
+  return fetch(API+'?'+q).then(function(r){return r.json()});
+}
+function aviso(m){var t=$('toast');t.innerHTML=m+'<br><button type="button" id="fechar">Fechar</button>';t.hidden=false;$('fechar').onclick=function(){t.hidden=true}}
+function aplicar(r){st.nome=r.nome;st.saldo=r.saldo;st.hist=r.hist;st.usada=r.usada}
 var META=ITENS.map(function(i){return i.custo}).sort(function(a,b){return a-b});
 function $(i){return document.getElementById(i)}
 function render(){
@@ -148,47 +150,54 @@ function render(){
     return '<div class="item"><div class="pic" style="--a:'+i.a+';--b:'+i.b+'">'+(i.svg||i.img)+'</div><div class="body"><b>'+i.nome+'</b><em>'+i.sub+'</em><div class="cost">'+i.custo+' pts</div><button class="go" data-id="'+i.id+'"'+(ok?'':' disabled')+'>'+(ok?'Trocar':'Faltam '+(i.custo-st.saldo))+'</button></div></div>'}).join('');
   $('sform').hidden=st.usada;$('sdone').hidden=!st.usada;
   $('hist').innerHTML=!st.hist.length?'<li><span>Nenhum movimento ainda<small>Digite a senha do estande para ganhar pontos</small></span></li>':st.hist.map(function(h){
-    return '<li><span>'+h.t+'<small>'+h.d+'</small></span><span class="'+(h.p>0?'p':'m')+'">'+(h.p>0?'+':'')+h.p+' pts</span></li>'}).join('');
+    return '<li><span>'+h.t+'<small>'+h.d+(h.c?' · código '+h.c:'')+'</small></span><span class="'+(h.p>0?'p':'m')+'">'+(h.p>0?'+':'')+h.p+' pts</span></li>'}).join('');
 }
 $('grid').addEventListener('click',function(e){
   var b=e.target.closest('.go');if(!b||b.disabled)return;
   var it=ITENS.filter(function(i){return i.id===b.getAttribute('data-id')})[0];
   if(st.saldo<it.custo)return;
-  st.saldo-=it.custo;
-  var cod='ONDA-'+Math.random().toString(36).slice(2,6).toUpperCase();
-  st.hist.unshift({t:'Troca · '+it.nome,d:'agora',p:-it.custo});
-  save();render();
-  var t=$('toast');t.innerHTML='Troca feita: <b>'+it.nome+'</b><br>Mostre o código no ponto de venda: <b>'+cod+'</b><br><button type="button" id="fechar">Fechar</button>';
-  t.hidden=false;$('fechar').onclick=function(){t.hidden=true};
+  [].forEach.call(document.querySelectorAll('.go'),function(x){x.disabled=true});
+  chamar({action:'trocar',email:st.email,item:it.id}).then(function(r){
+    if(r.ok){
+      aplicar(r);render();
+      var t=$('toast');t.innerHTML='Troca feita: <b>'+r.item+'</b><br>Mostre o código no ponto de venda: <b>'+r.codigo+'</b><br><button type="button" id="fechar">Fechar</button>';
+      t.hidden=false;$('fechar').onclick=function(){t.hidden=true};
+    }else{render();aviso(r.motivo==='saldo'?'Pontos insuficientes.':'Não foi possível trocar agora.')}
+  }).catch(function(){render();aviso('Sem conexão. Tente de novo.')});
 });
-function dar(){st.usada=true;st.saldo+=BONUS;st.hist.unshift({t:'Senha do estande',d:'agora',p:BONUS});$('serr').textContent='';$('senha').value='';save();render()}
 $('sform').addEventListener('submit',function(e){
   e.preventDefault();
   if(st.usada)return;
   var v=$('senha').value.trim().toUpperCase(),er=$('serr'),bt=$('sform').querySelector('button');
   if(!v){er.textContent='Digite a senha.';return}
-  if(!API){er.textContent='Servidor não configurado.';return}
   bt.disabled=true;er.textContent='Conferindo...';
-  fetch(API+'?email='+encodeURIComponent(st.email||'')+'&senha='+encodeURIComponent(v))
-    .then(function(r){return r.json()})
+  chamar({action:'senha',email:st.email,senha:v})
     .then(function(r){
-      if(r.ok){dar()}
-      else if(r.motivo==='usada'){st.usada=true;save();render();er.textContent=''}
+      if(r.ok){aplicar(r);er.textContent='';$('senha').value='';render()}
+      else if(r.motivo==='usada'){st.usada=true;render();er.textContent=''}
       else if(r.motivo==='senha'){er.textContent='Senha incorreta. Procure as dicas nas bancadas.'}
-      else{er.textContent='E-mail inválido.'}
+      else{er.textContent='Não foi possível validar agora.'}
     })
     .catch(function(){er.textContent='Sem conexão. Tente de novo.'})
     .then(function(){bt.disabled=false});
 });
+try{var em0=localStorage.getItem('fw_email');if(em0)$('em').value=em0}catch(e){}
 $('lf').addEventListener('submit',function(e){
   e.preventDefault();
-  var m=$('em').value.trim();
-  if(!/^\S+@\S+\.\S+$/.test(m)){$('lerr').textContent='Digite um e-mail válido.';return}
-  var n=m.split('@')[0].replace(/[._-]+/g,' ').split(' ')[0];
-  n=n.charAt(0).toUpperCase()+n.slice(1);
-  st.email=m.toLowerCase();$('who').textContent=n;
-  $('login').hidden=true;$('app').hidden=false;render();
-  window.scrollTo({top:0,behavior:'smooth'});
+  var m=$('em').value.trim().toLowerCase(),le=$('lerr'),bt=$('lf').querySelector('button[type=submit]');
+  if(!/^\S+@\S+\.\S+$/.test(m)){le.textContent='Digite um e-mail válido.';return}
+  bt.disabled=true;le.textContent='Entrando...';
+  chamar({action:'entrar',email:m}).then(function(r){
+    if(r.ok){
+      st.email=m;aplicar(r);le.textContent='';
+      try{localStorage.setItem('fw_email',m)}catch(e){}
+      $('who').textContent=r.nome.split(' ')[0];
+      $('login').hidden=true;$('app').hidden=false;render();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }else if(r.motivo==='naocadastrado'){
+      le.innerHTML='Esse e-mail ainda não está no clube. <a href="clube.html">Cadastre-se aqui</a>.';
+    }else{le.textContent='Não foi possível entrar agora.'}
+  }).catch(function(){le.textContent='Sem conexão. Tente de novo.'}).then(function(){bt.disabled=false});
 });
 $('sair').onclick=function(){$('app').hidden=true;$('login').hidden=false;$('toast').hidden=true};
 </script>

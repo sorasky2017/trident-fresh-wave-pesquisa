@@ -109,7 +109,7 @@ input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(31,9
   </section>
 
 
-  <p class="note">Demonstração do Clube Fresh Wave, projeto de Propaganda e Marketing, UNIP. Nenhum dado digitado aqui é salvo ou enviado.</p>
+  <p class="note">Demonstração do Clube Fresh Wave, projeto de Propaganda e Marketing, UNIP. Os dados informados ficam guardados apenas para a ação do projeto e podem ser apagados a pedido do participante.</p>
 </main>
 <script>
 var sel='';
@@ -118,18 +118,29 @@ tiles.forEach(function(t){t.addEventListener('click',function(){
   sel=t.getAttribute('data-s');
   tiles.forEach(function(x){x.setAttribute('aria-checked',x===t?'true':'false')});
 })});
+var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 document.getElementById('form').addEventListener('submit',function(e){
   e.preventDefault();
-  var n=document.getElementById('nome').value.trim(),m=document.getElementById('email').value.trim(),
-      okm=/^\S+@\S+\.\S+$/.test(m),l=document.getElementById('lgpd').checked;
+  var n=document.getElementById('nome').value.trim(),m=document.getElementById('email').value.trim().toLowerCase(),
+      okm=/^\S+@\S+\.\S+$/.test(m),l=document.getElementById('lgpd').checked,er=document.getElementById('err'),
+      bt=document.querySelector('#form button[type=submit]');
   var f=[!sel&&'um sabor',!n&&'o nome',!okm&&'um e-mail válido',!l&&'o aceite'].filter(Boolean);
-  if(f.length){document.getElementById('err').textContent='Falta: '+f.join(', ')+'.';return;}
-  document.getElementById('oi').textContent='Oi, '+n+'!';
-  document.getElementById('msg').textContent='Seu sabor é '+sel+'. Use o cupom na primeira compra e comece a somar pontos.';
-  document.getElementById('cadastro').hidden=true;
-  document.getElementById('ok').hidden=false;
-  [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=true});
-  window.scrollTo({top:0,behavior:'smooth'});
+  if(f.length){er.textContent='Falta: '+f.join(', ')+'.';return;}
+  er.textContent='Enviando...';bt.disabled=true;
+  fetch(API+'?action=cadastro&email='+encodeURIComponent(m)+'&nome='+encodeURIComponent(n)+'&sabor='+encodeURIComponent(sel)+'&lgpd=1')
+    .then(function(r){return r.json()})
+    .then(function(r){
+      if(!r.ok){er.textContent='Não foi possível cadastrar agora. Confira os dados.';return;}
+      er.textContent='';
+      document.getElementById('oi').textContent=(r.jaExistia?'Que bom ver você de novo, ':'Oi, ')+r.nome.split(' ')[0]+'!';
+      document.getElementById('msg').textContent=r.jaExistia?'Esse e-mail já estava no clube. Entre na lojinha para ver seus pontos.':'Seu sabor é '+r.sabor+'. Use o cupom na primeira compra e comece a somar pontos.';
+      document.getElementById('cadastro').hidden=true;
+      document.getElementById('ok').hidden=false;
+      [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=true});
+      window.scrollTo({top:0,behavior:'smooth'});
+    })
+    .catch(function(){er.textContent='Sem conexão. Tente de novo.'})
+    .then(function(){bt.disabled=false});
 });
 </script>
 </html>
