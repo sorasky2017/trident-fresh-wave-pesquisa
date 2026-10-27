@@ -102,7 +102,7 @@ input:focus,button:focus-visible{outline:3px solid rgba(31,96,160,.45);outline-o
         <div class="sline"><input id="senha" type="text" placeholder="Digite a senha" autocomplete="off" autocapitalize="characters" maxlength="12" aria-label="Senha do estande"><button class="go" type="submit" style="width:auto;padding:0 18px">Validar</button></div>
         <p id="serr" class="err" style="margin:8px 0 0;color:#c0392b;font-size:13px;font-weight:700"></p>
       </form>
-      <p id="sdone" class="sub" hidden style="margin:0">Senha do estande já utilizada neste aparelho. Seus pontos estão no saldo.</p>
+      <p id="sdone" class="sub" hidden style="margin:0">Este e-mail já usou a senha do estande. Seus pontos estão no saldo.</p>
     </section>
 
     <section class="card">
@@ -130,6 +130,7 @@ var ITENS=[
  {id:'chaveiro',nome:'Chaveiro Fresh Wave',sub:'Em acrílico, com argola',custo:60,a:'#fff4a8',b:'#d9b820',img:'<img class="prod" src="clube/chaveiro.png" alt="">'},
  {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:300,a:'#d6f0fb',b:'#3e9b3a',img:'<img class="prod" src="clube/mochila.png" alt="">'}
 ];
+var API='';/* endereço do app da web (Apps Script); vazio = modo demonstração local */
 var KEY='fw_loja_v1',SENHA='ONDA7',BONUS=60;
 var st={saldo:0,hist:[],usada:false};
 try{var sv=JSON.parse(localStorage.getItem(KEY)||'null');if(sv&&typeof sv.saldo==='number')st=sv}catch(e){}
@@ -160,13 +161,24 @@ $('grid').addEventListener('click',function(e){
   var t=$('toast');t.innerHTML='Troca feita: <b>'+it.nome+'</b><br>Mostre o código no ponto de venda: <b>'+cod+'</b><br><button type="button" id="fechar">Fechar</button>';
   t.hidden=false;$('fechar').onclick=function(){t.hidden=true};
 });
+function dar(){st.usada=true;st.saldo+=BONUS;st.hist.unshift({t:'Senha do estande',d:'agora',p:BONUS});$('serr').textContent='';$('senha').value='';save();render()}
 $('sform').addEventListener('submit',function(e){
   e.preventDefault();
-  var v=$('senha').value.trim().toUpperCase();
-  if(st.usada){return}
-  if(v!==SENHA){$('serr').textContent='Senha incorreta. Procure as dicas nas bancadas.';return}
-  st.usada=true;st.saldo+=BONUS;st.hist.unshift({t:'Senha do estande',d:'agora',p:BONUS});
-  $('serr').textContent='';$('senha').value='';save();render();
+  if(st.usada)return;
+  var v=$('senha').value.trim().toUpperCase(),er=$('serr'),bt=$('sform').querySelector('button');
+  if(!v){er.textContent='Digite a senha.';return}
+  if(!API){if(v!==SENHA){er.textContent='Senha incorreta. Procure as dicas nas bancadas.';return}dar();return}
+  bt.disabled=true;er.textContent='Conferindo...';
+  fetch(API+'?email='+encodeURIComponent(st.email||'')+'&senha='+encodeURIComponent(v))
+    .then(function(r){return r.json()})
+    .then(function(r){
+      if(r.ok){dar()}
+      else if(r.motivo==='usada'){st.usada=true;save();render();er.textContent=''}
+      else if(r.motivo==='senha'){er.textContent='Senha incorreta. Procure as dicas nas bancadas.'}
+      else{er.textContent='E-mail inválido.'}
+    })
+    .catch(function(){er.textContent='Sem conexão. Tente de novo.'})
+    .then(function(){bt.disabled=false});
 });
 $('lf').addEventListener('submit',function(e){
   e.preventDefault();
@@ -174,7 +186,7 @@ $('lf').addEventListener('submit',function(e){
   if(!/^\S+@\S+\.\S+$/.test(m)){$('lerr').textContent='Digite um e-mail válido.';return}
   var n=m.split('@')[0].replace(/[._-]+/g,' ').split(' ')[0];
   n=n.charAt(0).toUpperCase()+n.slice(1);
-  $('who').textContent=n;
+  st.email=m.toLowerCase();$('who').textContent=n;
   $('login').hidden=true;$('app').hidden=false;render();
   window.scrollTo({top:0,behavior:'smooth'});
 });
