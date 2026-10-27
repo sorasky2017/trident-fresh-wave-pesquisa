@@ -58,6 +58,8 @@ input:focus,button:focus-visible{outline:3px solid rgba(31,96,160,.45);outline-o
 .link a,.link button{color:var(--blue);font-weight:700;background:none;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
 .note{font-size:.75rem;color:var(--muted);text-align:center;margin:0 8px}
 [hidden]{display:none!important}
+.sline{display:flex;gap:8px}.sline input{flex:1;min-width:0;height:46px;border:2px solid #cfe3ef;border-radius:12px;padding:0 14px;font:800 16px Lato,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#194360}.sline input:focus{outline:none;border-color:#1F60A0}.sline .go{height:46px}
+[hidden]{display:none!important}
 </style>
 <body>
 <span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
@@ -92,6 +94,17 @@ input:focus,button:focus-visible{outline:3px solid rgba(31,96,160,.45);outline-o
       <small id="prox" style="text-transform:none;letter-spacing:0;font-size:.85rem"></small>
     </section>
 
+    <section class="card" id="senhacard">
+      <span class="chip">Senha do estande</span>
+      <h2>Descobriu a senha?</h2>
+      <p class="sub">Junte as dicas das bancadas e digite a senha para ganhar pontos.</p>
+      <form id="sform" novalidate>
+        <div class="sline"><input id="senha" type="text" placeholder="Digite a senha" autocomplete="off" autocapitalize="characters" maxlength="12" aria-label="Senha do estande"><button class="go" type="submit" style="width:auto;padding:0 18px">Validar</button></div>
+        <p id="serr" class="err" style="margin:8px 0 0;color:#c0392b;font-size:13px;font-weight:700"></p>
+      </form>
+      <p id="sdone" class="sub" hidden style="margin:0">Senha do estande já utilizada neste aparelho. Seus pontos estão no saldo.</p>
+    </section>
+
     <section class="card">
       <span class="chip g">Vitrine</span>
       <h2>Troque seus pontos</h2>
@@ -117,10 +130,11 @@ var ITENS=[
  {id:'chaveiro',nome:'Chaveiro Fresh Wave',sub:'Em acrílico, com argola',custo:60,a:'#fff4a8',b:'#d9b820',img:'<img class="prod" src="clube/chaveiro.png" alt="">'},
  {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:300,a:'#d6f0fb',b:'#3e9b3a',img:'<img class="prod" src="clube/mochila.png" alt="">'}
 ];
-var st={saldo:120,hist:[
- {t:'Compra registrada · Morango com Maracujá',d:'há 2 dias',p:+30},
- {t:'Compra registrada · Limão',d:'há 6 dias',p:+30},
- {t:'Bônus de boas-vindas',d:'há 9 dias',p:+60}]};
+var KEY='fw_loja_v1',SENHA='ONDA7',BONUS=60;
+var st={saldo:0,hist:[],usada:false};
+try{var sv=JSON.parse(localStorage.getItem(KEY)||'null');if(sv&&typeof sv.saldo==='number')st=sv}catch(e){}
+try{if(/[?&]reset=1/.test(location.search)){localStorage.removeItem(KEY);st={saldo:0,hist:[],usada:false}}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
 var META=ITENS.map(function(i){return i.custo}).sort(function(a,b){return a-b});
 function $(i){return document.getElementById(i)}
 function render(){
@@ -131,7 +145,8 @@ function render(){
   $('grid').innerHTML=ITENS.map(function(i){
     var ok=st.saldo>=i.custo;
     return '<div class="item"><div class="pic" style="--a:'+i.a+';--b:'+i.b+'">'+(i.svg||i.img)+'</div><div class="body"><b>'+i.nome+'</b><em>'+i.sub+'</em><div class="cost">'+i.custo+' pts</div><button class="go" data-id="'+i.id+'"'+(ok?'':' disabled')+'>'+(ok?'Trocar':'Faltam '+(i.custo-st.saldo))+'</button></div></div>'}).join('');
-  $('hist').innerHTML=st.hist.map(function(h){
+  $('sform').hidden=st.usada;$('sdone').hidden=!st.usada;
+  $('hist').innerHTML=!st.hist.length?'<li><span>Nenhum movimento ainda<small>Digite a senha do estande para ganhar pontos</small></span></li>':st.hist.map(function(h){
     return '<li><span>'+h.t+'<small>'+h.d+'</small></span><span class="'+(h.p>0?'p':'m')+'">'+(h.p>0?'+':'')+h.p+' pts</span></li>'}).join('');
 }
 $('grid').addEventListener('click',function(e){
@@ -141,9 +156,17 @@ $('grid').addEventListener('click',function(e){
   st.saldo-=it.custo;
   var cod='ONDA-'+Math.random().toString(36).slice(2,6).toUpperCase();
   st.hist.unshift({t:'Troca · '+it.nome,d:'agora',p:-it.custo});
-  render();
+  save();render();
   var t=$('toast');t.innerHTML='Troca feita: <b>'+it.nome+'</b><br>Mostre o código no ponto de venda: <b>'+cod+'</b><br><button type="button" id="fechar">Fechar</button>';
   t.hidden=false;$('fechar').onclick=function(){t.hidden=true};
+});
+$('sform').addEventListener('submit',function(e){
+  e.preventDefault();
+  var v=$('senha').value.trim().toUpperCase();
+  if(st.usada){return}
+  if(v!==SENHA){$('serr').textContent='Senha incorreta. Procure as dicas nas bancadas.';return}
+  st.usada=true;st.saldo+=BONUS;st.hist.unshift({t:'Senha do estande',d:'agora',p:BONUS});
+  $('serr').textContent='';$('senha').value='';save();render();
 });
 $('lf').addEventListener('submit',function(e){
   e.preventDefault();
@@ -155,6 +178,6 @@ $('lf').addEventListener('submit',function(e){
   $('login').hidden=true;$('app').hidden=false;render();
   window.scrollTo({top:0,behavior:'smooth'});
 });
-$('sair').onclick=function(){$('app').hidden=true;$('login').hidden=false;$('toast').hidden=true;st.saldo=120;st.hist=st.hist.filter(function(h){return h.p>0&&h.d!=='agora'})};
+$('sair').onclick=function(){$('app').hidden=true;$('login').hidden=false;$('toast').hidden=true};
 </script>
 </html>
