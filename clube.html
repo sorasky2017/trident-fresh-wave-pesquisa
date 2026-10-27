@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clube Fresh Wave · Trident</title>
+<style>
+:root{--bg:#eaf6fa;--card:#ffffff;--fg:#14232f;--muted:#5a6b78;--line:#d5dee6;--accent:#1f60a0;--accent2:#16807a;--onaccent:#ffffff;--hero1:#1f60a0;--hero2:#16a3a0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1a22;--card:#162530;--fg:#e6eef3;--muted:#9db0bd;--line:#273945;--accent:#5cc3de;--accent2:#6fd1c8;--onaccent:#0f1a22;--hero1:#14456f;--hero2:#126f6d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.55;padding:0 16px 32px}
+main{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.hero{margin:0 -16px;padding:32px 16px 28px;background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#fff;text-align:center}
+.hero .brand{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+.hero h1{font-size:clamp(1.7rem,7vw,2.2rem);line-height:1.15;margin:8px 0 6px}
+.hero p{margin:0;opacity:.95}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+h2{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+p{margin:0 0 10px}
+label{display:block;font-size:.9rem;font-weight:600;margin:12px 0 4px}
+input[type=text],input[type=email],select{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 12px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.check{font-weight:400!important;display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--muted);margin-top:14px}
+.check input{margin-top:3px;width:18px;height:18px;flex:none}
+button{width:100%;margin-top:16px;font:inherit;font-weight:700;color:var(--onaccent);background:var(--accent);border:0;border-radius:8px;padding:13px;cursor:pointer}
+.coupon{border:2px dashed var(--accent2);border-radius:10px;padding:14px;text-align:center}
+.coupon b{display:block;font-size:1.5rem;letter-spacing:.08em;color:var(--accent2)}
+.coupon span{font-size:.85rem;color:var(--muted)}
+.flavors{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.flavors li{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.dot{width:14px;height:14px;border-radius:50%;flex:none}
+.flavors small{margin-left:auto;color:var(--muted)}
+.steps{margin:0;padding-left:20px}
+.steps li{margin-bottom:6px}
+.note{font-size:.8rem;color:var(--muted);text-align:center}
+[hidden]{display:none!important}
+</style>
+<main>
+  <header class="hero">
+    <div class="brand">Trident</div>
+    <h1>Clube Fresh Wave</h1>
+    <p>Entre na onda: cupom, pontos e ofertas por sabor.</p>
+  </header>
+
+  <section class="card" id="cadastro">
+    <h2>Entre no clube</h2>
+    <form id="form" novalidate>
+      <label for="nome">Nome</label>
+      <input id="nome" type="text" autocomplete="given-name" required>
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="email" required>
+      <label for="sabor">Sabor favorito</label>
+      <select id="sabor" required>
+        <option value="">Escolha um sabor</option>
+        <option>Laranja com Morango</option>
+        <option>Morango com Maracujá</option>
+        <option>Abacaxi e Hortelã</option>
+        <option>Limão</option>
+        <option>Lichia</option>
+      </select>
+      <label class="check"><input id="lgpd" type="checkbox" required><span>Aceito receber ofertas do Clube Fresh Wave e o uso dos meus dados para essa finalidade, conforme a LGPD. Posso sair quando quiser.</span></label>
+      <p id="err" role="alert" style="color:#b3261e;font-size:.85rem;margin:10px 0 0"></p>
+      <button type="submit">Quero meu cupom</button>
+    </form>
+  </section>
+
+  <section class="card" id="ok" hidden>
+    <h2>Bem-vindo ao clube</h2>
+    <p id="msg"></p>
+    <div class="coupon"><span>Cupom de primeira compra</span><b>ONDA-1ª</b><span>Mostre no ponto de venda ou use no delivery</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Como funciona</h2>
+    <ol class="steps">
+      <li>Leia o QR code do rótulo da lata ou da garrafa.</li>
+      <li>Cadastre-se e receba o cupom de primeira compra.</li>
+      <li>A cada compra registrada, acumule pontos no sabor que você escolheu.</li>
+      <li>Troque os pontos por ofertas, kits de sabores e novidades.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Pontos e ofertas por sabor</h2>
+    <ul class="flavors">
+      <li><span class="dot" style="background:#f08a4b"></span>Laranja com Morango<small>kit de sabores</small></li>
+      <li><span class="dot" style="background:#e0566f"></span>Morango com Maracujá<small>oferta do mês</small></li>
+      <li><span class="dot" style="background:#6fbf73"></span>Abacaxi e Hortelã<small>combo de recompra</small></li>
+      <li><span class="dot" style="background:#c9d12f"></span>Limão<small>kit de sabores</small></li>
+      <li><span class="dot" style="background:#f0a0bb"></span>Lichia<small>sabor sazonal</small></li>
+    </ul>
+  </section>
+
+  <p class="note">Demonstração do Clube Fresh Wave, projeto de Propaganda e Marketing, UNIP. Nenhum dado digitado aqui é salvo ou enviado.</p>
+</main>
+<script>
+document.getElementById('form').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('nome').value.trim(),m=document.getElementById('email').value.trim(),
+      s=document.getElementById('sabor').value,l=document.getElementById('lgpd').checked;
+  if(!n||!/^\S+@\S+\.\S+$/.test(m)||!s||!l){
+    var f=[!n&&'nome',!/^\S+@\S+\.\S+$/.test(m)&&'e-mail válido',!s&&'sabor',!l&&'o aceite'].filter(Boolean);
+    document.getElementById('err').textContent='Preencha: '+f.join(', ')+'.';return;
+  }
+  document.getElementById('msg').textContent='Oi, '+n+'! Seu sabor favorito é '+s+'. Use o cupom na primeira compra e comece a somar pontos.';
+  document.getElementById('cadastro').hidden=true;
+  document.getElementById('ok').hidden=false;
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</html>
