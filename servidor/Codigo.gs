@@ -9,7 +9,11 @@ var ITENS = {
   kit:      { nome: 'Kit 5 sabores',        custo: 160 },
   chiclete: { nome: 'Chiclete Trident',     custo: 20 },
   chaveiro: { nome: 'Chaveiro Fresh Wave',  custo: 60 },
-  mochila:  { nome: 'Mochila Trident',      custo: 300 }
+  mochila:  { nome: 'Mochila Trident',      custo: 300 },
+  celular:  { nome: 'Celular novo',         custo: 50000 },
+  console:  { nome: 'Console de videogame', custo: 75000 },
+  notebook: { nome: 'Notebook',             custo: 100000 },
+  pc:       { nome: 'Computador gamer',     custo: 150000 }
 };
 var CAD = 'Cadastros';    // Data | Nome | E-mail | Sabor | LGPD
 var MOV = 'Movimentos';   // Data | E-mail | Descrição | Pontos | Código | Entregue?
