@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Lojinha Fresh Wave · Trident</title>
+<style>
+:root{--navy:#194360;--blue:#1f60a0;--teal:#16a3a0;--green:#3e9b3a;--ink:#14232f;--muted:#4f6676;--line:#cfe2ee;--card:rgba(255,255,255,.84)}
+*{box-sizing:border-box}
+html{background:#bfe3f5}
+body{margin:0;color:var(--ink);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;background:linear-gradient(180deg,#a9dcf3 0,#d5eef9 340px,#eaf6fa 700px,#d9f0f4 100%);min-height:100vh;position:relative;overflow-x:hidden}
+.bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.75),rgba(255,255,255,.12));pointer-events:none}
+main{position:relative;max-width:480px;margin:0 auto;padding:0 16px 32px;display:flex;flex-direction:column;gap:18px}
+.hero{text-align:center;padding:30px 0 4px}
+.top{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--navy);font-weight:600}
+.logo{display:block;margin:12px auto 0}.logo.t{width:150px}.logo.f{width:240px;margin-top:2px}
+.badge{display:inline-block;margin-top:14px;padding:8px 20px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.04em;font-size:1.05rem;box-shadow:0 6px 16px rgba(31,96,160,.28)}
+.card{background:var(--card);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.9);border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(25,67,96,.12)}
+.chip{display:inline-block;background:var(--blue);color:#fff;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:6px 14px;border-radius:999px;margin-bottom:14px}
+.chip.g{background:var(--teal)}
+h2{margin:0 0 4px;font-size:1.25rem;font-style:italic;font-weight:800;color:var(--navy);line-height:1.2}
+.sub{margin:0 0 14px;color:var(--muted);font-size:.92rem}
+label.f{display:block;font-size:.85rem;font-weight:700;color:var(--navy);margin:12px 0 4px}
+input[type=text],input[type=email]{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+input:focus,button:focus-visible{outline:3px solid rgba(31,96,160,.45);outline-offset:2px}
+.btn{width:100%;margin-top:16px;font:inherit;font-weight:800;font-style:italic;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(90deg,var(--blue),var(--teal) 60%,var(--green));border:0;border-radius:999px;padding:14px;cursor:pointer;box-shadow:0 8px 18px rgba(31,96,160,.3)}
+.err{color:#b3261e;font-size:.85rem;margin:10px 0 0;min-height:1em}
+.pts{border-radius:20px;padding:20px;color:#fff;background:linear-gradient(135deg,var(--blue),var(--teal) 70%,var(--green));box-shadow:0 10px 24px rgba(31,96,160,.3)}
+.pts small{display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;opacity:.92}
+.pts .who{font-weight:700;font-style:italic}
+.pts .n{font-size:3rem;font-weight:800;font-style:italic;line-height:1.05;margin:6px 0 2px}
+.pts .n span{font-size:1rem;font-weight:700;margin-left:6px}
+.bar{height:10px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .4s}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.item{background:#fff;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 12px rgba(25,67,96,.12)}
+.pic{height:130px;display:flex;align-items:center;justify-content:center;position:relative;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.9) 0 6px,transparent 7px),radial-gradient(circle at 82% 30%,rgba(255,255,255,.7) 0 5px,transparent 6px),radial-gradient(circle at 74% 78%,rgba(255,255,255,.6) 0 8px,transparent 9px),linear-gradient(180deg,var(--a),var(--b))}
+.pic img.can{height:112px;width:auto;filter:drop-shadow(0 5px 5px rgba(20,35,47,.3))}
+.pic img.cans{height:100px;width:auto;margin:0 -9px;filter:drop-shadow(0 4px 4px rgba(20,35,47,.3))}
+.pic svg{width:92px;height:92px;filter:drop-shadow(0 5px 5px rgba(20,35,47,.25))}
+.body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
+.body b{font-size:.9rem;line-height:1.2;color:var(--navy)}
+.body em{font-style:normal;font-size:.75rem;color:var(--muted)}
+.cost{margin-top:auto;padding-top:8px;font-weight:800;font-style:italic;color:var(--blue)}
+.go{margin-top:6px;font:inherit;font-weight:800;font-size:.85rem;color:#fff;background:linear-gradient(90deg,var(--blue),var(--teal));border:0;border-radius:999px;padding:9px;cursor:pointer}
+.go:disabled{background:#c9d6df;color:#5a6b78;cursor:not-allowed}
+.hist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.hist li{display:flex;justify-content:space-between;gap:10px;background:#fff;border-radius:14px;padding:10px 12px;font-size:.9rem}
+.hist .p{font-weight:800;color:var(--green);white-space:nowrap}
+.hist .m{font-weight:800;color:#b3261e;white-space:nowrap}
+.hist small{display:block;color:var(--muted)}
+.toast{position:fixed;left:16px;right:16px;bottom:18px;max-width:448px;margin:0 auto;background:var(--navy);color:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:10}
+.toast b{font-size:1.2rem;letter-spacing:.08em;font-style:italic}
+.toast button{margin-top:8px;font:inherit;font-weight:700;background:#fff;color:var(--navy);border:0;border-radius:99px;padding:7px 16px;cursor:pointer}
+.link{text-align:center;font-size:.85rem}
+.link a,.link button{color:var(--blue);font-weight:700;background:none;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
+.note{font-size:.75rem;color:var(--muted);text-align:center;margin:0 8px}
+[hidden]{display:none!important}
+</style>
+<body>
+<span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
+<span class="bub" style="width:34px;height:34px;right:14px;top:70px"></span>
+<span class="bub" style="width:22px;height:22px;right:60px;top:380px"></span>
+<main>
+  <header class="hero">
+    <div class="top">Lojinha do clube</div>
+    <img class="logo t" src="clube/trident.png" alt="Trident">
+    <img class="logo f" src="clube/freshwave.png" alt="Fresh Wave">
+    <div class="badge">LOJINHA FRESH WAVE</div>
+  </header>
+
+  <section class="card" id="login">
+    <span class="chip">Entrar</span>
+    <h2>Acesse seus pontos</h2>
+    <p class="sub">Use o e-mail do seu cadastro no clube.</p>
+    <form id="lf" novalidate>
+      <label class="f" for="em">E-mail</label>
+      <input id="em" type="email" autocomplete="email" placeholder="voce@email.com">
+      <p class="err" id="lerr" role="alert"></p>
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+    <p class="link" style="margin:14px 0 0">Ainda não é do clube? <a href="clube.html">Cadastre-se</a></p>
+  </section>
+
+  <div id="app" hidden style="display:flex;flex-direction:column;gap:18px">
+    <section class="pts">
+      <small>Olá,</small><div class="who" id="who"></div>
+      <div class="n"><b id="saldo">0</b><span>pontos</span></div>
+      <div class="bar"><i id="barra"></i></div>
+      <small id="prox" style="text-transform:none;letter-spacing:0;font-size:.85rem"></small>
+    </section>
+
+    <section class="card">
+      <span class="chip g">Vitrine</span>
+      <h2>Troque seus pontos</h2>
+      <p class="sub">Escolha um item e mostre o código no ponto de venda.</p>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="card">
+      <span class="chip">Histórico</span>
+      <ul class="hist" id="hist"></ul>
+    </section>
+    <p class="link"><button type="button" id="sair">Sair</button></p>
+  </div>
+
+  <p class="note">Demonstração da Lojinha Fresh Wave, projeto de Propaganda e Marketing, UNIP. Saldo, itens e pontos são exemplos, e nada do que for digitado é salvo ou enviado.</p>
+</main>
+<div class="toast" id="toast" hidden role="status"></div>
+<script>
+var ITENS=[
+ {id:'lata',nome:'Fresh Wave 330 ml',sub:'Lata no sabor que você escolher',custo:40,a:'#ffe0bd',b:'#f08a4b',img:'<img class="can" src="clube/lata2.png" alt="">'},
+ {id:'kit',nome:'Kit 5 sabores',sub:'Uma lata de cada sabor',custo:160,a:'#d6f0fb',b:'#1f60a0',img:'<img class="cans" src="clube/lata1.png" alt=""><img class="cans" src="clube/lata3.png" alt=""><img class="cans" src="clube/lata5.png" alt="">'},
+ {id:'chiclete',nome:'Chiclete Trident',sub:'Pacote de sabor à escolha',custo:20,a:'#d9f7f1',b:'#16a3a0',svg:'<svg viewBox="0 0 100 100"><rect x="18" y="26" width="64" height="48" rx="6" fill="#fff"/><rect x="18" y="26" width="64" height="14" rx="6" fill="#16a3a0"/><rect x="18" y="34" width="64" height="6" fill="#16a3a0"/><path d="M26 56h48" stroke="#1f60a0" stroke-width="5" stroke-linecap="round"/><path d="M30 66h30" stroke="#3e9b3a" stroke-width="4" stroke-linecap="round"/><path d="M14 40l8-12 10 6" fill="#e03a3a"/></svg>'},
+ {id:'chaveiro',nome:'Chaveiro Fresh Wave',sub:'Em acrílico, com argola',custo:60,a:'#fff4a8',b:'#d9b820',svg:'<svg viewBox="0 0 100 100"><circle cx="50" cy="20" r="11" fill="none" stroke="#194360" stroke-width="5"/><path d="M50 31v12" stroke="#194360" stroke-width="5"/><rect x="26" y="43" width="48" height="42" rx="12" fill="#1f60a0"/><path d="M33 68c8-10 14 8 22-2s11-6 12-4" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="56" r="4" fill="#9fe3f2"/></svg>'},
+ {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:300,a:'#d6f0fb',b:'#3e9b3a',svg:'<svg viewBox="0 0 100 100"><path d="M36 22c0-9 28-9 28 0" fill="none" stroke="#194360" stroke-width="6" stroke-linecap="round"/><rect x="22" y="22" width="56" height="66" rx="20" fill="#1f60a0"/><rect x="32" y="52" width="36" height="26" rx="8" fill="#16a3a0"/><path d="M38 62h24" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M32 36c10-6 26-6 36 0" fill="none" stroke="#9fe3f2" stroke-width="4" stroke-linecap="round"/></svg>'}
+];
+var st={saldo:120,hist:[
+ {t:'Compra registrada · Morango com Maracujá',d:'há 2 dias',p:+30},
+ {t:'Compra registrada · Limão',d:'há 6 dias',p:+30},
+ {t:'Bônus de boas-vindas',d:'há 9 dias',p:+60}]};
+var META=ITENS.map(function(i){return i.custo}).sort(function(a,b){return a-b});
+function $(i){return document.getElementById(i)}
+function render(){
+  $('saldo').textContent=st.saldo;
+  var prox=META.filter(function(c){return c>st.saldo})[0];
+  if(prox){$('prox').textContent='Faltam '+(prox-st.saldo)+' pontos para o próximo item da vitrine.';$('barra').style.width=Math.min(100,st.saldo/prox*100)+'%'}
+  else{$('prox').textContent='Você já pode trocar qualquer item da vitrine.';$('barra').style.width='100%'}
+  $('grid').innerHTML=ITENS.map(function(i){
+    var ok=st.saldo>=i.custo;
+    return '<div class="item"><div class="pic" style="--a:'+i.a+';--b:'+i.b+'">'+(i.svg||i.img)+'</div><div class="body"><b>'+i.nome+'</b><em>'+i.sub+'</em><div class="cost">'+i.custo+' pts</div><button class="go" data-id="'+i.id+'"'+(ok?'':' disabled')+'>'+(ok?'Trocar':'Faltam '+(i.custo-st.saldo))+'</button></div></div>'}).join('');
+  $('hist').innerHTML=st.hist.map(function(h){
+    return '<li><span>'+h.t+'<small>'+h.d+'</small></span><span class="'+(h.p>0?'p':'m')+'">'+(h.p>0?'+':'')+h.p+' pts</span></li>'}).join('');
+}
+$('grid').addEventListener('click',function(e){
+  var b=e.target.closest('.go');if(!b||b.disabled)return;
+  var it=ITENS.filter(function(i){return i.id===b.getAttribute('data-id')})[0];
+  if(st.saldo<it.custo)return;
+  st.saldo-=it.custo;
+  var cod='ONDA-'+Math.random().toString(36).slice(2,6).toUpperCase();
+  st.hist.unshift({t:'Troca · '+it.nome,d:'agora',p:-it.custo});
+  render();
+  var t=$('toast');t.innerHTML='Troca feita: <b>'+it.nome+'</b><br>Mostre o código no ponto de venda: <b>'+cod+'</b><br><button type="button" id="fechar">Fechar</button>';
+  t.hidden=false;$('fechar').onclick=function(){t.hidden=true};
+});
+$('lf').addEventListener('submit',function(e){
+  e.preventDefault();
+  var m=$('em').value.trim();
+  if(!/^\S+@\S+\.\S+$/.test(m)){$('lerr').textContent='Digite um e-mail válido.';return}
+  var n=m.split('@')[0].replace(/[._-]+/g,' ').split(' ')[0];
+  n=n.charAt(0).toUpperCase()+n.slice(1);
+  $('who').textContent=n;
+  $('login').hidden=true;$('app').hidden=false;render();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+$('sair').onclick=function(){$('app').hidden=true;$('login').hidden=false;$('toast').hidden=true;st.saldo=120;st.hist=st.hist.filter(function(h){return h.p>0&&h.d!=='agora'})};
+</script>
+</html>
