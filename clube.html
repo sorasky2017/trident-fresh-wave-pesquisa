@@ -96,7 +96,7 @@ input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(31,9
     <div class="ticket"><small>Cupom de primeira compra</small><b>ONDA-1ª</b><small>Mostre no ponto de venda ou use no delivery</small></div>
   </section>
 
-  <section class="card">
+  <section class="card info">
     <span class="chip">Como funciona</span>
     <ol class="steps">
       <li><i>1</i>Leia o QR code do rótulo da sua Fresh Wave.</li>
@@ -106,7 +106,7 @@ input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(31,9
     </ol>
   </section>
 
-  <section class="card">
+  <section class="card info">
     <span class="chip g">Ofertas por sabor</span>
     <div class="offers">
       <div class="offer"><span class="dot" style="background:#f08a4b"></span>Laranja com Morango<em>kit de sabores</em></div>
@@ -136,6 +136,7 @@ document.getElementById('form').addEventListener('submit',function(e){
   document.getElementById('msg').textContent='Seu sabor é '+sel+'. Use o cupom na primeira compra e comece a somar pontos.';
   document.getElementById('cadastro').hidden=true;
   document.getElementById('ok').hidden=false;
+  [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=true});
   window.scrollTo({top:0,behavior:'smooth'});
 });
 </script>
