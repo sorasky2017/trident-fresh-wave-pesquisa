@@ -124,11 +124,10 @@ input:focus,button:focus-visible{outline:3px solid rgba(31,96,160,.45);outline-o
 <div class="toast" id="toast" hidden role="status"></div>
 <script>
 var ITENS=[
- {id:'lata',nome:'Fresh Wave 330 ml',sub:'Lata no sabor que você escolher',custo:40,a:'#ffe0bd',b:'#f08a4b',img:'<img class="can" src="clube/lata2.png" alt="">'},
- {id:'kit',nome:'Kit 5 sabores',sub:'Uma lata de cada sabor',custo:160,a:'#d6f0fb',b:'#1f60a0',img:'<img class="cans" src="clube/lata1.png" alt=""><img class="cans" src="clube/lata3.png" alt=""><img class="cans" src="clube/lata5.png" alt="">'},
+ {id:'kit',nome:'Kit 5 sabores',sub:'Uma lata de cada sabor',custo:200,a:'#d6f0fb',b:'#1f60a0',img:'<img class="cans" src="clube/lata1.png" alt=""><img class="cans" src="clube/lata3.png" alt=""><img class="cans" src="clube/lata5.png" alt="">'},
  {id:'chiclete',nome:'Chiclete Trident',sub:'Pacote de sabor à escolha',custo:20,a:'#d9f7f1',b:'#16a3a0',img:'<img class="prod w" src="clube/chiclete.png" alt="">'},
  {id:'chaveiro',nome:'Chaveiro Fresh Wave',sub:'Em acrílico, com argola',custo:60,a:'#fff4a8',b:'#d9b820',img:'<img class="prod" src="clube/chaveiro.png" alt="">'},
- {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:300,a:'#d6f0fb',b:'#3e9b3a',img:'<img class="prod" src="clube/mochila.png" alt="">'},
+ {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:1000,a:'#d6f0fb',b:'#3e9b3a',img:'<img class="prod" src="clube/mochila.png" alt="">'},
  {id:'celular',nome:'Celular novo',sub:'Prêmio dos sonhos',custo:50000,a:'#d6f0fb',b:'#1f60a0',svg:'<svg viewBox="0 0 92 92" aria-hidden="true"><rect x="27" y="6" width="38" height="80" rx="9" fill="#194360"/><rect x="31" y="12" width="30" height="68" rx="5" fill="#eaf6fc"/><rect x="38" y="15" width="16" height="4" rx="2" fill="#194360"/><rect x="36" y="38" width="20" height="22" rx="4" fill="#16a3a0"/><circle cx="46" cy="49" r="5" fill="#fff"/></svg>'},
  {id:'console',nome:'Console de videogame',sub:'Prêmio dos sonhos',custo:75000,a:'#d9f7f1',b:'#16a3a0',svg:'<svg viewBox="0 0 92 92" aria-hidden="true"><rect x="22" y="6" width="26" height="80" rx="9" fill="#fff"/><rect x="30" y="10" width="10" height="72" rx="5" fill="#194360"/><rect x="26" y="78" width="18" height="4" rx="2" fill="#1f60a0"/><rect x="50" y="56" width="34" height="20" rx="10" fill="#fff"/><path d="M58 62v8M54 66h8" stroke="#194360" stroke-width="2.4" stroke-linecap="round"/><circle cx="73" cy="63" r="2.2" fill="#194360"/><circle cx="77.5" cy="67.5" r="2.2" fill="#194360"/></svg>'},
  {id:'notebook',nome:'Notebook',sub:'Prêmio dos sonhos',custo:100000,a:'#fff4a8',b:'#d9b820',svg:'<svg viewBox="0 0 92 92" aria-hidden="true"><rect x="16" y="18" width="60" height="42" rx="4" fill="#194360"/><rect x="20" y="22" width="52" height="34" rx="2" fill="#a9dcf3"/><path d="M8 64h76l-6 8H14z" fill="#fff"/><rect x="38" y="64" width="16" height="3" rx="1.5" fill="#194360"/><path d="M30 46l8-9 7 6 9-11 8 12z" fill="#16a3a0"/></svg>'},
@@ -156,6 +155,7 @@ function chamar(p){
 }
 function aviso(m){var t=$('toast');t.innerHTML=m+'<br><button type="button" id="fechar">Fechar</button>';t.hidden=false;$('fechar').onclick=function(){t.hidden=true}}
 function aplicar(r){st.nome=r.nome;st.saldo=r.saldo;st.hist=r.hist;st.usada=r.usada}
+ITENS.sort(function(a,b){return a.custo-b.custo});
 var META=ITENS.map(function(i){return i.custo}).sort(function(a,b){return a-b});
 function fmt(n){return Number(n).toLocaleString('pt-BR')}
 function $(i){return document.getElementById(i)}

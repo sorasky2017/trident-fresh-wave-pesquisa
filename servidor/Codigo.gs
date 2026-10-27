@@ -5,11 +5,10 @@ var BONUS = 60;           // pontos da senha
 var TZ = 'America/Sao_Paulo';
 var DESCARTAVEIS = ['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','temp-mail.org','yopmail.com','trashmail.com','throwawaymail.com','sharklasers.com','getnada.com','maildrop.cc','dispostable.com','fakeinbox.com','mohmal.com','emailondeck.com'];
 var ITENS = {
-  lata:     { nome: 'Fresh Wave 330 ml',    custo: 40 },
-  kit:      { nome: 'Kit 5 sabores',        custo: 160 },
+  kit:      { nome: 'Kit 5 sabores',        custo: 200 },
   chiclete: { nome: 'Chiclete Trident',     custo: 20 },
   chaveiro: { nome: 'Chaveiro Fresh Wave',  custo: 60 },
-  mochila:  { nome: 'Mochila Trident',      custo: 300 },
+  mochila:  { nome: 'Mochila Trident',      custo: 1000 },
   celular:  { nome: 'Celular novo',         custo: 50000 },
   console:  { nome: 'Console de videogame', custo: 75000 },
   notebook: { nome: 'Notebook',             custo: 100000 },
