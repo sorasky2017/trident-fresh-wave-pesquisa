@@ -199,6 +199,7 @@ $('lf').addEventListener('submit',function(e){
     }else{le.textContent='Não foi possível entrar agora.'}
   }).catch(function(){le.textContent='Sem conexão. Tente de novo.'}).then(function(){bt.disabled=false});
 });
-$('sair').onclick=function(){$('app').hidden=true;$('login').hidden=false;$('toast').hidden=true};
+$('sair').onclick=function(){try{localStorage.removeItem('fw_email')}catch(e){}$('em').value='';$('app').hidden=true;$('login').hidden=false;$('toast').hidden=true};
+if(location.hash==='#entrar'&&$('em').value){$('lf').dispatchEvent(new Event('submit',{cancelable:true}))}
 </script>
 </html>
