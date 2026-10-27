@@ -11,7 +11,7 @@ html{background:#bfe3f5}
 body{margin:0;color:var(--ink);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;
  background:linear-gradient(180deg,#a9dcf3 0,#d5eef9 340px,#eaf6fa 700px,#d9f0f4 100%);background-attachment:scroll;min-height:100vh;position:relative;overflow-x:hidden}
 .bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.75),rgba(255,255,255,.12));pointer-events:none}
-main{position:relative;max-width:480px;margin:0 auto;padding:0 16px 0;display:flex;flex-direction:column;gap:18px}
+main{position:relative;max-width:480px;margin:0 auto;padding:0 16px 32px;display:flex;flex-direction:column;gap:18px}
 .hero{text-align:center;padding:34px 0 6px}
 .top{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--navy);font-weight:600}
 .logo{display:block;margin:14px auto 0}
@@ -50,8 +50,6 @@ input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(31,9
 .dot{width:16px;height:16px;border-radius:50%;flex:none}
 .offer em{margin-left:auto;font-style:normal;font-size:.78rem;font-weight:700;color:var(--blue);text-align:right}
 .note{font-size:.75rem;color:var(--muted);text-align:center;margin:0 8px}
-.wave{display:block;width:calc(100% + 32px);margin:6px -16px 0;height:auto}
-.foot{background:#8fd3ea;margin:0}
 [hidden]{display:none!important}
 </style>
 <body>
@@ -120,7 +118,6 @@ input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(31,9
   </section>
 
   <p class="note">Demonstração do Clube Fresh Wave, projeto de Propaganda e Marketing, UNIP. Nenhum dado digitado aqui é salvo ou enviado.</p>
-  <img class="wave" src="clube/onda.jpg" alt="">
 </main>
 <script>
 var sel='';
