@@ -16,6 +16,7 @@ var MOV = 'Movimentos';   // Data | E-mail | Descrição | Pontos | Código | En
 
 function doGet(e) {
   var p = (e && e.parameter) || {};
+  if (p.action === 'painel') return resp(painel());
   var email = String(p.email || '').trim().toLowerCase();
   if (!/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/i.test(email) || /\.\./.test(email) || email.length > 120) return resp({ ok: false, motivo: 'email' });
   if (DESCARTAVEIS.indexOf(email.split('@')[1]) > -1) return resp({ ok: false, motivo: 'email' });
@@ -45,6 +46,7 @@ function aba(nome, cab) {
 function cad() { return aba(CAD, ['Data', 'Nome', 'E-mail', 'Sabor', 'LGPD']); }
 function mov() { return aba(MOV, ['Data', 'E-mail', 'Descrição', 'Pontos', 'Código', 'Entregue?']); }
 function limpa(s, n) { s = String(s || '').replace(/[\r\n\t]+/g, ' ').trim().slice(0, n); return /^[=+\-@]/.test(s) ? "'" + s : s; }
+function fmt(v) { return v instanceof Date ? Utilities.formatDate(v, TZ, 'dd/MM/yyyy HH:mm') : String(v); }
 function agora() { return Utilities.formatDate(new Date(), TZ, 'dd/MM/yyyy HH:mm'); }
 
 function achar(email) {
@@ -65,7 +67,7 @@ function extrato(email) {
       var pts = Number(v[i][3]) || 0;
       saldo += pts;
       if (String(v[i][2]) === 'Senha do estande') usada = true;
-      hist.unshift({ t: String(v[i][2]), d: String(v[i][0]), p: pts, c: String(v[i][4] || '') });
+      hist.unshift({ t: String(v[i][2]), d: fmt(v[i][0]), p: pts, c: String(v[i][4] || '') });
     }
   }
   return { saldo: saldo, hist: hist.slice(0, 15), usada: usada };
@@ -105,6 +107,31 @@ function trocar(email, item) {
   mov().appendRow([agora(), email, 'Troca · ' + it.nome, -it.custo, cod, 'Não']);
   var r = ficha(email, c);
   r.codigo = cod; r.item = it.nome;
+  return r;
+}
+// Números agregados para o painel do estande (sem dados pessoais)
+function painel() {
+  var cache = CacheService.getScriptCache(), c = cache.get('painel');
+  if (c) return JSON.parse(c);
+  var cs = cad(), ms = mov(), nc = cs.getLastRow(), nm = ms.getLastRow();
+  var r = { ok: true, cadastros: 0, completaram: 0, trocas: 0, entregues: 0, sabores: {}, porHora: {}, atualizado: agora() };
+  if (nc >= 2) {
+    var a = cs.getRange(2, 1, nc - 1, 5).getValues();
+    r.cadastros = a.length;
+    for (var i = 0; i < a.length; i++) {
+      var sb = String(a[i][3]); r.sabores[sb] = (r.sabores[sb] || 0) + 1;
+      var h = fmt(a[i][0]).slice(11, 13); if (h) r.porHora[h] = (r.porHora[h] || 0) + 1;
+    }
+  }
+  if (nm >= 2) {
+    var b = ms.getRange(2, 1, nm - 1, 6).getValues();
+    for (var j = 0; j < b.length; j++) {
+      var d = String(b[j][2]);
+      if (d === 'Senha do estande') r.completaram++;
+      if (d.indexOf('Troca') === 0) { r.trocas++; if (String(b[j][5]).toLowerCase() === 'sim') r.entregues++; }
+    }
+  }
+  cache.put('painel', JSON.stringify(r), 8);
   return r;
 }
 function resp(o) {

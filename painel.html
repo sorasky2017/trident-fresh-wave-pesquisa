@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Painel ao vivo · Fresh Wave</title>
+<style>
+:root{--navy:#194360;--blue:#1f60a0;--teal:#16a3a0;--green:#3e9b3a;--muted:#4f6676}
+*{box-sizing:border-box}
+html{background:#bfe3f5}
+body{margin:0;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#a9dcf3 0,#d5eef9 45%,#ebf6fc 100%);min-height:100vh;padding:clamp(14px,2.4vw,40px)}
+header{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.4vw,36px);flex-wrap:wrap}
+header img.t{height:clamp(40px,6vw,90px)}header img.f{height:clamp(30px,4.4vw,66px)}
+.badge{padding:.5em 1.4em;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.05em;font-size:clamp(14px,1.8vw,28px);text-transform:uppercase;box-shadow:0 6px 16px rgba(31,96,160,.28)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:clamp(10px,1.6vw,24px);margin-top:clamp(14px,2.4vw,36px)}
+.k{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2vw,30px);box-shadow:0 10px 28px rgba(25,67,96,.12);text-align:center}
+.k b{display:block;font-size:clamp(44px,8vw,128px);line-height:1;font-style:italic;font-weight:900;background:linear-gradient(90deg,var(--blue),var(--teal),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.k span{display:block;margin-top:.4em;font-size:clamp(12px,1.6vw,24px);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
+.k small{display:block;margin-top:.3em;font-size:clamp(11px,1.3vw,19px);color:var(--muted)}
+.rank{margin-top:clamp(14px,2.4vw,36px);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2.2vw,34px);box-shadow:0 10px 28px rgba(25,67,96,.12)}
+.rank h2{margin:0 0 .6em;font-size:clamp(16px,2.2vw,34px);font-style:italic;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.row{display:grid;grid-template-columns:clamp(28px,4vw,60px) minmax(0,1.3fr) minmax(0,3fr) clamp(30px,4vw,64px);align-items:center;gap:clamp(8px,1.4vw,22px);margin-top:clamp(8px,1.2vw,18px)}
+.row img{height:clamp(36px,6vw,92px);justify-self:center}
+.row .nm{font-weight:800;font-size:clamp(13px,1.8vw,28px);line-height:1.15}
+.bar{height:clamp(14px,2.2vw,36px);border-radius:99px;background:rgba(25,67,96,.1);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;width:0;transition:width .8s ease}
+.row .n{font-weight:900;font-size:clamp(16px,2.4vw,38px);font-style:italic;text-align:right;font-variant-numeric:tabular-nums}
+.row.top .nm{color:var(--green)}
+.foot{margin-top:clamp(10px,1.6vw,22px);text-align:center;font-size:clamp(11px,1.3vw,18px);color:var(--muted)}
+.dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;background:var(--green);margin-right:.5em;animation:p 1.6s infinite}
+.dot.off{background:#b3261e;animation:none}
+@keyframes p{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}.bar i{transition:none}}
+</style>
+<header>
+  <img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave">
+  <div class="badge">Painel ao vivo</div>
+</header>
+<section class="kpis" aria-live="polite">
+  <div class="k"><b id="k1">0</b><span>Cadastros no clube</span></div>
+  <div class="k"><b id="k2">0</b><span>Completaram a caça</span><small id="s2">&nbsp;</small></div>
+  <div class="k"><b id="k3">0</b><span>Chaveiros trocados</span><small id="s3">&nbsp;</small></div>
+</section>
+<section class="rank">
+  <h2>Sabor favorito do público</h2>
+  <div id="rank"></div>
+</section>
+<p class="foot"><span class="dot" id="dot"></span><span id="up">Conectando...</span></p>
+<script>
+var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
+var SAB=[
+ {n:'Laranja com Morango',c:'#f08a4b',img:'clube/lata1.png'},
+ {n:'Morango com Maracujá',c:'#e0566f',img:'clube/lata2.png'},
+ {n:'Limão',c:'#5fa83b',img:'clube/lata3.png'},
+ {n:'Lichia',c:'#e8708f',img:'clube/lata4.png'},
+ {n:'Abacaxi e Hortelã',c:'#d9b820',img:'clube/lata5.png'}
+];
+function $(i){return document.getElementById(i)}
+var demo=/[?&]demo=1/.test(location.search);
+function pct(a,b){return b?Math.round(a/b*100)+'%':'0%'}
+function mostrar(r){
+  $('k1').textContent=r.cadastros;$('k2').textContent=r.completaram;$('k3').textContent=r.trocas;
+  $('s2').textContent=r.cadastros?pct(r.completaram,r.cadastros)+' dos cadastrados':' ';
+  $('s3').textContent=r.trocas?r.entregues+' já entregues':' ';
+  var tot=SAB.reduce(function(a,s){return a+(r.sabores[s.n]||0)},0),max=Math.max.apply(null,SAB.map(function(s){return r.sabores[s.n]||0}).concat([1]));
+  var ord=SAB.slice().sort(function(a,b){return (r.sabores[b.n]||0)-(r.sabores[a.n]||0)});
+  $('rank').innerHTML=ord.map(function(s,i){var v=r.sabores[s.n]||0;
+    return '<div class="row'+(i===0&&v?' top':'')+'"><img src="'+s.img+'" alt=""><div class="nm">'+s.n+'</div><div class="bar"><i style="background:'+s.c+';width:'+(v/max*100)+'%"></i></div><div class="n">'+v+'</div></div>'}).join('');
+  $('up').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  $('dot').className='dot';
+}
+function ler(){
+  if(demo){mostrar({cadastros:87,completaram:52,trocas:41,entregues:38,sabores:{'Laranja com Morango':21,'Morango com Maracujá':24,'Limão':15,'Lichia':9,'Abacaxi e Hortelã':18}});$('up').textContent='Modo demonstração (dados de exemplo)';return}
+  fetch(API+'?action=painel&t='+Date.now()).then(function(r){return r.json()}).then(function(r){if(r.ok)mostrar(r);else throw 0})
+  .catch(function(){$('dot').className='dot off';$('up').textContent='Sem conexão com a planilha. Tentando de novo...'});
+}
+ler();if(!demo)setInterval(ler,8000);
+</script>
+</html>
