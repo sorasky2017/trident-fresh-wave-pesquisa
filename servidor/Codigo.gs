@@ -3,6 +3,7 @@
 var SENHA = 'ONDA7';      // senha do estande (só existe aqui)
 var BONUS = 60;           // pontos da senha
 var TZ = 'America/Sao_Paulo';
+var DESCARTAVEIS = ['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','temp-mail.org','yopmail.com','trashmail.com','throwawaymail.com','sharklasers.com','getnada.com','maildrop.cc','dispostable.com','fakeinbox.com','mohmal.com','emailondeck.com'];
 var ITENS = {
   lata:     { nome: 'Fresh Wave 330 ml',    custo: 40 },
   kit:      { nome: 'Kit 5 sabores',        custo: 160 },
@@ -16,7 +17,8 @@ var MOV = 'Movimentos';   // Data | E-mail | Descrição | Pontos | Código | En
 function doGet(e) {
   var p = (e && e.parameter) || {};
   var email = String(p.email || '').trim().toLowerCase();
-  if (!/^\S+@\S+\.\S+$/.test(email) || email.length > 120) return resp({ ok: false, motivo: 'email' });
+  if (!/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/i.test(email) || /\.\./.test(email) || email.length > 120) return resp({ ok: false, motivo: 'email' });
+  if (DESCARTAVEIS.indexOf(email.split('@')[1]) > -1) return resp({ ok: false, motivo: 'email' });
   var lock = LockService.getScriptLock();
   lock.waitLock(15000);
   try {

@@ -130,6 +130,20 @@ var ITENS=[
  {id:'chaveiro',nome:'Chaveiro Fresh Wave',sub:'Em acrílico, com argola',custo:60,a:'#fff4a8',b:'#d9b820',img:'<img class="prod" src="clube/chaveiro.png" alt="">'},
  {id:'mochila',nome:'Mochila Trident',sub:'Para levar a onda com você',custo:300,a:'#d6f0fb',b:'#3e9b3a',img:'<img class="prod" src="clube/mochila.png" alt="">'}
 ];
+
+var DOM=['gmail.com','hotmail.com','outlook.com','yahoo.com','yahoo.com.br','icloud.com','live.com','uol.com.br','bol.com.br','terra.com.br','msn.com','proton.me','protonmail.com'];
+var DESC=['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','temp-mail.org','yopmail.com','trashmail.com','throwawaymail.com','sharklasers.com','getnada.com','maildrop.cc','dispostable.com','fakeinbox.com','mohmal.com','emailondeck.com'];
+function lev(a,b){var d=[],i,j;for(i=0;i<=a.length;i++){d[i]=[i]}for(j=1;j<=b.length;j++){d[0][j]=j}
+  for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+/* retorna {erro:'..'} | {sug:'email corrigido'} | {} */
+function checarEmail(m){
+  if(!/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/i.test(m)||/\.\./.test(m)||/^\.|\.@/.test(m))return{erro:'Confira o e-mail: ele parece estar incompleto ou com algum erro.'};
+  var d=m.split('@')[1].toLowerCase();
+  if(DESC.indexOf(d)>-1)return{erro:'Use um e-mail pessoal, e-mails temporários não são aceitos.'};
+  if(DOM.indexOf(d)>-1)return{};
+  for(var i=0;i<DOM.length;i++){if(lev(d,DOM[i])<=2&&Math.abs(d.length-DOM[i].length)<=2)return{sug:m.split('@')[0]+'@'+DOM[i]}}
+  return{};
+}
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 var st={email:'',nome:'',saldo:0,hist:[],usada:false};
 function chamar(p){
@@ -185,7 +199,9 @@ try{var em0=localStorage.getItem('fw_email');if(em0)$('em').value=em0}catch(e){}
 $('lf').addEventListener('submit',function(e){
   e.preventDefault();
   var m=$('em').value.trim().toLowerCase(),le=$('lerr'),bt=$('lf').querySelector('button[type=submit]');
-  if(!/^\S+@\S+\.\S+$/.test(m)){le.textContent='Digite um e-mail válido.';return}
+  var ce=checarEmail(m);
+  if(ce.erro){le.textContent=ce.erro;return}
+  if(ce.sug&&window._sugVista!==m){window._sugVista=m;le.innerHTML='Você quis dizer <b>'+ce.sug+'</b>? <a href="#" id="usar">Usar este</a>. Se estiver certo, toque em entrar de novo.';$('usar').onclick=function(ev){ev.preventDefault();$('em').value=ce.sug;le.textContent=''};return}
   bt.disabled=true;le.textContent='Entrando...';
   chamar({action:'entrar',email:m}).then(function(r){
     if(r.ok){

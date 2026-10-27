@@ -118,14 +118,29 @@ tiles.forEach(function(t){t.addEventListener('click',function(){
   sel=t.getAttribute('data-s');
   tiles.forEach(function(x){x.setAttribute('aria-checked',x===t?'true':'false')});
 })});
+
+var DOM=['gmail.com','hotmail.com','outlook.com','yahoo.com','yahoo.com.br','icloud.com','live.com','uol.com.br','bol.com.br','terra.com.br','msn.com','proton.me','protonmail.com'];
+var DESC=['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','temp-mail.org','yopmail.com','trashmail.com','throwawaymail.com','sharklasers.com','getnada.com','maildrop.cc','dispostable.com','fakeinbox.com','mohmal.com','emailondeck.com'];
+function lev(a,b){var d=[],i,j;for(i=0;i<=a.length;i++){d[i]=[i]}for(j=1;j<=b.length;j++){d[0][j]=j}
+  for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+/* retorna {erro:'..'} | {sug:'email corrigido'} | {} */
+function checarEmail(m){
+  if(!/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/i.test(m)||/\.\./.test(m)||/^\.|\.@/.test(m))return{erro:'Confira o e-mail: ele parece estar incompleto ou com algum erro.'};
+  var d=m.split('@')[1].toLowerCase();
+  if(DESC.indexOf(d)>-1)return{erro:'Use um e-mail pessoal, e-mails temporários não são aceitos.'};
+  if(DOM.indexOf(d)>-1)return{};
+  for(var i=0;i<DOM.length;i++){if(lev(d,DOM[i])<=2&&Math.abs(d.length-DOM[i].length)<=2)return{sug:m.split('@')[0]+'@'+DOM[i]}}
+  return{};
+}
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 document.getElementById('form').addEventListener('submit',function(e){
   e.preventDefault();
   var n=document.getElementById('nome').value.trim(),m=document.getElementById('email').value.trim().toLowerCase(),
-      okm=/^\S+@\S+\.\S+$/.test(m),l=document.getElementById('lgpd').checked,er=document.getElementById('err'),
+      ce=checarEmail(m),okm=!ce.erro,l=document.getElementById('lgpd').checked,er=document.getElementById('err'),
       bt=document.querySelector('#form button[type=submit]');
   var f=[!sel&&'um sabor',!n&&'o nome',!okm&&'um e-mail válido',!l&&'o aceite'].filter(Boolean);
-  if(f.length){er.textContent='Falta: '+f.join(', ')+'.';return;}
+  if(f.length){er.textContent=(ce.erro&&f.length===1&&!okm)?ce.erro:'Falta: '+f.join(', ')+'.';return;}
+  if(ce.sug&&window._sugVista!==m){window._sugVista=m;er.innerHTML='Você quis dizer <b>'+ce.sug+'</b>? <a href="#" id="usar" style="color:#1F60A0;font-weight:800">Usar este</a>. Se estiver certo, toque em enviar de novo.';document.getElementById('usar').onclick=function(ev){ev.preventDefault();document.getElementById('email').value=ce.sug;er.textContent='';};return;}
   er.textContent='Enviando...';bt.disabled=true;
   fetch(API+'?action=cadastro&email='+encodeURIComponent(m)+'&nome='+encodeURIComponent(n)+'&sabor='+encodeURIComponent(sel)+'&lgpd=1')
     .then(function(r){return r.json()})
