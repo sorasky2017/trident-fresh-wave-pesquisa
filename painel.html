@@ -5,24 +5,24 @@
 <meta name="color-scheme" content="light">
 <title>Painel ao vivo · Fresh Wave</title>
 <style>
-:root{--navy:#194360;--blue:#1f60a0;--teal:#16a3a0;--green:#3e9b3a;--muted:#4f6676}
+:root{--navy:#1E2B24;--blue:#00873D;--teal:#00BF63;--green:#00BF63;--muted:#4A5F52}
 *{box-sizing:border-box}
-html{background:#bfe3f5}
-body{margin:0;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#a9dcf3 0,#d5eef9 45%,#ebf6fc 100%);min-height:100vh;padding:clamp(14px,2.4vw,40px)}
+html{background:#C4EBD2}
+body{margin:0;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#BDEBCB 0,#D6F1DF 45%,#f0fceb 100%);min-height:100vh;padding:clamp(14px,2.4vw,40px)}
 header{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.4vw,36px);flex-wrap:wrap}
 header img.t{height:clamp(40px,6vw,90px)}header img.f{height:clamp(30px,4.4vw,66px)}
-.badge{padding:.5em 1.4em;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.05em;font-size:clamp(14px,1.8vw,28px);text-transform:uppercase;box-shadow:0 6px 16px rgba(31,96,160,.28)}
+.badge{padding:.5em 1.4em;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.05em;font-size:clamp(14px,1.8vw,28px);text-transform:uppercase;box-shadow:0 6px 16px rgba(0,135,61,.28)}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:clamp(10px,1.6vw,24px);margin-top:clamp(14px,2.4vw,36px)}
-.k{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2vw,30px);box-shadow:0 10px 28px rgba(25,67,96,.12);text-align:center}
+.k{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2vw,30px);box-shadow:0 10px 28px rgba(30,43,36,.12);text-align:center}
 .k b{display:block;font-size:clamp(44px,8vw,128px);line-height:1;font-style:italic;font-weight:900;background:linear-gradient(90deg,var(--blue),var(--teal),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
 .k span{display:block;margin-top:.4em;font-size:clamp(12px,1.6vw,24px);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
 .k small{display:block;margin-top:.3em;font-size:clamp(11px,1.3vw,19px);color:var(--muted)}
-.rank{margin-top:clamp(14px,2.4vw,36px);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2.2vw,34px);box-shadow:0 10px 28px rgba(25,67,96,.12)}
+.rank{margin-top:clamp(14px,2.4vw,36px);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2.2vw,34px);box-shadow:0 10px 28px rgba(30,43,36,.12)}
 .rank h2{margin:0 0 .6em;font-size:clamp(16px,2.2vw,34px);font-style:italic;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
 .row{display:grid;grid-template-columns:clamp(28px,4vw,60px) minmax(0,1.3fr) minmax(0,3fr) clamp(30px,4vw,64px);align-items:center;gap:clamp(8px,1.4vw,22px);margin-top:clamp(8px,1.2vw,18px)}
 .row img{height:clamp(36px,6vw,92px);justify-self:center}
 .row .nm{font-weight:800;font-size:clamp(13px,1.8vw,28px);line-height:1.15}
-.bar{height:clamp(14px,2.2vw,36px);border-radius:99px;background:rgba(25,67,96,.1);overflow:hidden}
+.bar{height:clamp(14px,2.2vw,36px);border-radius:99px;background:rgba(30,43,36,.1);overflow:hidden}
 .bar i{display:block;height:100%;border-radius:99px;width:0;transition:width .8s ease}
 .row .n{font-weight:900;font-size:clamp(16px,2.4vw,38px);font-style:italic;text-align:right;font-variant-numeric:tabular-nums}
 .row.top .nm{color:var(--green)}
@@ -51,7 +51,7 @@ var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhO
 var SAB=[
  {n:'Laranja com Morango',c:'#f08a4b',img:'clube/lata1.png'},
  {n:'Morango com Maracujá',c:'#e0566f',img:'clube/lata2.png'},
- {n:'Limão',c:'#5fa83b',img:'clube/lata3.png'},
+ {n:'Limão',c:'#22CC74',img:'clube/lata3.png'},
  {n:'Lichia',c:'#e8708f',img:'clube/lata4.png'},
  {n:'Abacaxi e Hortelã',c:'#d9b820',img:'clube/lata5.png'}
 ];
