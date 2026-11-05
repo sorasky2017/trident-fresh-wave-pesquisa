@@ -38,7 +38,6 @@ header img.t{height:clamp(40px,6vw,90px)}header img.f{height:clamp(30px,4.4vw,66
 </header>
 <section class="kpis" aria-live="polite">
   <div class="k"><b id="k1">0</b><span>Cadastros no clube</span></div>
-  <div class="k"><b id="k2">0</b><span>Completaram a caça</span><small id="s2">&nbsp;</small></div>
   <div class="k"><b id="k3">0</b><span>Chaveiros trocados</span><small id="s3">&nbsp;</small></div>
 </section>
 <section class="rank">
@@ -59,8 +58,7 @@ function $(i){return document.getElementById(i)}
 var demo=/[?&]demo=1/.test(location.search);
 function pct(a,b){return b?Math.round(a/b*100)+'%':'0%'}
 function mostrar(r){
-  $('k1').textContent=r.cadastros;$('k2').textContent=r.completaram;$('k3').textContent=r.trocas;
-  $('s2').textContent=r.cadastros?pct(r.completaram,r.cadastros)+' dos cadastrados':' ';
+  $('k1').textContent=r.cadastros;$('k3').textContent=r.trocas;
   $('s3').textContent=r.trocas?r.entregues+' já entregues':' ';
   var tot=SAB.reduce(function(a,s){return a+(r.sabores[s.n]||0)},0),max=Math.max.apply(null,SAB.map(function(s){return r.sabores[s.n]||0}).concat([1]));
   var ord=SAB.slice().sort(function(a,b){return (r.sabores[b.n]||0)-(r.sabores[a.n]||0)});

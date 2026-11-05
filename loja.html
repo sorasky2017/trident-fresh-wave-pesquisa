@@ -94,17 +94,6 @@ input:focus,button:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-of
       <small id="prox" style="text-transform:none;letter-spacing:0;font-size:.85rem"></small>
     </section>
 
-    <section class="card" id="senhacard">
-      <span class="chip">Senha do estande</span>
-      <h2>Descobriu a senha?</h2>
-      <p class="sub">Junte as dicas das bancadas e digite a senha para ganhar pontos.</p>
-      <form id="sform" novalidate>
-        <div class="sline"><input id="senha" type="text" placeholder="Digite a senha" autocomplete="off" autocapitalize="characters" maxlength="12" aria-label="Senha do estande"><button class="go" type="submit" style="width:auto;padding:0 18px">Validar</button></div>
-        <p id="serr" class="err" style="margin:8px 0 0;color:#c0392b;font-size:13px;font-weight:700"></p>
-      </form>
-      <p id="sdone" class="sub" hidden style="margin:0">Este e-mail já usou a senha do estande. Seus pontos estão no saldo.</p>
-    </section>
-
     <section class="card">
       <span class="chip g">Vitrine</span>
       <h2>Troque seus pontos</h2>
@@ -167,8 +156,7 @@ function render(){
   $('grid').innerHTML=ITENS.map(function(i){
     var ok=st.saldo>=i.custo;
     return '<div class="item"><div class="pic" style="--a:'+i.a+';--b:'+i.b+'">'+(i.svg||i.img)+'</div><div class="body"><b>'+i.nome+'</b><em>'+i.sub+'</em><div class="cost">'+fmt(i.custo)+' pts</div><button class="go" data-id="'+i.id+'"'+(ok?'':' disabled')+'>'+(ok?'Trocar':'Faltam '+fmt(i.custo-st.saldo))+'</button></div></div>'}).join('');
-  $('sform').hidden=st.usada;$('sdone').hidden=!st.usada;
-  $('hist').innerHTML=!st.hist.length?'<li><span>Nenhum movimento ainda<small>Digite a senha do estande para ganhar pontos</small></span></li>':st.hist.map(function(h){
+  $('hist').innerHTML=!st.hist.length?'<li><span>Nenhum movimento ainda<small>Troque seus pontos por itens da vitrine</small></span></li>':st.hist.map(function(h){
     return '<li><span>'+h.t+'<small>'+h.d+(h.c?' · código '+h.c:'')+'</small></span><span class="'+(h.p>0?'p':'m')+'">'+(h.p>0?'+':'')+h.p+' pts</span></li>'}).join('');
 }
 $('grid').addEventListener('click',function(e){
@@ -183,22 +171,6 @@ $('grid').addEventListener('click',function(e){
       t.hidden=false;$('fechar').onclick=function(){t.hidden=true};
     }else{render();aviso(r.motivo==='saldo'?'Pontos insuficientes.':'Não foi possível trocar agora.')}
   }).catch(function(){render();aviso('Sem conexão. Tente de novo.')});
-});
-$('sform').addEventListener('submit',function(e){
-  e.preventDefault();
-  if(st.usada)return;
-  var v=$('senha').value.trim().toUpperCase(),er=$('serr'),bt=$('sform').querySelector('button');
-  if(!v){er.textContent='Digite a senha.';return}
-  bt.disabled=true;er.textContent='Conferindo...';
-  chamar({action:'senha',email:st.email,senha:v})
-    .then(function(r){
-      if(r.ok){aplicar(r);er.textContent='';$('senha').value='';render()}
-      else if(r.motivo==='usada'){st.usada=true;render();er.textContent=''}
-      else if(r.motivo==='senha'){er.textContent='Senha incorreta. Procure as dicas nas bancadas.'}
-      else{er.textContent='Não foi possível validar agora.'}
-    })
-    .catch(function(){er.textContent='Sem conexão. Tente de novo.'})
-    .then(function(){bt.disabled=false});
 });
 try{var em0=localStorage.getItem('fw_email');if(em0)$('em').value=em0}catch(e){}
 $('lf').addEventListener('submit',function(e){
