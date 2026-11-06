@@ -57,6 +57,14 @@ main{min-height:100vh;min-height:100dvh;justify-content:center;padding-top:16px;
 .opt{display:block;text-align:center;text-decoration:none;font-weight:800;font-style:italic;letter-spacing:.03em;font-size:1.25rem;color:#fff;background:linear-gradient(90deg,var(--blue),var(--teal) 60%,var(--green));border-radius:999px;padding:20px 16px;box-shadow:0 8px 20px rgba(0,135,61,.3)}
 .opt.alt{background:#fff;color:var(--blue);border:2.5px solid var(--blue);box-shadow:0 8px 20px rgba(30,43,36,.12)}
 .opt:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:3px}
+@media (min-width:820px){
+main{max-width:860px;gap:34px}
+.logo.t{width:260px}.logo.f{width:420px;margin-top:4px}.logo.s{width:390px;margin-top:10px}
+.opts{grid-template-columns:1fr 1fr;gap:24px;width:100%}
+.opt{font-size:1.5rem;padding:28px 20px;transition:transform .15s,box-shadow .15s}
+.opt:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,135,61,.35)}
+.note{font-size:.9rem}
+}
 </style>
 <body>
 <span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
