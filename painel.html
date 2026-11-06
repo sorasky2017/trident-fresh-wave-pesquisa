@@ -38,7 +38,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
   <div class="msg" id="msg">Aguardando o sorteio...</div>
   <div class="nome" id="nome" hidden></div>
   <div class="curso" id="curso"></div>
-  <div class="tempo" id="tempo" hidden><small>Tempo para se apresentar</small><b id="tv">02:00</b></div>
+  <div class="tempo" id="tempo" hidden><small>Tempo para se apresentar</small><b id="tv">01:30</b></div>
 </main>
 <div class="ant" id="ant"></div>
 <div class="foot" id="foot"></div>
@@ -46,7 +46,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 <script>
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 var $=function(i){return document.getElementById(i)};
-var mostrada=null,primeira=true,t0=null,TOTAL=120;
+var mostrada=null,primeira=true,t0=null,TOTAL=90;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function msg(t,spin){t0=null;$('tempo').hidden=true;$('nome').hidden=true;$('curso').textContent='';var m=$('msg');m.hidden=false;m.textContent=t;m.className='msg'+(spin?' spin':'')}
 function relogio(){
