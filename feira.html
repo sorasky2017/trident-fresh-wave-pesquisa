@@ -24,7 +24,7 @@ main{position:relative;max-width:480px;margin:0 auto;padding:0 16px 32px;display
 h2{margin:0 0 4px;font-size:1.25rem;font-style:italic;font-weight:800;color:var(--navy);line-height:1.2}
 .sub{margin:0 0 14px;color:var(--muted);font-size:.92rem}
 label.f{display:block;font-size:.85rem;font-weight:700;color:var(--navy);margin:12px 0 4px}
-input[type=text],input[type=email]{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+input[type=text],input[type=email],input[type=tel]{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
 input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:2px}
 .tiles{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;margin:0 -4px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 .tile{flex:0 0 88px;scroll-snap-align:center;border:3px solid transparent;border-radius:18px;background:#fff;padding:0;cursor:pointer;overflow:hidden;text-align:center;font:inherit;box-shadow:0 4px 12px rgba(30,43,36,.15);transition:transform .15s}
@@ -96,6 +96,8 @@ h2{font-size:1.5rem}
       <input id="nome" type="text" autocomplete="name">
       <label class="f" for="curso">Curso</label>
       <input id="curso" type="text" autocomplete="off" placeholder="Ex.: Propaganda e Marketing">
+      <label class="f" for="tel">Telefone com WhatsApp <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 91234-5678">
       <label class="f" id="al">Avalie o estande</label>
       <div class="stars" role="radiogroup" aria-labelledby="al" id="stars">
         <button type="button" role="radio" aria-checked="false" aria-label="1 estrela" data-v="1">★</button>
@@ -104,7 +106,7 @@ h2{font-size:1.5rem}
         <button type="button" role="radio" aria-checked="false" aria-label="4 estrelas" data-v="4">★</button>
         <button type="button" role="radio" aria-checked="false" aria-label="5 estrelas" data-v="5">★</button>
       </div>
-      <label class="check"><input id="lgpd" type="checkbox"><span>Concordo em usar meu nome, curso e avaliação do estande só para participar do sorteio de ecobags.</span></label>
+      <label class="check"><input id="lgpd" type="checkbox"><span>Concordo em usar meu nome, curso, avaliação do estande e, se informado, meu telefone só para participar do sorteio de ecobags e receber o aviso caso eu ganhe.</span></label>
       <p class="err" id="err" role="alert"></p>
       <button class="btn" type="submit">Quero concorrer</button>
     </form>
@@ -138,14 +140,15 @@ var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhO
 document.getElementById('form').addEventListener('submit',function(e){
   e.preventDefault();
   var n=document.getElementById('nome').value.trim().replace(/\s+/g,' '),c=document.getElementById('curso').value.trim().replace(/\s+/g,' '),
-      l=document.getElementById('lgpd').checked,er=document.getElementById('err'),bt=document.querySelector('#form button[type=submit]');
+      tl=document.getElementById('tel').value.trim(),td=tl.replace(/\D/g,''),l=document.getElementById('lgpd').checked,er=document.getElementById('err'),bt=document.querySelector('#form button[type=submit]');
   var f=[(n.split(' ').length<2)&&'o nome completo',!c&&'o curso',!nota&&'a avaliação do estande',!l&&'o aceite'].filter(Boolean);
+  if(!f.length&&tl&&td.length<10){er.textContent='Confira o telefone: inclua o DDD, por exemplo (11) 91234-5678.';return;}
   if(f.length){er.textContent='Falta: '+f.join(', ')+'.';return;}
   er.textContent='Enviando...';bt.disabled=true;
-  fetch(API+'?action=feira&nome='+encodeURIComponent(n)+'&curso='+encodeURIComponent(c)+'&avaliacao='+nota+'&lgpd=1')
+  fetch(API+'?action=feira&nome='+encodeURIComponent(n)+'&curso='+encodeURIComponent(c)+'&avaliacao='+nota+(tl?'&telefone='+encodeURIComponent(tl):'')+'&lgpd=1')
     .then(function(r){return r.json()})
     .then(function(r){
-      if(!r.ok){er.textContent='Não foi possível cadastrar agora. Confira os dados.';return;}
+      if(!r.ok){er.textContent=r.motivo==='telefone'?'Telefone inválido. Inclua o DDD.':'Não foi possível cadastrar agora. Confira os dados.';return;}
       er.textContent='';
       document.getElementById('msg').textContent=r.jaExistia?'Esse nome já estava na lista, '+r.nome.split(' ')[0]+'. Use o código que você recebeu no primeiro cadastro.':'Cadastro feito, '+r.nome.split(' ')[0]+'! Obrigado pela avaliação. Vamos sortear as ecobags entre os cadastrados.';
       document.getElementById('cod').hidden=!r.codigo;document.getElementById('boa').hidden=!!r.codigo;

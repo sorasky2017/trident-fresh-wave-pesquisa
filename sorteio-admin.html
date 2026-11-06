@@ -90,6 +90,8 @@ th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
 th{color:var(--blue);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase}
 .codbox{display:inline-block;margin-top:16px;padding:10px 22px;border-radius:14px;background:#fff;border:2px dashed var(--blue);font-size:clamp(14px,2vw,22px);color:var(--muted)}
 .codbox b{display:block;font-size:clamp(28px,5vw,56px);letter-spacing:.12em;color:var(--navy)}
+.wpp[hidden]{display:none}
+.wpp{display:inline-block;text-decoration:none;text-align:center;background:linear-gradient(90deg,#128C4A,#25D366)}
 .pres{color:var(--blue);font-weight:700}
 .aus{color:#b3261e;font-weight:700}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
@@ -117,8 +119,10 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
     <div class="status" id="info"></div>
     <div class="big" id="nome">?</div>
     <div class="curso" id="curso"></div>
+    <div class="status" id="semtel" hidden>Esta pessoa não informou telefone.</div>
     <div class="codbox" id="codbox" hidden>Código do ganhador (confira com a pessoa): <b id="cod"></b></div>
     <div class="row">
+      <a class="btn wpp" id="wpp" target="_blank" rel="noopener" hidden>Avisar no WhatsApp</a>
       <button class="btn" id="presente" hidden>Pessoa apareceu ✔</button>
       <button class="btn" id="sortear">Sortear</button>
       <button class="btn sec" id="ausente" hidden>Não compareceu, sortear outro</button>
@@ -150,9 +154,17 @@ $('entrar').onclick=function(){
 };
 $('pin').addEventListener('keydown',function(e){if(e.key==='Enter')$('entrar').click()});
 var busy=false;
+function aviso(r){
+  var d=String(r.telefone||'').replace(/\D/g,''),w=$('wpp'),n=$('semtel');
+  if(d.length>=10){
+    if(d.length<=11)d='55'+d;
+    var t='Oi, '+String(r.nome).split(' ')[0]+'! Parabéns, você ganhou uma ecobag Fresh Wave no sorteio da nossa feira! Venha buscar no estande. Seu código: '+(r.codigo||'');
+    w.href='https://wa.me/'+d+'?text='+encodeURIComponent(t);w.hidden=false;n.hidden=true;
+  }else{w.hidden=true;n.hidden=false}
+}
 function sortear(){
   if(busy)return;busy=true;
-  $('sortear').disabled=$('ausente').disabled=$('presente').disabled=true;$('presente').hidden=true;$('ausente').hidden=true;
+  $('sortear').disabled=$('ausente').disabled=$('presente').disabled=true;$('presente').hidden=true;$('ausente').hidden=true;$('wpp').hidden=true;$('semtel').hidden=true;
   $('curso').textContent='';$('codbox').hidden=true;$('nome').className='big spin';$('nome').textContent='Sorteando...';
   var t0=Date.now();
   call('sortear').then(function(r){
@@ -160,7 +172,7 @@ function sortear(){
     setTimeout(function(){
       $('nome').className='big';
       if(!r.ok){$('nome').textContent=r.motivo==='acabou'?'Acabaram os nomes':r.motivo==='vazio'?'Ninguém cadastrado':'Erro, tente de novo';busy=false;$('sortear').disabled=false;return}
-      $('nome').textContent=r.nome;$('curso').textContent=r.curso;$('cod').textContent=r.codigo||'(sem código)';$('codbox').hidden=false;void $('nome').offsetWidth;$('nome').className='big pop';
+      $('nome').textContent=r.nome;$('curso').textContent=r.curso;$('cod').textContent=r.codigo||'(sem código)';aviso(r);$('codbox').hidden=false;void $('nome').offsetWidth;$('nome').className='big pop';
       $('sortear').textContent='Sortear de novo';$('ausente').hidden=false;$('presente').hidden=false;confete();
       call('ganhadores').then(mostra);
       busy=false;$('sortear').disabled=$('ausente').disabled=$('presente').disabled=false;
