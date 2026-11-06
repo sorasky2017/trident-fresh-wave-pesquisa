@@ -22,12 +22,12 @@ function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.action === 'painel') return resp(painel());
   if (p.action === 'ultimo') return resp(ultimo());
-  if (p.action === 'sortear' || p.action === 'ganhadores' || p.action === 'ausente') {
+  if (p.action === 'sortear' || p.action === 'ganhadores' || p.action === 'ausente' || p.action === 'presente') {
     var lk2 = LockService.getScriptLock();
     lk2.waitLock(15000);
     try {
       if (String(p.pin || '') !== ADMIN_PIN) return resp({ ok: false, motivo: 'pin' });
-      return resp(p.action === 'sortear' ? sortear() : p.action === 'ausente' ? ausente() : lista());
+      return resp(p.action === 'sortear' ? sortear() : p.action === 'ausente' ? ausente() : p.action === 'presente' ? presente() : lista());
     } catch (err) { return resp({ ok: false, motivo: 'erro' }); } finally { lk2.releaseLock(); }
   }
   if (p.action === 'feira') {
@@ -222,6 +222,7 @@ function estilo(sh) {
     dados(6).setHorizontalAlignment('center').setFontWeight('bold');
     regras.push(
       SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Ganhou').setBackground('#C9F0D6').setRanges([dados(6)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Presente').setBackground('#8FE0AE').setRanges([dados(6)]).build(),
       SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Ausente').setBackground('#FFD9D9').setRanges([dados(6)]).build());
   } else if (nome === CAD) {
     larg = { 1: 130, 2: 240, 3: 260, 4: 190, 5: 90 };
@@ -282,7 +283,13 @@ function sortear() {
 // Marca o último ganhador como ausente (continua fora do próximo sorteio)
 function ausente() {
   var g = gan(), n = g.getLastRow();
-  if (n >= 2) g.getRange(n, 6).setValue('Ausente');
+  if (n >= 2 && String(g.getRange(n, 6).getValue()) === 'Ganhou') g.getRange(n, 6).setValue('Ausente');
+  return lista();
+}
+// Confirma que o último ganhador apareceu (o painel para o cronômetro)
+function presente() {
+  var g = gan(), n = g.getLastRow();
+  if (n >= 2 && String(g.getRange(n, 6).getValue()) === 'Ganhou') g.getRange(n, 6).setValue('Presente');
   return lista();
 }
 
@@ -292,11 +299,11 @@ function ultimo() {
   var idade = t ? Date.now() - Number(t) : 99999;
   var anteriores = [], atual = null;
   for (var i = 0; i < g.length; i++) {
-    if (g[i].s !== 'Ganhou') continue;
+    if (g[i].s === 'Ausente') continue;
     if (!atual) atual = g[i]; else if (anteriores.length < 6) anteriores.push({ nome: g[i].nome, curso: g[i].curso });
   }
   return { ok: true, total: r.total, restantes: r.restantes, idade: idade, ultimoAusente: g.length > 0 && g[0].s === 'Ausente',
-           atual: atual ? { chave: atual.n + '|' + atual.d, nome: atual.nome, curso: atual.curso } : null, anteriores: anteriores };
+           atual: atual ? { chave: atual.n + '|' + atual.d, nome: atual.nome, curso: atual.curso, presente: atual.s === 'Presente' } : null, anteriores: anteriores };
 }
 
 // Código aleatório de 5 caracteres (sem 0/O/1/I/L) no formato FW-K7M2Q

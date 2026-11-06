@@ -19,6 +19,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;color:var(--navy);font-family:"
 .tempo{margin-top:clamp(10px,min(2.4vw,2.4vh),28px);display:inline-block;padding:.4em 1.6em .5em;border-radius:22px;background:#fff;border:3px solid var(--blue)}
 .tempo small{display:block;font-size:clamp(12px,1.8vw,24px);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tempo b{display:block;font-size:clamp(36px,min(8vw,12vh),110px);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.05;color:var(--blue)}
+.tempo.ok{border-color:var(--blue);background:#EAF8EF}.tempo.ok b{font-size:clamp(28px,5.5vw,80px)}.tempo.ok small:empty{display:none}
 .tempo.fim{border-color:#b3261e}.tempo.fim b{color:#b3261e;font-size:clamp(28px,5.5vw,80px)}
 .tempo.urg b{color:#b3261e;animation:pulse .5s infinite alternate}
 .msg{font-size:clamp(20px,3.6vw,52px);font-weight:800;font-style:italic;color:var(--muted)}
@@ -38,7 +39,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
   <div class="msg" id="msg">Aguardando o sorteio...</div>
   <div class="nome" id="nome" hidden></div>
   <div class="curso" id="curso"></div>
-  <div class="tempo" id="tempo" hidden><small>Tempo para se apresentar</small><b id="tv">01:30</b></div>
+  <div class="tempo" id="tempo" hidden><small id="tl">Tempo para se apresentar</small><b id="tv">01:30</b></div>
 </main>
 <div class="ant" id="ant"></div>
 <div class="foot" id="foot"></div>
@@ -46,15 +47,16 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 <script>
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 var $=function(i){return document.getElementById(i)};
-var mostrada=null,primeira=true,t0=null,TOTAL=90;
+var mostrada=null,primeira=true,t0=null,TOTAL=90,pres=false;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function msg(t,spin){t0=null;$('tempo').hidden=true;$('nome').hidden=true;$('curso').textContent='';var m=$('msg');m.hidden=false;m.textContent=t;m.className='msg'+(spin?' spin':'')}
 function relogio(){
   var t=$('tempo');
   if(t0===null){t.hidden=true;return}
+  if(pres){t.hidden=false;t.className='tempo ok';$('tl').textContent='';$('tv').textContent='Presente! Parabéns!';return}
   var rest=TOTAL-Math.floor((Date.now()-t0)/1000);t.hidden=false;
   if(rest<=0){t.className='tempo fim';$('tv').textContent='Tempo esgotado';return}
-  t.className='tempo'+(rest<=10?' urg':'');
+  $('tl').textContent='Tempo para se apresentar';t.className='tempo'+(rest<=10?' urg':'');
   $('tv').textContent=('0'+Math.floor(rest/60)).slice(-2)+':'+('0'+rest%60).slice(-2);
 }
 setInterval(relogio,250);
@@ -68,7 +70,7 @@ function tick(){
     if(!r.ok)return;
     $('foot').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
     $('ant').innerHTML=r.anteriores.length?'<b>Ganhadores anteriores:</b> '+r.anteriores.map(function(a){return esc(a.nome)}).join(' · '):'';
-    var a=r.atual;
+    var a=r.atual;pres=!!(a&&a.presente);
     if(r.idade<2400){msg('Sorteando...',true)}
     else if(r.ultimoAusente&&a&&a.chave===mostrada){msg('Sorteando outro...',true)}
     else if(!a){msg('Aguardando o sorteio...')}

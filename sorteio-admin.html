@@ -90,6 +90,7 @@ th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
 th{color:var(--blue);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase}
 .codbox{display:inline-block;margin-top:16px;padding:10px 22px;border-radius:14px;background:#fff;border:2px dashed var(--blue);font-size:clamp(14px,2vw,22px);color:var(--muted)}
 .codbox b{display:block;font-size:clamp(28px,5vw,56px);letter-spacing:.12em;color:var(--navy)}
+.pres{color:var(--blue);font-weight:700}
 .aus{color:#b3261e;font-weight:700}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 </style>
@@ -118,6 +119,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
     <div class="curso" id="curso"></div>
     <div class="codbox" id="codbox" hidden>Código do ganhador (confira com a pessoa): <b id="cod"></b></div>
     <div class="row">
+      <button class="btn" id="presente" hidden>Pessoa apareceu ✔</button>
       <button class="btn" id="sortear">Sortear</button>
       <button class="btn sec" id="ausente" hidden>Não compareceu, sortear outro</button>
     </div>
@@ -136,7 +138,7 @@ function call(a){return fetch(API+'?action='+a+'&pin='+encodeURIComponent(PIN)).
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function mostra(r){
   $('info').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
-  var h='';(r.ganhadores||[]).forEach(function(g){h+='<tr><td>'+esc(g.n)+'</td><td>'+esc(g.nome)+'</td><td>'+esc(g.curso)+'</td><td><b>'+esc(g.c||'')+'</b></td><td class="'+(g.s==='Ausente'?'aus':'')+'">'+(g.s==='Ausente'?'Ausente':'')+'</td></tr>'});
+  var h='';(r.ganhadores||[]).forEach(function(g){h+='<tr><td>'+esc(g.n)+'</td><td>'+esc(g.nome)+'</td><td>'+esc(g.curso)+'</td><td><b>'+esc(g.c||'')+'</b></td><td class="'+(g.s==='Ausente'?'aus':'')+'">'+(g.s==='Ausente'?'Ausente':g.s==='Presente'?'Presente ✔':'')+'</td></tr>'});
   $('corpo').innerHTML=h;$('lista').hidden=!(r.ganhadores||[]).length;
 }
 $('entrar').onclick=function(){
@@ -150,7 +152,7 @@ $('pin').addEventListener('keydown',function(e){if(e.key==='Enter')$('entrar').c
 var busy=false;
 function sortear(){
   if(busy)return;busy=true;
-  $('sortear').disabled=$('ausente').disabled=true;
+  $('sortear').disabled=$('ausente').disabled=$('presente').disabled=true;$('presente').hidden=true;$('ausente').hidden=true;
   $('curso').textContent='';$('codbox').hidden=true;$('nome').className='big spin';$('nome').textContent='Sorteando...';
   var t0=Date.now();
   call('sortear').then(function(r){
@@ -159,13 +161,20 @@ function sortear(){
       $('nome').className='big';
       if(!r.ok){$('nome').textContent=r.motivo==='acabou'?'Acabaram os nomes':r.motivo==='vazio'?'Ninguém cadastrado':'Erro, tente de novo';busy=false;$('sortear').disabled=false;return}
       $('nome').textContent=r.nome;$('curso').textContent=r.curso;$('cod').textContent=r.codigo||'(sem código)';$('codbox').hidden=false;void $('nome').offsetWidth;$('nome').className='big pop';
-      $('sortear').textContent='Sortear de novo';$('ausente').hidden=false;confete();
+      $('sortear').textContent='Sortear de novo';$('ausente').hidden=false;$('presente').hidden=false;confete();
       call('ganhadores').then(mostra);
-      busy=false;$('sortear').disabled=$('ausente').disabled=false;
+      busy=false;$('sortear').disabled=$('ausente').disabled=$('presente').disabled=false;
     },espera);
-  }).catch(function(){$('nome').className='big';$('nome').textContent='Sem conexão';busy=false;$('sortear').disabled=$('ausente').disabled=false});
+  }).catch(function(){$('nome').className='big';$('nome').textContent='Sem conexão';busy=false;$('sortear').disabled=$('ausente').disabled=$('presente').disabled=false});
 }
 $('sortear').onclick=sortear;
+$('presente').onclick=function(){
+  if(busy)return;$('presente').disabled=true;
+  call('presente').then(function(r){
+    if(r.ok){mostra(r);$('presente').hidden=true;$('ausente').hidden=true;$('curso').textContent=$('curso').textContent.replace(/ · Presente ✔$/,'')+' · Presente ✔';$('sortear').textContent='Sortear próximo'}
+    $('presente').disabled=false;
+  }).catch(function(){$('presente').disabled=false});
+};
 $('ausente').onclick=function(){
   if(busy)return;$('ausente').disabled=true;
   call('ausente').then(function(r){if(r.ok)mostra(r);sortear()});
