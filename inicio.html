@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Trident Fresh Wave</title>
+<style>
+:root{--navy:#1E2B24;--blue:#00873D;--teal:#00BF63;--green:#00BF63;--ink:#12261B;--muted:#4A5F52;--line:#d6eecf;--card:rgba(255,255,255,.82)}
+*{box-sizing:border-box}
+html{background:#C4EBD2}
+body{margin:0;color:var(--ink);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;
+ background:linear-gradient(180deg,#BDEBCB 0,#D6F1DF 340px,#EAF8EF 700px,#D9F2E4 100%);background-attachment:scroll;min-height:100vh;position:relative;overflow-x:hidden}
+.bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.75),rgba(255,255,255,.12));pointer-events:none}
+main{position:relative;max-width:480px;margin:0 auto;padding:0 16px 32px;display:flex;flex-direction:column;gap:18px}
+.hero{text-align:center;padding:34px 0 6px}
+.top{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--navy);font-weight:600}
+.logo{display:block;margin:14px auto 0}
+.logo.t{width:180px}.logo.f{width:290px;margin-top:2px}.logo.s{width:270px;margin-top:6px}
+.badge{display:inline-block;margin-top:18px;padding:9px 22px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.04em;font-size:1.15rem;box-shadow:0 6px 16px rgba(0,135,61,.28)}
+.lead{margin:12px auto 0;max-width:340px;color:var(--navy)}
+.card{background:var(--card);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.9);border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(30,43,36,.12)}
+.chip{display:inline-block;background:var(--blue);color:#fff;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:6px 14px;border-radius:999px;margin-bottom:14px}
+.chip.g{background:var(--teal)}
+h2{margin:0 0 4px;font-size:1.25rem;font-style:italic;font-weight:800;color:var(--navy);line-height:1.2}
+.sub{margin:0 0 14px;color:var(--muted);font-size:.92rem}
+label.f{display:block;font-size:.85rem;font-weight:700;color:var(--navy);margin:12px 0 4px}
+input[type=text],input[type=email]{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:2px}
+.tiles{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;margin:0 -4px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.tile{flex:0 0 88px;scroll-snap-align:center;border:3px solid transparent;border-radius:18px;background:#fff;padding:0;cursor:pointer;overflow:hidden;text-align:center;font:inherit;box-shadow:0 4px 12px rgba(30,43,36,.15);transition:transform .15s}
+.pic{height:104px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;background:radial-gradient(circle at 24% 18%,rgba(255,255,255,.9) 0 7px,transparent 8px),radial-gradient(circle at 80% 30%,rgba(255,255,255,.7) 0 5px,transparent 6px),radial-gradient(circle at 70% 72%,rgba(255,255,255,.6) 0 9px,transparent 10px),radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.55),transparent 60%),linear-gradient(180deg,var(--a),var(--b))}
+.tile img{display:block;height:86px;width:auto;filter:drop-shadow(0 6px 6px rgba(20,35,47,.3))}
+.tile span{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:7px 4px 9px;color:#fff}
+.tile[aria-checked=true]{transform:translateY(-3px);border-color:var(--navy)}
+.tile[aria-checked=true] span::before{content:"✓ "}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.82rem;color:var(--muted);margin-top:12px}
+.check input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--blue)}
+.btn{width:100%;margin-top:16px;font:inherit;font-weight:800;font-style:italic;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(90deg,var(--blue),var(--teal) 60%,var(--green));border:0;border-radius:999px;padding:15px;cursor:pointer;box-shadow:0 8px 18px rgba(0,135,61,.3)}
+.err{color:#b3261e;font-size:.85rem;margin:10px 0 0;min-height:1em}
+.ticket{position:relative;border-radius:18px;padding:18px;text-align:center;color:#fff;background:linear-gradient(135deg,var(--blue),var(--teal));overflow:hidden}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:#e2f8d9;transform:translateY(-50%)}
+.ticket::before{left:-11px}.ticket::after{right:-11px}
+.ticket small{display:block;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;opacity:.92}
+.ticket b{display:block;font-size:2rem;font-style:italic;letter-spacing:.06em;margin:4px 0}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps li{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:10px 12px;font-size:.93rem}
+.steps i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-style:normal;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--teal))}
+.offers{display:grid;gap:8px}
+.offer{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:10px 12px;font-size:.92rem}
+.dot{width:16px;height:16px;border-radius:50%;flex:none}
+.offer em{margin-left:auto;font-style:normal;font-size:.78rem;font-weight:700;color:var(--blue);text-align:right}
+.note{font-size:.75rem;color:var(--muted);text-align:center;margin:0 8px}
+[hidden]{display:none!important}
+.opts{display:grid;gap:16px;margin-top:10px}
+.opt{display:block;text-align:center;text-decoration:none;font-weight:800;font-style:italic;letter-spacing:.03em;font-size:1.25rem;color:#fff;background:linear-gradient(90deg,var(--blue),var(--teal) 60%,var(--green));border-radius:999px;padding:20px 16px;box-shadow:0 8px 20px rgba(0,135,61,.3)}
+.opt.alt{background:#fff;color:var(--blue);border:2.5px solid var(--blue);box-shadow:0 8px 20px rgba(30,43,36,.12)}
+.opt:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:3px}
+</style>
+<body>
+<span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
+<span class="bub" style="width:34px;height:34px;right:14px;top:70px"></span>
+<span class="bub" style="width:22px;height:22px;right:60px;top:380px"></span>
+<span class="bub" style="width:48px;height:48px;left:6px;top:900px"></span>
+<main>
+  <header class="hero">
+    <img class="logo t" src="clube/trident.png" alt="Trident">
+    <img class="logo f" src="clube/freshwave.png" alt="Fresh Wave">
+    <img class="logo s" src="clube/slogan.png" alt="Uma onda de frescor">
+  </header>
+  <nav class="opts" aria-label="Escolha uma opção">
+    <a class="opt" href="https://sorasky2017.github.io/trident-fresh-wave-pesquisa/clube.html?v=3">Club Fresh Wave</a>
+    <a class="opt alt" href="https://sorasky2017.github.io/trident-fresh-wave-pesquisa/feira.html">Participe do Sorteio</a>
+  </nav>
+  <p class="note">Ação do projeto Trident Fresh Wave, Propaganda e Marketing, UNIP.</p>
+</main>
+</html>
