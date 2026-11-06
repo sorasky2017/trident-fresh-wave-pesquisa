@@ -21,6 +21,7 @@ var MOV = 'Movimentos';   // Data | E-mail | Descrição | Pontos | Código | En
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.action === 'painel') return resp(painel());
+  if (p.action === 'ultimo') return resp(ultimo());
   if (p.action === 'sortear' || p.action === 'ganhadores' || p.action === 'ausente') {
     var lk2 = LockService.getScriptLock();
     lk2.waitLock(15000);
@@ -262,6 +263,7 @@ function sortear() {
   if (!pool.length) return { ok: false, motivo: 'acabou' };
   var w = pool[Math.floor(Math.random() * pool.length)];
   g.appendRow([agora(), w[0], w[2], w[3], w[4], 'Ganhou']);
+  CacheService.getScriptCache().put('sort_ts', String(Date.now()), 600);
   var r = lista();
   return { ok: true, n: w[0], nome: String(w[2]), curso: String(w[3]), total: r.total, restantes: r.restantes };
 }
@@ -270,4 +272,17 @@ function ausente() {
   var g = gan(), n = g.getLastRow();
   if (n >= 2) g.getRange(n, 6).setValue('Ausente');
   return lista();
+}
+
+// Painel público do sorteio: último ganhador (só nome e curso) + total. "idade" deixa o painel esperar a animação da página admin.
+function ultimo() {
+  var r = lista(), g = r.ganhadores, t = CacheService.getScriptCache().get('sort_ts');
+  var idade = t ? Date.now() - Number(t) : 99999;
+  var anteriores = [], atual = null;
+  for (var i = 0; i < g.length; i++) {
+    if (g[i].s !== 'Ganhou') continue;
+    if (!atual) atual = g[i]; else if (anteriores.length < 6) anteriores.push({ nome: g[i].nome, curso: g[i].curso });
+  }
+  return { ok: true, total: r.total, restantes: r.restantes, idade: idade, ultimoAusente: g.length > 0 && g[0].s === 'Ausente',
+           atual: atual ? { chave: atual.n + '|' + atual.d, nome: atual.nome, curso: atual.curso } : null, anteriores: anteriores };
 }

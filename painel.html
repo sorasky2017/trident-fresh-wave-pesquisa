@@ -3,75 +3,68 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Painel ao vivo · Fresh Wave</title>
+<title>Sorteio ao vivo · Fresh Wave</title>
 <style>
-:root{--navy:#1E2B24;--blue:#00873D;--teal:#00BF63;--green:#00BF63;--muted:#4A5F52}
+:root{--navy:#1E2B24;--blue:#00873D;--teal:#00BF63;--muted:#4A5F52}
 *{box-sizing:border-box}
 html{background:#C4EBD2}
-body{margin:0;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#BDEBCB 0,#D6F1DF 45%,#f0fceb 100%);min-height:100vh;padding:clamp(14px,2.4vw,40px)}
-header{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.4vw,36px);flex-wrap:wrap}
-header img.t{height:clamp(40px,6vw,90px)}header img.f{height:clamp(30px,4.4vw,66px)}
-.badge{padding:.5em 1.4em;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.05em;font-size:clamp(14px,1.8vw,28px);text-transform:uppercase;box-shadow:0 6px 16px rgba(0,135,61,.28)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:clamp(10px,1.6vw,24px);margin-top:clamp(14px,2.4vw,36px)}
-.k{background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2vw,30px);box-shadow:0 10px 28px rgba(30,43,36,.12);text-align:center}
-.k b{display:block;font-size:clamp(44px,8vw,128px);line-height:1;font-style:italic;font-weight:900;background:linear-gradient(90deg,var(--blue),var(--teal),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
-.k span{display:block;margin-top:.4em;font-size:clamp(12px,1.6vw,24px);font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--navy)}
-.k small{display:block;margin-top:.3em;font-size:clamp(11px,1.3vw,19px);color:var(--muted)}
-.rank{margin-top:clamp(14px,2.4vw,36px);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:24px;padding:clamp(14px,2.2vw,34px);box-shadow:0 10px 28px rgba(30,43,36,.12)}
-.rank h2{margin:0 0 .6em;font-size:clamp(16px,2.2vw,34px);font-style:italic;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
-.row{display:grid;grid-template-columns:clamp(28px,4vw,60px) minmax(0,1.3fr) minmax(0,3fr) clamp(30px,4vw,64px);align-items:center;gap:clamp(8px,1.4vw,22px);margin-top:clamp(8px,1.2vw,18px)}
-.row img{height:clamp(36px,6vw,92px);justify-self:center}
-.row .nm{font-weight:800;font-size:clamp(13px,1.8vw,28px);line-height:1.15}
-.bar{height:clamp(14px,2.2vw,36px);border-radius:99px;background:rgba(30,43,36,.1);overflow:hidden}
-.bar i{display:block;height:100%;border-radius:99px;width:0;transition:width .8s ease}
-.row .n{font-weight:900;font-size:clamp(16px,2.4vw,38px);font-style:italic;text-align:right;font-variant-numeric:tabular-nums}
-.row.top .nm{color:var(--green)}
-.foot{margin-top:clamp(10px,1.6vw,22px);text-align:center;font-size:clamp(11px,1.3vw,18px);color:var(--muted)}
-.dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;background:var(--green);margin-right:.5em;animation:p 1.6s infinite}
-.dot.off{background:#b3261e;animation:none}
-@keyframes p{50%{opacity:.3}}
-@media (prefers-reduced-motion:reduce){.dot{animation:none}.bar i{transition:none}}
+body{margin:0;min-height:100vh;min-height:100dvh;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#BDEBCB 0,#D6F1DF 45%,#EAF8EF 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,2.6vw,34px);padding:clamp(16px,3vw,40px);text-align:center;overflow-x:hidden}
+.logos{display:flex;flex-direction:column;align-items:center;gap:6px}
+.logos .t{height:clamp(46px,8vw,110px)}.logos .f{height:clamp(34px,6vw,84px)}.logos .s{height:clamp(14px,2.4vw,34px)}
+.badge{padding:.5em 1.6em;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.05em;font-size:clamp(14px,2.2vw,32px)}
+.card{width:min(1100px,100%);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:32px;padding:clamp(24px,5vw,70px) clamp(16px,3vw,40px);box-shadow:0 14px 36px rgba(30,43,36,.14)}
+.nome{font-size:clamp(34px,8.5vw,128px);font-weight:900;font-style:italic;line-height:1.05;word-break:break-word}
+.curso{margin-top:.3em;font-size:clamp(18px,3.6vw,52px);font-weight:800;color:var(--blue)}
+.msg{font-size:clamp(20px,3.6vw,52px);font-weight:800;font-style:italic;color:var(--muted)}
+.pop{animation:pop .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+.spin{animation:pulse .5s infinite alternate}
+@keyframes pulse{from{opacity:.35}to{opacity:1}}
+.ant{font-size:clamp(12px,1.6vw,22px);color:var(--muted);max-width:1100px;line-height:1.6}
+.ant b{color:var(--navy)}
+.foot{font-size:clamp(11px,1.3vw,18px);color:var(--muted)}
+canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
+@media (prefers-reduced-motion:reduce){.pop,.spin{animation:none}}
 </style>
-<header>
-  <img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave">
-  <div class="badge">Painel ao vivo</div>
-</header>
-<section class="kpis" aria-live="polite">
-  <div class="k"><b id="k1">0</b><span>Cadastros no clube</span></div>
-  <div class="k"><b id="k3">0</b><span>Chaveiros trocados</span><small id="s3">&nbsp;</small></div>
-</section>
-<section class="rank">
-  <h2>Sabor favorito do público</h2>
-  <div id="rank"></div>
-</section>
-<p class="foot"><span class="dot" id="dot"></span><span id="up">Conectando...</span></p>
+<div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"><img class="s" src="clube/slogan.png" alt="Uma onda de frescor"></div>
+<div class="badge">SORTEIO DE ECOBAGS</div>
+<main class="card" aria-live="polite">
+  <div class="msg" id="msg">Aguardando o sorteio...</div>
+  <div class="nome" id="nome" hidden></div>
+  <div class="curso" id="curso"></div>
+</main>
+<div class="ant" id="ant"></div>
+<div class="foot" id="foot"></div>
+<canvas id="cf"></canvas>
 <script>
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
-var SAB=[
- {n:'Laranja com Morango',c:'#f08a4b',img:'clube/lata1.png'},
- {n:'Morango com Maracujá',c:'#e0566f',img:'clube/lata2.png'},
- {n:'Limão',c:'#22CC74',img:'clube/lata3.png'},
- {n:'Lichia',c:'#e8708f',img:'clube/lata4.png'},
- {n:'Abacaxi e Hortelã',c:'#d9b820',img:'clube/lata5.png'}
-];
-function $(i){return document.getElementById(i)}
-var demo=/[?&]demo=1/.test(location.search);
-function pct(a,b){return b?Math.round(a/b*100)+'%':'0%'}
-function mostrar(r){
-  $('k1').textContent=r.cadastros;$('k3').textContent=r.trocas;
-  $('s3').textContent=r.trocas?r.entregues+' já entregues':' ';
-  var tot=SAB.reduce(function(a,s){return a+(r.sabores[s.n]||0)},0),max=Math.max.apply(null,SAB.map(function(s){return r.sabores[s.n]||0}).concat([1]));
-  var ord=SAB.slice().sort(function(a,b){return (r.sabores[b.n]||0)-(r.sabores[a.n]||0)});
-  $('rank').innerHTML=ord.map(function(s,i){var v=r.sabores[s.n]||0;
-    return '<div class="row'+(i===0&&v?' top':'')+'"><img src="'+s.img+'" alt=""><div class="nm">'+s.n+'</div><div class="bar"><i style="background:'+s.c+';width:'+(v/max*100)+'%"></i></div><div class="n">'+v+'</div></div>'}).join('');
-  $('up').textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  $('dot').className='dot';
+var $=function(i){return document.getElementById(i)};
+var mostrada=null,primeira=true;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function msg(t,spin){$('nome').hidden=true;$('curso').textContent='';var m=$('msg');m.hidden=false;m.textContent=t;m.className='msg'+(spin?' spin':'')}
+function revela(a,anima){
+  mostrada=a.chave;$('msg').hidden=true;var n=$('nome');n.hidden=false;n.textContent=a.nome;$('curso').textContent=a.curso;
+  n.className='nome';if(anima){void n.offsetWidth;n.className='nome pop';confete()}
 }
-function ler(){
-  if(demo){mostrar({cadastros:87,completaram:52,trocas:41,entregues:38,sabores:{'Laranja com Morango':21,'Morango com Maracujá':24,'Limão':15,'Lichia':9,'Abacaxi e Hortelã':18}});$('up').textContent='Modo demonstração (dados de exemplo)';return}
-  fetch(API+'?action=painel&t='+Date.now()).then(function(r){return r.json()}).then(function(r){if(r.ok)mostrar(r);else throw 0})
-  .catch(function(){$('dot').className='dot off';$('up').textContent='Sem conexão com a planilha. Tentando de novo...'});
+function tick(){
+  fetch(API+'?action=ultimo').then(function(r){return r.json()}).then(function(r){
+    if(!r.ok)return;
+    $('foot').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
+    $('ant').innerHTML=r.anteriores.length?'<b>Ganhadores anteriores:</b> '+r.anteriores.map(function(a){return esc(a.nome)}).join(' · '):'';
+    var a=r.atual;
+    if(r.idade<2400){msg('Sorteando...',true)}
+    else if(r.ultimoAusente&&a&&a.chave===mostrada){msg('Sorteando outro...',true)}
+    else if(!a){msg('Aguardando o sorteio...')}
+    else if(a.chave!==mostrada){revela(a,!primeira||r.idade<60000)}
+    primeira=false;
+  }).catch(function(){});
 }
-ler();if(!demo)setInterval(ler,8000);
+tick();setInterval(tick,1500);
+function confete(){
+  var c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  var cores=['#00BF63','#00873D','#F58A1F','#E94B5B','#7ED321','#F58FB2','#F2D13D'],p=[];
+  for(var i=0;i<160;i++)p.push({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,v:2+Math.random()*4,r:4+Math.random()*7,c:cores[i%7],a:Math.random()*6});
+  var f=0;(function an(){x.clearRect(0,0,c.width,c.height);p.forEach(function(q){q.y+=q.v;q.a+=.1;x.fillStyle=q.c;x.save();x.translate(q.x+Math.sin(q.a)*10,q.y);x.rotate(q.a);x.fillRect(-q.r/2,-q.r/2,q.r,q.r*1.6);x.restore()});if(++f<220)requestAnimationFrame(an);else x.clearRect(0,0,c.width,c.height)})();
+}
 </script>
 </html>
