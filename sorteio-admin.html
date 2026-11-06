@@ -88,6 +88,8 @@ input[type=password]{width:100%;font:inherit;color:var(--ink);background:#fff;bo
 table{width:100%;border-collapse:collapse;font-size:.95rem}
 th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
 th{color:var(--blue);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase}
+.codbox{display:inline-block;margin-top:16px;padding:10px 22px;border-radius:14px;background:#fff;border:2px dashed var(--blue);font-size:clamp(14px,2vw,22px);color:var(--muted)}
+.codbox b{display:block;font-size:clamp(28px,5vw,56px);letter-spacing:.12em;color:var(--navy)}
 .aus{color:#b3261e;font-weight:700}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 </style>
@@ -114,6 +116,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
     <div class="status" id="info"></div>
     <div class="big" id="nome">?</div>
     <div class="curso" id="curso"></div>
+    <div class="codbox" id="codbox" hidden>Código do ganhador (confira com a pessoa): <b id="cod"></b></div>
     <div class="row">
       <button class="btn" id="sortear">Sortear</button>
       <button class="btn sec" id="ausente" hidden>Não compareceu, sortear outro</button>
@@ -122,7 +125,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 
   <section class="card" id="lista" hidden>
     <span class="chip g">Ganhadores</span>
-    <table><thead><tr><th>Nº</th><th>Nome</th><th>Curso</th><th></th></tr></thead><tbody id="corpo"></tbody></table>
+    <table><thead><tr><th>Nº</th><th>Nome</th><th>Curso</th><th>Código</th><th></th></tr></thead><tbody id="corpo"></tbody></table>
   </section>
 </main>
 <canvas id="cf"></canvas>
@@ -133,7 +136,7 @@ function call(a){return fetch(API+'?action='+a+'&pin='+encodeURIComponent(PIN)).
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function mostra(r){
   $('info').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
-  var h='';(r.ganhadores||[]).forEach(function(g){h+='<tr><td>'+esc(g.n)+'</td><td>'+esc(g.nome)+'</td><td>'+esc(g.curso)+'</td><td class="'+(g.s==='Ausente'?'aus':'')+'">'+(g.s==='Ausente'?'Ausente':'')+'</td></tr>'});
+  var h='';(r.ganhadores||[]).forEach(function(g){h+='<tr><td>'+esc(g.n)+'</td><td>'+esc(g.nome)+'</td><td>'+esc(g.curso)+'</td><td><b>'+esc(g.c||'')+'</b></td><td class="'+(g.s==='Ausente'?'aus':'')+'">'+(g.s==='Ausente'?'Ausente':'')+'</td></tr>'});
   $('corpo').innerHTML=h;$('lista').hidden=!(r.ganhadores||[]).length;
 }
 $('entrar').onclick=function(){
@@ -148,14 +151,14 @@ var busy=false;
 function sortear(){
   if(busy)return;busy=true;
   $('sortear').disabled=$('ausente').disabled=true;
-  $('curso').textContent='';$('nome').className='big spin';$('nome').textContent='Sorteando...';
+  $('curso').textContent='';$('codbox').hidden=true;$('nome').className='big spin';$('nome').textContent='Sorteando...';
   var t0=Date.now();
   call('sortear').then(function(r){
     var espera=Math.max(0,2200-(Date.now()-t0));
     setTimeout(function(){
       $('nome').className='big';
       if(!r.ok){$('nome').textContent=r.motivo==='acabou'?'Acabaram os nomes':r.motivo==='vazio'?'Ninguém cadastrado':'Erro, tente de novo';busy=false;$('sortear').disabled=false;return}
-      $('nome').textContent=r.nome;$('curso').textContent=r.curso;void $('nome').offsetWidth;$('nome').className='big pop';
+      $('nome').textContent=r.nome;$('curso').textContent=r.curso;$('cod').textContent=r.codigo||'(sem código)';$('codbox').hidden=false;void $('nome').offsetWidth;$('nome').className='big pop';
       $('sortear').textContent='Sortear de novo';$('ausente').hidden=false;confete();
       call('ganhadores').then(mostra);
       busy=false;$('sortear').disabled=$('ausente').disabled=false;

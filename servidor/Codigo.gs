@@ -160,20 +160,26 @@ function resp(o) {
 function feira(p) {
   var nome = limpa(p.nome, 80), curso = limpa(p.curso, 60), nota = parseInt(p.avaliacao, 10);
   if (!nome || !curso || !(nota >= 1 && nota <= 5) || p.lgpd !== '1' || nome.split(' ').length < 2) return { ok: false, motivo: 'dados' };
-  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']);
+  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD', 'Código']);
   if (String(sh.getRange(1, 5).getValue()) === 'Sabor') sh.getRange(1, 5).setValue('Avaliação do estande');
+  if (String(sh.getRange(1, 7).getValue()) === '') { sh.getRange(1, 7).setValue('Código'); estilo(sh); }
   var n = sh.getLastRow();
   var chave = (nome + '|' + curso).toLowerCase();
+  var usados = {};
   if (n >= 2) {
-    var v = sh.getRange(2, 1, n - 1, 6).getValues();
+    var v = sh.getRange(2, 1, n - 1, 7).getValues();
     for (var i = 0; i < v.length; i++) {
+      if (v[i][6]) usados[String(v[i][6])] = 1;
+      // mesmo nome e curso: não devolve o código (só quem se cadastrou primeiro o tem)
       if ((String(v[i][2]) + '|' + String(v[i][3])).toLowerCase() === chave) return { ok: true, jaExistia: true, nome: String(v[i][2]) };
     }
   }
+  var cod;
+  do { cod = novoCodigo(); } while (usados[cod]);
   var maxN = 0;
   if (n >= 2) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) { maxN = Math.max(maxN, Number(r[0]) || 0); });
-  sh.appendRow([maxN + 1, agora(), nome, curso, nota, 'aceitou']);
-  return { ok: true, jaExistia: false, nome: nome };
+  sh.appendRow([maxN + 1, agora(), nome, curso, nota, 'aceitou', cod]);
+  return { ok: true, jaExistia: false, nome: nome, codigo: cod };
 }
 
 // ---- Visual da planilha: rode "deixarBonita" uma vez (Apps Script > selecione a função > Executar) ----
@@ -202,13 +208,15 @@ function estilo(sh) {
   var regras = [];
   var dados = function (c) { return sh.getRange(2, c, rows - 1, 1); };
   if (nome === 'Sorteio') {
-    larg = { 1: 60, 2: 130, 3: 260, 4: 220, 5: 150, 6: 90 };
+    larg = { 1: 60, 2: 130, 3: 260, 4: 220, 5: 150, 6: 90, 7: 120 };
+    dados(7).setHorizontalAlignment('center').setFontWeight('bold');
     sh.getRange(2, 1, rows - 1, 2).setHorizontalAlignment('center');
     dados(5).setHorizontalAlignment('center').setFontWeight('bold').setFontSize(12);
     dados(6).setHorizontalAlignment('center');
     regras.push(cor(dados(5), 1, 2, '#FFD9D9'), cor(dados(5), 3, 3, '#FFF3BF'), cor(dados(5), 4, 5, '#C9F0D6'));
   } else if (nome === 'Ganhadores') {
-    larg = { 1: 130, 2: 60, 3: 260, 4: 220, 5: 150, 6: 110 };
+    larg = { 1: 130, 2: 60, 3: 260, 4: 220, 5: 150, 6: 110, 7: 120 };
+    dados(7).setHorizontalAlignment('center').setFontWeight('bold');
     sh.getRange(2, 1, rows - 1, 2).setHorizontalAlignment('center');
     dados(5).setHorizontalAlignment('center');
     dados(6).setHorizontalAlignment('center').setFontWeight('bold');
@@ -243,12 +251,16 @@ function cor(range, de, ate, fundo) {
 
 // ---- Sorteio (página admin): sorteia no servidor entre quem ainda não ganhou ----
 // Aba "Ganhadores" = Data | Nº | Nome completo | Curso | Avaliação | Situação (Ganhou / Ausente)
-function gan() { return aba('Ganhadores', ['Data', 'Nº', 'Nome completo', 'Curso', 'Avaliação', 'Situação']); }
+function gan() {
+  var sh = aba('Ganhadores', ['Data', 'Nº', 'Nome completo', 'Curso', 'Avaliação', 'Situação', 'Código']);
+  if (String(sh.getRange(1, 7).getValue()) === '') { sh.getRange(1, 7).setValue('Código'); estilo(sh); }
+  return sh;
+}
 function lista() {
   var sh = gan(), n = sh.getLastRow(), out = [];
   if (n >= 2) {
-    var v = sh.getRange(2, 1, n - 1, 6).getValues();
-    for (var i = 0; i < v.length; i++) out.push({ d: fmt(v[i][0]), n: v[i][1], nome: String(v[i][2]), curso: String(v[i][3]), s: String(v[i][5]) });
+    var v = sh.getRange(2, 1, n - 1, 7).getValues();
+    for (var i = 0; i < v.length; i++) out.push({ d: fmt(v[i][0]), n: v[i][1], nome: String(v[i][2]), curso: String(v[i][3]), s: String(v[i][5]), c: String(v[i][6] || '') });
   }
   var total = Math.max(aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']).getLastRow() - 1, 0);
   return { ok: true, ganhadores: out.reverse(), total: total, restantes: Math.max(total - out.length, 0) };
@@ -258,14 +270,14 @@ function sortear() {
   if (n < 2) return { ok: false, motivo: 'vazio' };
   var g = gan(), ng = g.getLastRow(), usados = {};
   if (ng >= 2) g.getRange(2, 2, ng - 1, 1).getValues().forEach(function (r) { usados[String(r[0])] = 1; });
-  var v = sh.getRange(2, 1, n - 1, 6).getValues(), pool = [];
+  var v = sh.getRange(2, 1, n - 1, 7).getValues(), pool = [];
   for (var i = 0; i < v.length; i++) if (!usados[String(v[i][0])]) pool.push(v[i]);
   if (!pool.length) return { ok: false, motivo: 'acabou' };
   var w = pool[Math.floor(Math.random() * pool.length)];
-  g.appendRow([agora(), w[0], w[2], w[3], w[4], 'Ganhou']);
+  g.appendRow([agora(), w[0], w[2], w[3], w[4], 'Ganhou', String(w[6] || '')]);
   CacheService.getScriptCache().put('sort_ts', String(Date.now()), 600);
   var r = lista();
-  return { ok: true, n: w[0], nome: String(w[2]), curso: String(w[3]), total: r.total, restantes: r.restantes };
+  return { ok: true, n: w[0], nome: String(w[2]), curso: String(w[3]), codigo: String(w[6] || ''), total: r.total, restantes: r.restantes };
 }
 // Marca o último ganhador como ausente (continua fora do próximo sorteio)
 function ausente() {
@@ -285,4 +297,11 @@ function ultimo() {
   }
   return { ok: true, total: r.total, restantes: r.restantes, idade: idade, ultimoAusente: g.length > 0 && g[0].s === 'Ausente',
            atual: atual ? { chave: atual.n + '|' + atual.d, nome: atual.nome, curso: atual.curso } : null, anteriores: anteriores };
+}
+
+// Código aleatório de 5 caracteres (sem 0/O/1/I/L) no formato FW-K7M2Q
+function novoCodigo() {
+  var a = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', s = '';
+  for (var i = 0; i < 5; i++) s += a.charAt(Math.floor(Math.random() * a.length));
+  return 'FW-' + s;
 }

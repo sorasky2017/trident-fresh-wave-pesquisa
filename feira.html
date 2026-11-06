@@ -114,7 +114,8 @@ h2{font-size:1.5rem}
     <span class="chip g">Cadastro feito</span>
     <h2>Aguarde o sorteio</h2>
     <p class="sub" id="msg"></p>
-    <div class="ticket"><small>Sorteio de ecobags</small><b>Boa sorte!</b><small>Fique por perto: o resultado sai aqui no estande</small></div>
+    <div class="ticket" id="cod" hidden><small>Seu código do sorteio</small><b id="codv"></b><small>Tire um print e guarde. Se for sorteado, mostre este código no estande</small></div>
+    <div class="ticket" id="boa"><small>Sorteio de ecobags</small><b>Boa sorte!</b><small>Fique por perto: o resultado sai aqui no estande</small></div>
   </section>
 
   <section class="card info">
@@ -146,7 +147,9 @@ document.getElementById('form').addEventListener('submit',function(e){
     .then(function(r){
       if(!r.ok){er.textContent='Não foi possível cadastrar agora. Confira os dados.';return;}
       er.textContent='';
-      document.getElementById('msg').textContent=(r.jaExistia?'Você já estava na lista, ':'Cadastro feito, ')+r.nome.split(' ')[0]+'! Obrigado pela avaliação. Vamos sortear as ecobags entre os cadastrados.';
+      document.getElementById('msg').textContent=r.jaExistia?'Esse nome já estava na lista, '+r.nome.split(' ')[0]+'. Use o código que você recebeu no primeiro cadastro.':'Cadastro feito, '+r.nome.split(' ')[0]+'! Obrigado pela avaliação. Vamos sortear as ecobags entre os cadastrados.';
+      document.getElementById('cod').hidden=!r.codigo;document.getElementById('boa').hidden=!!r.codigo;
+      if(r.codigo)document.getElementById('codv').textContent=r.codigo;
       document.getElementById('cadastro').hidden=true;
       document.getElementById('ok').hidden=false;
       [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=true});
