@@ -20,6 +20,11 @@ var MOV = 'Movimentos';   // Data | E-mail | Descrição | Pontos | Código | En
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.action === 'painel') return resp(painel());
+  if (p.action === 'feira') {
+    var lk = LockService.getScriptLock();
+    lk.waitLock(15000);
+    try { return resp(feira(p)); } catch (err) { return resp({ ok: false, motivo: 'erro' }); } finally { lk.releaseLock(); }
+  }
   var email = String(p.email || '').trim().toLowerCase();
   if (!/^[a-z0-9._%+\-]+@[a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,}$/i.test(email) || /\.\./.test(email) || email.length > 120) return resp({ ok: false, motivo: 'email' });
   if (DESCARTAVEIS.indexOf(email.split('@')[1]) > -1) return resp({ ok: false, motivo: 'email' });
@@ -139,4 +144,21 @@ function painel() {
 }
 function resp(o) {
   return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Sorteio de ecobags na feira (sem e-mail): aba "Sorteio" = Nº | Data | Nome completo | Curso | Sabor | LGPD
+function feira(p) {
+  var nome = limpa(p.nome, 80), curso = limpa(p.curso, 60), sabor = limpa(p.sabor, 40);
+  if (!nome || !curso || !sabor || p.lgpd !== '1' || nome.split(' ').length < 2) return { ok: false, motivo: 'dados' };
+  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Sabor', 'LGPD']);
+  var n = sh.getLastRow();
+  var chave = (nome + '|' + curso).toLowerCase();
+  if (n >= 2) {
+    var v = sh.getRange(2, 1, n - 1, 6).getValues();
+    for (var i = 0; i < v.length; i++) {
+      if ((String(v[i][2]) + '|' + String(v[i][3])).toLowerCase() === chave) return { ok: true, jaExistia: true, nome: String(v[i][2]), sabor: String(v[i][4]) };
+    }
+  }
+  sh.appendRow([n, agora(), nome, curso, sabor, 'aceitou']);
+  return { ok: true, jaExistia: false, nome: nome, sabor: sabor };
 }
