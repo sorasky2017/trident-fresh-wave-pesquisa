@@ -146,19 +146,20 @@ function resp(o) {
   return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
 }
 
-// Sorteio de ecobags na feira (sem e-mail): aba "Sorteio" = Nº | Data | Nome completo | Curso | Sabor | LGPD
+// Sorteio de ecobags na feira (sem e-mail): aba "Sorteio" = Nº | Data | Nome completo | Curso | Avaliação do estande (1-5) | LGPD
 function feira(p) {
-  var nome = limpa(p.nome, 80), curso = limpa(p.curso, 60), sabor = limpa(p.sabor, 40);
-  if (!nome || !curso || !sabor || p.lgpd !== '1' || nome.split(' ').length < 2) return { ok: false, motivo: 'dados' };
-  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Sabor', 'LGPD']);
+  var nome = limpa(p.nome, 80), curso = limpa(p.curso, 60), nota = parseInt(p.avaliacao, 10);
+  if (!nome || !curso || !(nota >= 1 && nota <= 5) || p.lgpd !== '1' || nome.split(' ').length < 2) return { ok: false, motivo: 'dados' };
+  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']);
+  if (String(sh.getRange(1, 5).getValue()) === 'Sabor') sh.getRange(1, 5).setValue('Avaliação do estande');
   var n = sh.getLastRow();
   var chave = (nome + '|' + curso).toLowerCase();
   if (n >= 2) {
     var v = sh.getRange(2, 1, n - 1, 6).getValues();
     for (var i = 0; i < v.length; i++) {
-      if ((String(v[i][2]) + '|' + String(v[i][3])).toLowerCase() === chave) return { ok: true, jaExistia: true, nome: String(v[i][2]), sabor: String(v[i][4]) };
+      if ((String(v[i][2]) + '|' + String(v[i][3])).toLowerCase() === chave) return { ok: true, jaExistia: true, nome: String(v[i][2]) };
     }
   }
-  sh.appendRow([n, agora(), nome, curso, sabor, 'aceitou']);
-  return { ok: true, jaExistia: false, nome: nome, sabor: sabor };
+  sh.appendRow([n, agora(), nome, curso, nota, 'aceitou']);
+  return { ok: true, jaExistia: false, nome: nome };
 }

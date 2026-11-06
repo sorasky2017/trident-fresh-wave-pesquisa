@@ -66,6 +66,11 @@ h2{font-size:1.5rem}
 .steps{grid-template-columns:1fr 1fr}
 .tile:hover{transform:translateY(-3px)}
 }
+.stars{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}
+.stars button{font:inherit;font-size:2.6rem;line-height:1;background:none;border:0;padding:2px 4px;cursor:pointer;color:#c5d9cc;transition:transform .12s,color .12s}
+.stars button.on{color:#F2D13D;text-shadow:0 2px 6px rgba(160,120,0,.35)}
+.stars button:hover{transform:scale(1.12)}
+.stars button:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:2px;border-radius:8px}
 </style>
 <body>
 <span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
@@ -84,21 +89,22 @@ h2{font-size:1.5rem}
 
   <section class="card" id="cadastro">
     <span class="chip">Cadastro para o sorteio</span>
-    <h2>Qual é o seu sabor?</h2>
-    <p class="sub">Escolha o favorito e preencha seus dados para concorrer.</p>
+    <h2>Participe do sorteio</h2>
+    <p class="sub">Preencha seus dados e avalie o estande para concorrer.</p>
     <form id="form" novalidate>
-      <div class="tiles" role="radiogroup" aria-label="Sabor favorito" id="tiles">
-        <button type="button" class="tile" role="radio" aria-checked="false" data-s="Laranja com Morango" style="background:#f08a4b"><div class="pic" style="--a:#ffe0bd;--b:#f08a4b"><img src="clube/lata1.png" alt=""></div><span>Laranja com Morango</span></button>
-        <button type="button" class="tile" role="radio" aria-checked="false" data-s="Morango com Maracujá" style="background:#e0566f"><div class="pic" style="--a:#ffc9cf;--b:#e0566f"><img src="clube/lata2.png" alt=""></div><span>Morango com Maracujá</span></button>
-        <button type="button" class="tile" role="radio" aria-checked="false" data-s="Limão" style="background:#22CC74"><div class="pic" style="--a:#e4f5bf;--b:#22CC74"><img src="clube/lata3.png" alt=""></div><span>Limão</span></button>
-        <button type="button" class="tile" role="radio" aria-checked="false" data-s="Lichia" style="background:#e8708f"><div class="pic" style="--a:#ffd6e3;--b:#e8708f"><img src="clube/lata4.png" alt=""></div><span>Lichia</span></button>
-        <button type="button" class="tile" role="radio" aria-checked="false" data-s="Abacaxi e Hortelã" style="background:#d9b820"><div class="pic" style="--a:#fff4a8;--b:#d9b820"><img src="clube/lata5.png" alt=""></div><span>Abacaxi e Hortelã</span></button>
-      </div>
       <label class="f" for="nome">Nome completo</label>
       <input id="nome" type="text" autocomplete="name">
       <label class="f" for="curso">Curso</label>
       <input id="curso" type="text" autocomplete="off" placeholder="Ex.: Propaganda e Marketing">
-      <label class="check"><input id="lgpd" type="checkbox"><span>Concordo em usar meu nome, curso e sabor favorito só para participar do sorteio de ecobags.</span></label>
+      <label class="f" id="al">Avalie o estande</label>
+      <div class="stars" role="radiogroup" aria-labelledby="al" id="stars">
+        <button type="button" role="radio" aria-checked="false" aria-label="1 estrela" data-v="1">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="2 estrelas" data-v="2">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="3 estrelas" data-v="3">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="4 estrelas" data-v="4">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="5 estrelas" data-v="5">★</button>
+      </div>
+      <label class="check"><input id="lgpd" type="checkbox"><span>Concordo em usar meu nome, curso e avaliação do estande só para participar do sorteio de ecobags.</span></label>
       <p class="err" id="err" role="alert"></p>
       <button class="btn" type="submit">Quero concorrer</button>
     </form>
@@ -115,8 +121,8 @@ h2{font-size:1.5rem}
   <section class="card info">
     <span class="chip">Como funciona</span>
     <ol class="steps">
-      <li><i>1</i>Escolha seu sabor favorito.</li>
-      <li><i>2</i>Informe nome completo e curso.</li>
+      <li><i>1</i>Informe nome completo e curso.</li>
+      <li><i>2</i>Avalie o estande de 1 a 5 estrelas.</li>
       <li><i>3</i>Aguarde o sorteio das ecobags no estande.</li>
     </ol>
   </section>
@@ -124,26 +130,24 @@ h2{font-size:1.5rem}
   <p class="note">Ação do projeto Trident Fresh Wave, Propaganda e Marketing, UNIP. Os dados informados são usados apenas para o sorteio de ecobags e podem ser apagados a pedido do participante.</p>
 </main>
 <script>
-var sel='';
-var tiles=[].slice.call(document.querySelectorAll('.tile'));
-tiles.forEach(function(t){t.addEventListener('click',function(){
-  sel=t.getAttribute('data-s');
-  tiles.forEach(function(x){x.setAttribute('aria-checked',x===t?'true':'false')});
-})});
+var nota=0;
+var stars=[].slice.call(document.querySelectorAll('#stars button'));
+function pinta(v){stars.forEach(function(s){var on=Number(s.getAttribute('data-v'))<=v;s.classList.toggle('on',on);s.setAttribute('aria-checked',Number(s.getAttribute('data-v'))===nota?'true':'false')})}
+stars.forEach(function(s){s.addEventListener('click',function(){nota=Number(s.getAttribute('data-v'));pinta(nota)});s.addEventListener('mouseenter',function(){pinta(Number(s.getAttribute('data-v')))});s.addEventListener('mouseleave',function(){pinta(nota)})});
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 document.getElementById('form').addEventListener('submit',function(e){
   e.preventDefault();
   var n=document.getElementById('nome').value.trim().replace(/\s+/g,' '),c=document.getElementById('curso').value.trim().replace(/\s+/g,' '),
       l=document.getElementById('lgpd').checked,er=document.getElementById('err'),bt=document.querySelector('#form button[type=submit]');
-  var f=[!sel&&'um sabor',(n.split(' ').length<2)&&'o nome completo',!c&&'o curso',!l&&'o aceite'].filter(Boolean);
+  var f=[(n.split(' ').length<2)&&'o nome completo',!c&&'o curso',!nota&&'a avaliação do estande',!l&&'o aceite'].filter(Boolean);
   if(f.length){er.textContent='Falta: '+f.join(', ')+'.';return;}
   er.textContent='Enviando...';bt.disabled=true;
-  fetch(API+'?action=feira&nome='+encodeURIComponent(n)+'&curso='+encodeURIComponent(c)+'&sabor='+encodeURIComponent(sel)+'&lgpd=1')
+  fetch(API+'?action=feira&nome='+encodeURIComponent(n)+'&curso='+encodeURIComponent(c)+'&avaliacao='+nota+'&lgpd=1')
     .then(function(r){return r.json()})
     .then(function(r){
       if(!r.ok){er.textContent='Não foi possível cadastrar agora. Confira os dados.';return;}
       er.textContent='';
-      document.getElementById('msg').textContent=(r.jaExistia?'Você já estava na lista, ':'Cadastro feito, ')+r.nome.split(' ')[0]+'! Seu sabor é '+r.sabor+'. Vamos sortear as ecobags entre os cadastrados.';
+      document.getElementById('msg').textContent=(r.jaExistia?'Você já estava na lista, ':'Cadastro feito, ')+r.nome.split(' ')[0]+'! Obrigado pela avaliação. Vamos sortear as ecobags entre os cadastrados.';
       document.getElementById('cadastro').hidden=true;
       document.getElementById('ok').hidden=false;
       [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=true});
@@ -154,7 +158,7 @@ document.getElementById('form').addEventListener('submit',function(e){
 });
 document.getElementById('outro').addEventListener('click',function(ev){
   ev.preventDefault();
-  sel='';tiles.forEach(function(x){x.setAttribute('aria-checked','false')});
+  nota=0;pinta(0);
   ['nome','curso'].forEach(function(i){document.getElementById(i).value=''});
   document.getElementById('lgpd').checked=false;
   document.getElementById('ok').hidden=true;document.getElementById('cadastro').hidden=false;
