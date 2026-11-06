@@ -115,7 +115,6 @@ h2{font-size:1.5rem}
     <h2>Aguarde o sorteio</h2>
     <p class="sub" id="msg"></p>
     <div class="ticket"><small>Sorteio de ecobags</small><b>Boa sorte!</b><small>Fique por perto: o resultado sai aqui no estande</small></div>
-    <p style="text-align:center;margin:16px 0 0"><a href="#" id="outro" style="font-weight:800;font-style:italic;color:var(--blue)">Cadastrar outra pessoa</a></p>
   </section>
 
   <section class="card info">
@@ -155,15 +154,6 @@ document.getElementById('form').addEventListener('submit',function(e){
     })
     .catch(function(){er.textContent='Sem conexão. Tente de novo.'})
     .then(function(){bt.disabled=false});
-});
-document.getElementById('outro').addEventListener('click',function(ev){
-  ev.preventDefault();
-  nota=0;pinta(0);
-  ['nome','curso'].forEach(function(i){document.getElementById(i).value=''});
-  document.getElementById('lgpd').checked=false;
-  document.getElementById('ok').hidden=true;document.getElementById('cadastro').hidden=false;
-  [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=false});
-  window.scrollTo({top:0});
 });
 </script>
 </html>
