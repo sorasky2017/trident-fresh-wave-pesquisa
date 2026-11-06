@@ -51,6 +51,21 @@ input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(0,13
 .offer em{margin-left:auto;font-style:normal;font-size:.78rem;font-weight:700;color:var(--blue);text-align:right}
 .note{font-size:.75rem;color:var(--muted);text-align:center;margin:0 8px}
 [hidden]{display:none!important}
+@media (min-width:820px){
+main{max-width:760px;gap:24px;padding-bottom:48px}
+.hero{padding-top:48px}
+.logo.t{width:230px}.logo.f{width:370px}.logo.s{width:340px}
+.lead{max-width:460px;font-size:1.1rem}
+.card{padding:30px 34px}
+h2{font-size:1.5rem}
+.tiles{overflow:visible;gap:14px;scroll-snap-type:none}
+.tile{flex:1 1 0;min-width:0}
+.pic{height:130px}.tile img{height:108px}
+.tile span{font-size:.78rem}
+.btn{max-width:420px;display:block;margin-left:auto;margin-right:auto}
+.steps{grid-template-columns:1fr 1fr}
+.tile:hover{transform:translateY(-3px)}
+}
 </style>
 <body>
 <span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
