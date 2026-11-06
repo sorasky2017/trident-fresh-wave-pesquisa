@@ -2,6 +2,7 @@
 // Cole em Extensões > Apps Script da planilha e implante como App da Web (acesso: Qualquer pessoa).
 var SENHA = 'ONDA7';      // senha do estande (só existe aqui)
 var BONUS = 60;           // pontos da senha
+var ADMIN_PIN = 'TROQUE123';  // PIN da página de sorteio (admin). Troque antes da feira.
 var TZ = 'America/Sao_Paulo';
 var DESCARTAVEIS = ['mailinator.com','guerrillamail.com','10minutemail.com','tempmail.com','temp-mail.org','yopmail.com','trashmail.com','throwawaymail.com','sharklasers.com','getnada.com','maildrop.cc','dispostable.com','fakeinbox.com','mohmal.com','emailondeck.com'];
 var ITENS = {
@@ -20,6 +21,14 @@ var MOV = 'Movimentos';   // Data | E-mail | Descrição | Pontos | Código | En
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.action === 'painel') return resp(painel());
+  if (p.action === 'sortear' || p.action === 'ganhadores' || p.action === 'ausente') {
+    var lk2 = LockService.getScriptLock();
+    lk2.waitLock(15000);
+    try {
+      if (String(p.pin || '') !== ADMIN_PIN) return resp({ ok: false, motivo: 'pin' });
+      return resp(p.action === 'sortear' ? sortear() : p.action === 'ausente' ? ausente() : lista());
+    } catch (err) { return resp({ ok: false, motivo: 'erro' }); } finally { lk2.releaseLock(); }
+  }
   if (p.action === 'feira') {
     var lk = LockService.getScriptLock();
     lk.waitLock(15000);
@@ -219,4 +228,36 @@ function estilo(sh) {
 }
 function cor(range, de, ate, fundo) {
   return SpreadsheetApp.newConditionalFormatRule().whenNumberBetween(de, ate).setBackground(fundo).setRanges([range]).build();
+}
+
+// ---- Sorteio (página admin): sorteia no servidor entre quem ainda não ganhou ----
+// Aba "Ganhadores" = Data | Nº | Nome completo | Curso | Avaliação | Situação (Ganhou / Ausente)
+function gan() { return aba('Ganhadores', ['Data', 'Nº', 'Nome completo', 'Curso', 'Avaliação', 'Situação']); }
+function lista() {
+  var sh = gan(), n = sh.getLastRow(), out = [];
+  if (n >= 2) {
+    var v = sh.getRange(2, 1, n - 1, 6).getValues();
+    for (var i = 0; i < v.length; i++) out.push({ d: fmt(v[i][0]), n: v[i][1], nome: String(v[i][2]), curso: String(v[i][3]), s: String(v[i][5]) });
+  }
+  var total = Math.max(aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']).getLastRow() - 1, 0);
+  return { ok: true, ganhadores: out.reverse(), total: total, restantes: Math.max(total - out.length, 0) };
+}
+function sortear() {
+  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']), n = sh.getLastRow();
+  if (n < 2) return { ok: false, motivo: 'vazio' };
+  var g = gan(), ng = g.getLastRow(), usados = {};
+  if (ng >= 2) g.getRange(2, 2, ng - 1, 1).getValues().forEach(function (r) { usados[String(r[0])] = 1; });
+  var v = sh.getRange(2, 1, n - 1, 6).getValues(), pool = [];
+  for (var i = 0; i < v.length; i++) if (!usados[String(v[i][0])]) pool.push(v[i]);
+  if (!pool.length) return { ok: false, motivo: 'acabou' };
+  var w = pool[Math.floor(Math.random() * pool.length)];
+  g.appendRow([agora(), w[0], w[2], w[3], w[4], 'Ganhou']);
+  var r = lista();
+  return { ok: true, n: w[0], nome: String(w[2]), curso: String(w[3]), total: r.total, restantes: r.restantes };
+}
+// Marca o último ganhador como ausente (continua fora do próximo sorteio)
+function ausente() {
+  var g = gan(), n = g.getLastRow();
+  if (n >= 2) g.getRange(n, 6).setValue('Ausente');
+  return lista();
 }
