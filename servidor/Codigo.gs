@@ -48,7 +48,7 @@ function doGet(e) {
 function aba(nome, cab) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sh = ss.getSheetByName(nome) || ss.insertSheet(nome);
-  if (sh.getLastRow() === 0) { sh.appendRow(cab); sh.setFrozenRows(1); }
+  if (sh.getLastRow() === 0) { sh.appendRow(cab); sh.setFrozenRows(1); estilo(sh); }
   return sh;
 }
 function cad() { return aba(CAD, ['Data', 'Nome', 'E-mail', 'Sabor', 'LGPD']); }
@@ -162,4 +162,61 @@ function feira(p) {
   }
   sh.appendRow([n, agora(), nome, curso, nota, 'aceitou']);
   return { ok: true, jaExistia: false, nome: nome };
+}
+
+// ---- Visual da planilha: rode "deixarBonita" uma vez (Apps Script > selecione a função > Executar) ----
+var VERDE = '#00873D', VERDE_CLARO = '#EAF8EF';
+function deixarBonita() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  [CAD, MOV, 'Sorteio'].forEach(function (nome) {
+    var sh = ss.getSheetByName(nome);
+    if (sh) estilo(sh);
+  });
+}
+function estilo(sh) {
+  var nome = sh.getName(), cols = sh.getLastColumn(), rows = Math.max(sh.getMaxRows(), 2);
+  if (cols < 1) return;
+  sh.setFrozenRows(1);
+  sh.setRowHeight(1, 34);
+  sh.getRange(1, 1, rows, cols).setFontFamily('Arial').setFontSize(10).setVerticalAlignment('middle');
+  sh.getRange(1, 1, 1, cols).setBackground(VERDE).setFontColor('#FFFFFF').setFontWeight('bold').setFontSize(11).setHorizontalAlignment('center');
+  // linhas alternadas
+  sh.getBandings().forEach(function (b) { b.remove(); });
+  sh.getRange(1, 1, rows, cols).applyRowBanding(SpreadsheetApp.BandingTheme.LIGHT_GREY, true, false)
+    .setHeaderRowColor(VERDE).setFirstRowColor('#FFFFFF').setSecondRowColor(VERDE_CLARO);
+  sh.getRange(1, 1, rows, cols).setBorder(true, true, true, true, true, true, '#CFE9D8', SpreadsheetApp.BorderStyle.SOLID);
+  sh.setTabColor('#00BF63');
+  var larg = {};
+  var regras = [];
+  var dados = function (c) { return sh.getRange(2, c, rows - 1, 1); };
+  if (nome === 'Sorteio') {
+    larg = { 1: 60, 2: 130, 3: 260, 4: 220, 5: 150, 6: 90 };
+    sh.getRange(2, 1, rows - 1, 2).setHorizontalAlignment('center');
+    dados(5).setHorizontalAlignment('center').setFontWeight('bold').setFontSize(12);
+    dados(6).setHorizontalAlignment('center');
+    regras.push(cor(dados(5), 1, 2, '#FFD9D9'), cor(dados(5), 3, 3, '#FFF3BF'), cor(dados(5), 4, 5, '#C9F0D6'));
+  } else if (nome === CAD) {
+    larg = { 1: 130, 2: 240, 3: 260, 4: 190, 5: 90 };
+    sh.getRange(2, 1, rows - 1, 1).setHorizontalAlignment('center');
+    dados(5).setHorizontalAlignment('center');
+    var sabores = { 'Laranja': '#FDD9AE', 'Morango': '#F9C0C6', 'Limão': '#D9F2B0', 'Lichia': '#FBD3E2', 'Abacaxi': '#FAEFA6' };
+    for (var s in sabores) regras.push(SpreadsheetApp.newConditionalFormatRule().whenTextStartsWith(s).setBackground(sabores[s]).setRanges([dados(4)]).build());
+  } else if (nome === MOV) {
+    larg = { 1: 130, 2: 260, 3: 250, 4: 90, 5: 110, 6: 100 };
+    sh.getRange(2, 1, rows - 1, 1).setHorizontalAlignment('center');
+    dados(4).setHorizontalAlignment('center').setFontWeight('bold');
+    dados(5).setHorizontalAlignment('center');
+    dados(6).setHorizontalAlignment('center').setFontWeight('bold');
+    regras.push(
+      SpreadsheetApp.newConditionalFormatRule().whenNumberLessThan(0).setFontColor('#C0392B').setRanges([dados(4)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenNumberGreaterThan(0).setFontColor(VERDE).setRanges([dados(4)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Não').setBackground('#FFF3BF').setRanges([dados(6)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Sim').setBackground('#C9F0D6').setRanges([dados(6)]).build());
+  }
+  for (var c in larg) sh.setColumnWidth(Number(c), larg[c]);
+  sh.setConditionalFormatRules(regras);
+  if (!sh.getFilter()) sh.getRange(1, 1, rows, cols).createFilter();
+}
+function cor(range, de, ate, fundo) {
+  return SpreadsheetApp.newConditionalFormatRule().whenNumberBetween(de, ate).setBackground(fundo).setRanges([range]).build();
 }
