@@ -169,7 +169,9 @@ function feira(p) {
       if ((String(v[i][2]) + '|' + String(v[i][3])).toLowerCase() === chave) return { ok: true, jaExistia: true, nome: String(v[i][2]) };
     }
   }
-  sh.appendRow([n, agora(), nome, curso, nota, 'aceitou']);
+  var maxN = 0;
+  if (n >= 2) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) { maxN = Math.max(maxN, Number(r[0]) || 0); });
+  sh.appendRow([maxN + 1, agora(), nome, curso, nota, 'aceitou']);
   return { ok: true, jaExistia: false, nome: nome };
 }
 
@@ -177,7 +179,7 @@ function feira(p) {
 var VERDE = '#00873D', VERDE_CLARO = '#EAF8EF';
 function deixarBonita() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  [CAD, MOV, 'Sorteio'].forEach(function (nome) {
+  [CAD, MOV, 'Sorteio', 'Ganhadores'].forEach(function (nome) {
     var sh = ss.getSheetByName(nome);
     if (sh) estilo(sh);
   });
@@ -204,6 +206,14 @@ function estilo(sh) {
     dados(5).setHorizontalAlignment('center').setFontWeight('bold').setFontSize(12);
     dados(6).setHorizontalAlignment('center');
     regras.push(cor(dados(5), 1, 2, '#FFD9D9'), cor(dados(5), 3, 3, '#FFF3BF'), cor(dados(5), 4, 5, '#C9F0D6'));
+  } else if (nome === 'Ganhadores') {
+    larg = { 1: 130, 2: 60, 3: 260, 4: 220, 5: 150, 6: 110 };
+    sh.getRange(2, 1, rows - 1, 2).setHorizontalAlignment('center');
+    dados(5).setHorizontalAlignment('center');
+    dados(6).setHorizontalAlignment('center').setFontWeight('bold');
+    regras.push(
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Ganhou').setBackground('#C9F0D6').setRanges([dados(6)]).build(),
+      SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Ausente').setBackground('#FFD9D9').setRanges([dados(6)]).build());
   } else if (nome === CAD) {
     larg = { 1: 130, 2: 240, 3: 260, 4: 190, 5: 90 };
     sh.getRange(2, 1, rows - 1, 1).setHorizontalAlignment('center');
