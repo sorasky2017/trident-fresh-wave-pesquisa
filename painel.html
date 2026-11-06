@@ -15,6 +15,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;color:var(--navy);font-family:"
 .card{width:min(1100px,100%);background:rgba(255,255,255,.88);border:1px solid #fff;border-radius:32px;padding:clamp(18px,min(4vw,4.5vh),60px) clamp(16px,3vw,40px);box-shadow:0 14px 36px rgba(30,43,36,.14)}
 .nome{font-size:clamp(30px,min(8.5vw,12vh),120px);font-weight:900;font-style:italic;line-height:1.05;word-break:break-word}
 .curso{margin-top:.3em;font-size:clamp(16px,min(3.6vw,5vh),48px);font-weight:800;color:var(--blue)}
+.tempo[hidden]{display:none}
 .tempo{margin-top:clamp(10px,min(2.4vw,2.4vh),28px);display:inline-block;padding:.4em 1.6em .5em;border-radius:22px;background:#fff;border:3px solid var(--blue)}
 .tempo small{display:block;font-size:clamp(12px,1.8vw,24px);font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tempo b{display:block;font-size:clamp(36px,min(8vw,12vh),110px);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.05;color:var(--blue)}
@@ -58,7 +59,7 @@ function relogio(){
 }
 setInterval(relogio,250);
 function revela(a,anima,idade){
-  t0=(idade<99999)?Date.now()-Math.max(0,idade-2400):null;
+  t0=(anima&&idade<99999)?Date.now()-Math.max(0,idade-2400):null;
   mostrada=a.chave;$('msg').hidden=true;var n=$('nome');n.hidden=false;n.textContent=a.nome;$('curso').textContent=a.curso;
   n.className='nome';if(anima){void n.offsetWidth;n.className='nome pop';confete()}
 }
