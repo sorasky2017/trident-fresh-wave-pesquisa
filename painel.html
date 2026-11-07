@@ -85,7 +85,9 @@ function tick(){
     });
     Object.keys(cards).forEach(function(k){if(!keep[k]){cards[k].el.remove();delete cards[k]}});
     // ordena no DOM
-    ativos.forEach(function(g){$('cards').appendChild(cards[g.chave].el)});
+    // reordena só se a ordem mudou (mexer no DOM reinicia a animação "pop")
+    var ordem=ativos.map(function(g){return cards[g.chave].el}),atual=[].slice.call($('cards').children);
+    if(ordem.length!==atual.length||ordem.some(function(e,i){return e!==atual[i]}))ordem.forEach(function(e){$('cards').appendChild(e)});
     var n=ativos.length;$('cards').className='cards'+(n>1?' n'+Math.min(n,5):'');
     $('msg').hidden=n>0;
     $('ant').innerHTML=ant.length?'<b>Ganhadores anteriores:</b> '+ant.slice(0,6).map(function(a){return esc(a.nome)}).join(' · '):'';
