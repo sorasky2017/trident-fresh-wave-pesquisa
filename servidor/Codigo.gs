@@ -27,7 +27,7 @@ function doGet(e) {
     lk2.waitLock(15000);
     try {
       if (String(p.pin || '') !== ADMIN_PIN) return resp({ ok: false, motivo: 'pin' });
-      return resp(p.action === 'sortear' ? sortear() : p.action === 'ausente' ? ausente() : p.action === 'presente' ? presente() : lista());
+      return resp(p.action === 'sortear' ? sortear(p.qtd) : p.action === 'ausente' ? ausente(p.n) : p.action === 'presente' ? presente(p.n) : lista());
     } catch (err) { return resp({ ok: false, motivo: 'erro' }); } finally { lk2.releaseLock(); }
   }
   if (p.action === 'feira') {
@@ -222,6 +222,7 @@ function estilo(sh) {
     larg = { 1: 130, 2: 60, 3: 260, 4: 220, 5: 150, 6: 110, 7: 120, 8: 150 };
     dados(7).setHorizontalAlignment('center').setFontWeight('bold');
     dados(8).setHorizontalAlignment('center');
+    sh.hideColumns(9);
     sh.getRange(2, 1, rows - 1, 2).setHorizontalAlignment('center');
     dados(5).setHorizontalAlignment('center');
     dados(6).setHorizontalAlignment('center').setFontWeight('bold');
@@ -256,60 +257,67 @@ function cor(range, de, ate, fundo) {
 }
 
 // ---- Sorteio (página admin): sorteia no servidor entre quem ainda não ganhou ----
-// Aba "Ganhadores" = Data | Nº | Nome completo | Curso | Avaliação | Situação (Ganhou / Ausente)
+// Aba "Ganhadores" = Data | Nº | Nome completo | Curso | Avaliação | Situação (Ganhou / Presente / Ausente) | Código | Telefone | Registro (ms)
 function gan() {
-  var sh = aba('Ganhadores', ['Data', 'Nº', 'Nome completo', 'Curso', 'Avaliação', 'Situação', 'Código', 'Telefone']);
+  var sh = aba('Ganhadores', ['Data', 'Nº', 'Nome completo', 'Curso', 'Avaliação', 'Situação', 'Código', 'Telefone', 'Registro (ms)']);
   if (String(sh.getRange(1, 7).getValue()) === '') sh.getRange(1, 7).setValue('Código');
-  if (String(sh.getRange(1, 8).getValue()) === '') { sh.getRange(1, 8).setValue('Telefone'); estilo(sh); }
+  if (String(sh.getRange(1, 8).getValue()) === '') sh.getRange(1, 8).setValue('Telefone');
+  if (String(sh.getRange(1, 9).getValue()) === '') { sh.getRange(1, 9).setValue('Registro (ms)'); estilo(sh); }
   return sh;
 }
 function lista() {
   var sh = gan(), n = sh.getLastRow(), out = [];
   if (n >= 2) {
-    var v = sh.getRange(2, 1, n - 1, 8).getValues();
-    for (var i = 0; i < v.length; i++) out.push({ d: fmt(v[i][0]), n: v[i][1], nome: String(v[i][2]), curso: String(v[i][3]), s: String(v[i][5]), c: String(v[i][6] || ''), t: String(v[i][7] || '') });
+    var v = sh.getRange(2, 1, n - 1, 9).getValues();
+    for (var i = 0; i < v.length; i++) out.push({ d: fmt(v[i][0]), n: v[i][1], nome: String(v[i][2]), curso: String(v[i][3]), s: String(v[i][5]), c: String(v[i][6] || ''), t: String(v[i][7] || ''), ts: Number(v[i][8]) || 0 });
   }
-  var total = Math.max(aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']).getLastRow() - 1, 0);
+  var total = Math.max(aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD', 'Código', 'Telefone']).getLastRow() - 1, 0);
   return { ok: true, ganhadores: out.reverse(), total: total, restantes: Math.max(total - out.length, 0) };
 }
-function sortear() {
-  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD']), n = sh.getLastRow();
+// Sorteia "qtd" pessoas (1 a 5) de uma vez, entre quem ainda não está em Ganhadores
+function sortear(qtd) {
+  qtd = Math.max(1, Math.min(5, parseInt(qtd, 10) || 1));
+  var sh = aba('Sorteio', ['Nº', 'Data', 'Nome completo', 'Curso', 'Avaliação do estande', 'LGPD', 'Código', 'Telefone']), n = sh.getLastRow();
   if (n < 2) return { ok: false, motivo: 'vazio' };
   var g = gan(), ng = g.getLastRow(), usados = {};
   if (ng >= 2) g.getRange(2, 2, ng - 1, 1).getValues().forEach(function (r) { usados[String(r[0])] = 1; });
   var v = sh.getRange(2, 1, n - 1, 8).getValues(), pool = [];
   for (var i = 0; i < v.length; i++) if (!usados[String(v[i][0])]) pool.push(v[i]);
   if (!pool.length) return { ok: false, motivo: 'acabou' };
-  var w = pool[Math.floor(Math.random() * pool.length)];
-  g.appendRow([agora(), w[0], w[2], w[3], w[4], 'Ganhou', String(w[6] || ''), String(w[7] || '')]);
-  CacheService.getScriptCache().put('sort_ts', String(Date.now()), 600);
+  var escolhidos = [], ts = Date.now();
+  while (escolhidos.length < qtd && pool.length) escolhidos.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  var linhas = escolhidos.map(function (w) { return [agora(), w[0], w[2], w[3], w[4], 'Ganhou', String(w[6] || ''), String(w[7] || ''), ts]; });
+  g.getRange(ng + 1, 1, linhas.length, 9).setValues(linhas);
   var r = lista();
-  return { ok: true, n: w[0], nome: String(w[2]), curso: String(w[3]), codigo: String(w[6] || ''), telefone: String(w[7] || ''), total: r.total, restantes: r.restantes };
+  return { ok: true, pedidos: qtd, ganhadores: escolhidos.map(function (w) { return { n: w[0], nome: String(w[2]), curso: String(w[3]), codigo: String(w[6] || ''), telefone: String(w[7] || '') }; }), total: r.total, restantes: r.restantes };
 }
-// Marca o último ganhador como ausente (continua fora do próximo sorteio)
-function ausente() {
+// Marca um ganhador (pelo Nº) como ausente ou presente. Ausente continua fora de novos sorteios.
+function marcar(num, situacao) {
   var g = gan(), n = g.getLastRow();
-  if (n >= 2 && String(g.getRange(n, 6).getValue()) === 'Ganhou') g.getRange(n, 6).setValue('Ausente');
-  return lista();
-}
-// Confirma que o último ganhador apareceu (o painel para o cronômetro)
-function presente() {
-  var g = gan(), n = g.getLastRow();
-  if (n >= 2 && String(g.getRange(n, 6).getValue()) === 'Ganhou') g.getRange(n, 6).setValue('Presente');
-  return lista();
-}
-
-// Painel público do sorteio: último ganhador (só nome e curso) + total. "idade" deixa o painel esperar a animação da página admin.
-function ultimo() {
-  var r = lista(), g = r.ganhadores, t = CacheService.getScriptCache().get('sort_ts');
-  var idade = t ? Date.now() - Number(t) : 99999;
-  var anteriores = [], atual = null;
-  for (var i = 0; i < g.length; i++) {
-    if (g[i].s === 'Ausente') continue;
-    if (!atual) atual = g[i]; else if (anteriores.length < 6) anteriores.push({ nome: g[i].nome, curso: g[i].curso });
+  if (n >= 2) {
+    var v = g.getRange(2, 2, n - 1, 1).getValues();
+    for (var i = v.length - 1; i >= 0; i--) {
+      if (String(v[i][0]) === String(num)) {
+        var c = g.getRange(i + 2, 6);
+        if (String(c.getValue()) === 'Ganhou') c.setValue(situacao);
+        break;
+      }
+    }
   }
-  return { ok: true, total: r.total, restantes: r.restantes, idade: idade, ultimoAusente: g.length > 0 && g[0].s === 'Ausente',
-           atual: atual ? { chave: atual.n + '|' + atual.d, nome: atual.nome, curso: atual.curso, presente: atual.s === 'Presente' } : null, anteriores: anteriores };
+  return lista();
+}
+function ausente(num) { return marcar(num, 'Ausente'); }
+function presente(num) { return marcar(num, 'Presente'); }
+
+// Painel público do sorteio: ganhadores recentes (só nome e curso) com a "idade" de cada sorteio, para o painel contar o tempo
+function ultimo() {
+  var r = lista(), now = Date.now(), recentes = [];
+  for (var i = 0; i < r.ganhadores.length && recentes.length < 14; i++) {
+    var x = r.ganhadores[i];
+    if (x.s === 'Ausente') continue;
+    recentes.push({ chave: x.n + '|' + x.ts, nome: x.nome, curso: x.curso, presente: x.s === 'Presente', idade: x.ts ? now - x.ts : 1e9 });
+  }
+  return { ok: true, total: r.total, restantes: r.restantes, recentes: recentes };
 }
 
 // Código aleatório de 5 caracteres (sem 0/O/1/I/L) no formato FW-K7M2Q

@@ -95,6 +95,19 @@ th{color:var(--blue);font-size:.75rem;letter-spacing:.1em;text-transform:upperca
 .pres{color:var(--blue);font-weight:700}
 .aus{color:#b3261e;font-weight:700}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
+.qtd{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:6px;font-weight:700;color:var(--muted)}
+.qtd select{font:inherit;font-weight:800;padding:8px 14px;border-radius:12px;border:2px solid var(--blue);background:#fff;color:var(--navy)}
+.cards{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin-top:8px}
+.gc{flex:1 1 380px;max-width:520px;background:#fff;border:2px solid var(--line);border-radius:22px;padding:20px 16px}
+.gc.ok{border-color:var(--blue);background:#EAF8EF}
+.gc .nm{font-size:clamp(1.6rem,4vw,2.6rem);font-weight:900;font-style:italic;line-height:1.1;color:var(--navy);word-break:break-word}
+.gc .cu{margin-top:4px;font-size:clamp(1rem,2.2vw,1.35rem);font-weight:700;color:var(--blue)}
+.gc .ac{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+.gc .ac .btn,.gc .ac .sec,.gc .ac .wpp{width:auto;min-width:0;margin:0;padding:11px 16px;font-size:.95rem}
+.gc .codbox{margin-top:12px;padding:6px 14px}
+.gc .codbox b{font-size:clamp(1.4rem,3vw,2.1rem)}
+.gc .tag{margin-top:10px;font-weight:800;color:var(--blue)}
+.gc .tag.no{color:#b3261e}
 </style>
 <body>
 <span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
@@ -117,16 +130,11 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
   <section class="card stage" id="palco" hidden>
     <span class="chip">Sorteio de ecobags</span>
     <div class="status" id="info"></div>
-    <div class="big" id="nome">?</div>
-    <div class="curso" id="curso"></div>
-    <div class="status" id="semtel" hidden>Esta pessoa não informou telefone.</div>
-    <div class="codbox" id="codbox" hidden>Código do ganhador (confira com a pessoa): <b id="cod"></b></div>
-    <div class="row">
-      <a class="btn wpp" id="wpp" target="_blank" rel="noopener" hidden>Avisar no WhatsApp</a>
-      <button class="btn" id="presente" hidden>Pessoa apareceu ✔</button>
-      <button class="btn" id="sortear">Sortear</button>
-      <button class="btn sec" id="ausente" hidden>Não compareceu, sortear outro</button>
-    </div>
+    <div class="big" id="nome" style="font-size:clamp(1.6rem,4vw,2.4rem)">Pronto para sortear</div>
+    <div class="cards" id="cards"></div>
+    <div class="qtd"><label for="qtd">Quantas pessoas sortear:</label>
+      <select id="qtd"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
+    <div class="row"><button class="btn" id="sortear">Sortear</button></div>
   </section>
 
   <section class="card" id="lista" hidden>
@@ -138,11 +146,11 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 <script>
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 var PIN='',$=function(i){return document.getElementById(i)};
-function call(a){return fetch(API+'?action='+a+'&pin='+encodeURIComponent(PIN)).then(function(r){return r.json()})}
+function call(a,extra){return fetch(API+'?action='+a+(extra||'')+'&pin='+encodeURIComponent(PIN)).then(function(r){return r.json()})}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function mostra(r){
   $('info').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
-  var h='';(r.ganhadores||[]).forEach(function(g){h+='<tr><td>'+esc(g.n)+'</td><td>'+esc(g.nome)+'</td><td>'+esc(g.curso)+'</td><td><b>'+esc(g.c||'')+'</b></td><td class="'+(g.s==='Ausente'?'aus':'')+'">'+(g.s==='Ausente'?'Ausente':g.s==='Presente'?'Presente ✔':'')+'</td></tr>'});
+  var h='';(r.ganhadores||[]).forEach(function(g){h+='<tr><td>'+esc(g.n)+'</td><td>'+esc(g.nome)+'</td><td>'+esc(g.curso)+'</td><td><b>'+esc(g.c||'')+'</b></td><td class="'+(g.s==='Ausente'?'aus':g.s==='Presente'?'pres':'')+'">'+(g.s==='Ausente'?'Ausente':g.s==='Presente'?'Presente ✔':'')+'</td></tr>'});
   $('corpo').innerHTML=h;$('lista').hidden=!(r.ganhadores||[]).length;
 }
 $('entrar').onclick=function(){
@@ -153,43 +161,61 @@ $('entrar').onclick=function(){
   }).catch(function(){$('err').textContent='Sem conexão. Tente de novo.'});
 };
 $('pin').addEventListener('keydown',function(e){if(e.key==='Enter')$('entrar').click()});
-var busy=false;
-function aviso(r){
-  var d=String(r.telefone||'').replace(/\D/g,''),w=$('wpp'),n=$('semtel');
-  if(d.length>=10){
-    if(d.length<=11)d='55'+d;
-    var t='Oi, '+String(r.nome).split(' ')[0]+'! Parabéns, você ganhou uma ecobag Fresh Wave no sorteio da nossa feira! Venha buscar no estande. Seu código: '+(r.codigo||'');
-    w.href='https://wa.me/'+d+'?text='+encodeURIComponent(t);w.hidden=false;n.hidden=true;
-  }else{w.hidden=true;n.hidden=false}
+
+function zap(w){
+  var d=String(w.telefone||'').replace(/\D/g,'');if(d.length<10)return '';
+  if(d.length<=11)d='55'+d;
+  return 'https://wa.me/'+d+'?text='+encodeURIComponent('Oi, '+String(w.nome).split(' ')[0]+'! Parabéns, você ganhou uma ecobag Fresh Wave no sorteio da nossa feira! Venha buscar no estande. Seu código: '+(w.codigo||''));
 }
-function sortear(){
-  if(busy)return;busy=true;
-  $('sortear').disabled=$('ausente').disabled=$('presente').disabled=true;$('presente').hidden=true;$('ausente').hidden=true;$('wpp').hidden=true;$('semtel').hidden=true;
-  $('curso').textContent='';$('codbox').hidden=true;$('nome').className='big spin';$('nome').textContent='Sorteando...';
+// monta o cartão de um ganhador, com os botões dele
+function cartao(w){
+  var el=document.createElement('div');el.className='gc';el.setAttribute('data-n',w.n);
+  var z=zap(w);
+  el.innerHTML='<div class="nm">'+esc(w.nome)+'</div><div class="cu">'+esc(w.curso)+'</div>'+
+   '<div class="codbox">Código (confira com a pessoa): <b>'+esc(w.codigo||'(sem código)')+'</b></div>'+
+   '<div class="tag" hidden></div>'+
+   '<div class="ac">'+(z?'<a class="btn wpp" target="_blank" rel="noopener" href="'+z+'">Avisar no WhatsApp</a>':'')+
+   '<button class="btn" data-a="p">Apareceu ✔</button><button class="btn sec" data-a="a">Não compareceu, sortear outro</button></div>'+
+   (z?'':'<div class="status">Sem telefone informado.</div>');
+  el.querySelector('[data-a=p]').onclick=function(){
+    var b=this;b.disabled=true;
+    call('presente','&n='+encodeURIComponent(w.n)).then(function(r){if(r.ok){mostra(r);el.classList.add('ok');var t=el.querySelector('.tag');t.hidden=false;t.textContent='Presente ✔';el.querySelectorAll('[data-a]').forEach(function(x){x.hidden=true})}else b.disabled=false}).catch(function(){b.disabled=false});
+  };
+  el.querySelector('[data-a=a]').onclick=function(){
+    el.querySelectorAll('button').forEach(function(x){x.disabled=true});
+    call('ausente','&n='+encodeURIComponent(w.n)).then(function(r){
+      if(!r.ok)return;mostra(r);
+      el.innerHTML='<div class="nm spin" style="font-size:1.6rem">Sorteando outro...</div>';
+      var t0=Date.now();
+      call('sortear','&qtd=1').then(function(s){
+        setTimeout(function(){
+          if(s.ok&&s.ganhadores.length){var novo=cartao(s.ganhadores[0]);el.replaceWith(novo);confete();call('ganhadores').then(mostra)}
+          else el.innerHTML='<div class="nm" style="font-size:1.4rem">'+(s.motivo==='acabou'?'Acabaram os nomes':'Erro, tente de novo')+'</div>';
+        },Math.max(0,2200-(Date.now()-t0)));
+      });
+    }).catch(function(){el.querySelectorAll('button').forEach(function(x){x.disabled=false})});
+  };
+  return el;
+}
+var busy=false;
+$('sortear').onclick=function(){
+  if(busy)return;busy=true;$('sortear').disabled=true;
+  var q=$('qtd').value;$('cards').innerHTML='';
+  $('nome').hidden=false;$('nome').className='big spin';$('nome').style.fontSize='clamp(1.6rem,4vw,2.4rem)';$('nome').textContent='Sorteando...';
   var t0=Date.now();
-  call('sortear').then(function(r){
-    var espera=Math.max(0,2200-(Date.now()-t0));
+  call('sortear','&qtd='+q).then(function(r){
     setTimeout(function(){
       $('nome').className='big';
       if(!r.ok){$('nome').textContent=r.motivo==='acabou'?'Acabaram os nomes':r.motivo==='vazio'?'Ninguém cadastrado':'Erro, tente de novo';busy=false;$('sortear').disabled=false;return}
-      $('nome').textContent=r.nome;$('curso').textContent=r.curso;$('cod').textContent=r.codigo||'(sem código)';aviso(r);$('codbox').hidden=false;void $('nome').offsetWidth;$('nome').className='big pop';
-      $('sortear').textContent='Sortear de novo';$('ausente').hidden=false;$('presente').hidden=false;confete();
-      call('ganhadores').then(mostra);
-      busy=false;$('sortear').disabled=$('ausente').disabled=$('presente').disabled=false;
-    },espera);
-  }).catch(function(){$('nome').className='big';$('nome').textContent='Sem conexão';busy=false;$('sortear').disabled=$('ausente').disabled=$('presente').disabled=false});
-}
-$('sortear').onclick=sortear;
-$('presente').onclick=function(){
-  if(busy)return;$('presente').disabled=true;
-  call('presente').then(function(r){
-    if(r.ok){mostra(r);$('presente').hidden=true;$('ausente').hidden=true;$('curso').textContent=$('curso').textContent.replace(/ · Presente ✔$/,'')+' · Presente ✔';$('sortear').textContent='Sortear próximo'}
-    $('presente').disabled=false;
-  }).catch(function(){$('presente').disabled=false});
-};
-$('ausente').onclick=function(){
-  if(busy)return;$('ausente').disabled=true;
-  call('ausente').then(function(r){if(r.ok)mostra(r);sortear()});
+      $('nome').hidden=true;
+      r.ganhadores.forEach(function(w){$('cards').appendChild(cartao(w))});
+      if(r.ganhadores.length<Number(q)){$('info').textContent='Só havia '+r.ganhadores.length+' nome(s) disponível(is).'}
+      else $('info').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
+      $('sortear').textContent='Sortear de novo';confete();
+      call('ganhadores').then(function(x){var m=$('info').textContent;mostra(x);if(r.ganhadores.length<Number(q))$('info').textContent=m});
+      busy=false;$('sortear').disabled=false;
+    },Math.max(0,2200-(Date.now()-t0)));
+  }).catch(function(){$('nome').className='big';$('nome').textContent='Sem conexão';busy=false;$('sortear').disabled=false});
 };
 function confete(){
   var c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;

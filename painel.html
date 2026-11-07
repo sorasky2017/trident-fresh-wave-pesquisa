@@ -32,14 +32,25 @@ body{margin:0;min-height:100vh;min-height:100dvh;color:var(--navy);font-family:"
 .foot{font-size:clamp(11px,1.3vw,18px);color:var(--muted)}
 canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 @media (prefers-reduced-motion:reduce){.pop,.spin{animation:none}}
+.cards{display:flex;flex-wrap:wrap;gap:clamp(14px,2.4vw,30px);justify-content:center}
+.gc{flex:1 1 380px;min-width:0;padding:clamp(8px,1.4vw,18px)}
+.gc .nome{font-size:clamp(26px,min(8.5vw,12vh),120px)}
+.cards.n2 .gc .nome{font-size:clamp(24px,min(5vw,9vh),84px)}
+.cards.n3 .gc .nome,.cards.n4 .gc .nome,.cards.n5 .gc .nome{font-size:clamp(20px,min(3.6vw,7vh),60px)}
+.cards.n2 .gc .curso{font-size:clamp(14px,min(2.4vw,4vh),36px)}
+.cards.n3 .gc .curso,.cards.n4 .gc .curso,.cards.n5 .gc .curso{font-size:clamp(12px,min(1.8vw,3vh),26px)}
+.cards.n2 .tempo b{font-size:clamp(30px,min(5vw,9vh),72px)}
+.cards.n3 .tempo b,.cards.n4 .tempo b,.cards.n5 .tempo b{font-size:clamp(24px,min(3.6vw,7vh),52px)}
+.cards.n2 .tempo small,.cards.n3 .tempo small,.cards.n4 .tempo small,.cards.n5 .tempo small{font-size:clamp(10px,1.2vw,16px)}
+.gc.ph .nome,.gc.ph .curso,.gc.ph .tempo{display:none}
+.gc .ph-t{display:none;font-size:clamp(20px,3.4vw,48px);font-weight:800;font-style:italic;color:var(--muted)}
+.gc.ph .ph-t{display:block}
 </style>
 <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"><img class="s" src="clube/slogan.png" alt="Uma onda de frescor"></div>
 <div class="badge">SORTEIO DE ECOBAGS</div>
 <main class="card" aria-live="polite">
   <div class="msg" id="msg">Aguardando o sorteio...</div>
-  <div class="nome" id="nome" hidden></div>
-  <div class="curso" id="curso"></div>
-  <div class="tempo" id="tempo" hidden><small id="tl">Tempo para se apresentar</small><b id="tv">01:30</b></div>
+  <div class="cards" id="cards"></div>
 </main>
 <div class="ant" id="ant"></div>
 <div class="foot" id="foot"></div>
@@ -47,42 +58,56 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 <script>
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 var $=function(i){return document.getElementById(i)};
-var mostrada=null,primeira=true,t0=null,TOTAL=90,pres=false,tPres=0,VOLTA=15000;
+var TOTAL=180,VOLTA=15000,PH=2400,LIM=TOTAL*1000+PH+VOLTA; // 3 min para se apresentar; 15 s de "Presente" antes de voltar ao Aguardando
+var cards={},tPres={};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function msg(t,spin){t0=null;$('tempo').hidden=true;$('nome').hidden=true;$('curso').textContent='';var m=$('msg');m.hidden=false;m.textContent=t;m.className='msg'+(spin?' spin':'')}
-function relogio(){
-  var t=$('tempo');
-  if(t0===null){t.hidden=true;return}
-  if(pres){t.hidden=false;t.className='tempo ok';$('tl').textContent='';$('tv').textContent='Presente! Parabéns!';return}
-  var rest=TOTAL-Math.floor((Date.now()-t0)/1000);t.hidden=false;
-  if(rest<=0){t.className='tempo fim';$('tv').textContent='Tempo esgotado';return}
-  $('tl').textContent='Tempo para se apresentar';t.className='tempo'+(rest<=10?' urg':'');
-  $('tv').textContent=('0'+Math.floor(rest/60)).slice(-2)+':'+('0'+rest%60).slice(-2);
-}
-setInterval(relogio,250);
-function revela(a,anima,idade){
-  t0=(anima&&idade<1e8)?Date.now()-Math.max(0,idade-2400):null;
-  mostrada=a.chave;$('msg').hidden=true;var n=$('nome');n.hidden=false;n.textContent=a.nome;$('curso').textContent=a.curso;
-  n.className='nome';if(anima){void n.offsetWidth;n.className='nome pop';confete()}
+function mk(g){
+  var el=document.createElement('div');el.className='gc ph';
+  el.innerHTML='<div class="ph-t">Sorteando...</div><div class="nome">'+esc(g.nome)+'</div><div class="curso">'+esc(g.curso)+'</div><div class="tempo"><small class="tl">Tempo para se apresentar</small><b class="tv">03:00</b></div>';
+  return {el:el,rev:false,t:el.querySelector('.tempo'),tl:el.querySelector('.tl'),tv:el.querySelector('.tv')};
 }
 function tick(){
   fetch(API+'?action=ultimo').then(function(r){return r.json()}).then(function(r){
-    if(!r.ok)return;
+    if(!r.ok)return;var now=Date.now();
     $('foot').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
-    $('ant').innerHTML=r.anteriores.length?'<b>Ganhadores anteriores:</b> '+r.anteriores.map(function(a){return esc(a.nome)}).join(' · '):'';
-    var a=r.atual,p0=pres;pres=!!(a&&a.presente);
-    if(pres&&!p0)tPres=Date.now();
-    // o ganhador fica na tela durante o cronômetro e, depois da presença confirmada ou do tempo esgotado, a tela volta ao "Aguardando"
-    var LIM=TOTAL*1000+2400+VOLTA;
-    if(r.idade===99999)r.idade=1e9; // servidor sem horário do sorteio: considera antigo
-    var vis=a&&r.idade<LIM&&!(pres&&Date.now()-tPres>VOLTA);
-    if(r.idade<2400){msg('Sorteando...',true)}
-    else if(r.ultimoAusente&&r.idade<LIM){msg('Sorteando outro...',true);mostrada=null}
-    else if(!vis){msg('Aguardando o sorteio...');mostrada=a?a.chave:null}
-    else if(a.chave!==mostrada){revela(a,!primeira||r.idade<60000,r.idade)}
-    primeira=false;
+    var ativos=[],ant=[];
+    r.recentes.forEach(function(g){
+      if(g.presente&&!tPres[g.chave])tPres[g.chave]=now;
+      var vis=g.idade<LIM&&!(g.presente&&now-tPres[g.chave]>VOLTA);
+      (vis?ativos:ant).push(g);
+    });
+    ativos.reverse(); // quem foi sorteado primeiro fica à esquerda
+    var keep={};
+    ativos.forEach(function(g){
+      keep[g.chave]=1;var c=cards[g.chave];
+      if(!c){c=cards[g.chave]=mk(g);$('cards').appendChild(c.el)}
+      c.idade=g.idade;c.at=now;c.presente=g.presente;
+    });
+    Object.keys(cards).forEach(function(k){if(!keep[k]){cards[k].el.remove();delete cards[k]}});
+    // ordena no DOM
+    ativos.forEach(function(g){$('cards').appendChild(cards[g.chave].el)});
+    var n=ativos.length;$('cards').className='cards'+(n>1?' n'+Math.min(n,5):'');
+    $('msg').hidden=n>0;
+    $('ant').innerHTML=ant.length?'<b>Ganhadores anteriores:</b> '+ant.slice(0,6).map(function(a){return esc(a.nome)}).join(' · '):'';
+    relogio();
   }).catch(function(){});
 }
+function fmt2(x){return ('0'+x).slice(-2)}
+function relogio(){
+  var now=Date.now();
+  Object.keys(cards).forEach(function(k){
+    var c=cards[k],ms=c.idade+(now-c.at);
+    if(ms<PH){c.el.className='gc ph';return}
+    if(!c.rev){c.rev=true;if(ms<PH+20000){c.el.className='gc pop';confete()}else c.el.className='gc'}
+    else if(c.el.classList.contains('ph'))c.el.className='gc';
+    if(c.presente){c.t.className='tempo ok';c.tl.textContent='';c.tv.textContent='Presente! Parabéns!';return}
+    var rest=TOTAL-Math.floor((ms-PH)/1000);
+    if(rest<=0){c.t.className='tempo fim';c.tl.textContent='Tempo para se apresentar';c.tv.textContent='Tempo esgotado';return}
+    c.tl.textContent='Tempo para se apresentar';c.t.className='tempo'+(rest<=10?' urg':'');
+    c.tv.textContent=fmt2(Math.floor(rest/60))+':'+fmt2(rest%60);
+  });
+}
+setInterval(relogio,250);
 tick();setInterval(tick,1500);
 function confete(){
   var c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
