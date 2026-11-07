@@ -47,7 +47,7 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 <script>
 var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
 var $=function(i){return document.getElementById(i)};
-var mostrada=null,primeira=true,t0=null,TOTAL=90,pres=false;
+var mostrada=null,primeira=true,t0=null,TOTAL=90,pres=false,tPres=0,VOLTA=15000;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function msg(t,spin){t0=null;$('tempo').hidden=true;$('nome').hidden=true;$('curso').textContent='';var m=$('msg');m.hidden=false;m.textContent=t;m.className='msg'+(spin?' spin':'')}
 function relogio(){
@@ -61,7 +61,7 @@ function relogio(){
 }
 setInterval(relogio,250);
 function revela(a,anima,idade){
-  t0=(anima&&idade<99999)?Date.now()-Math.max(0,idade-2400):null;
+  t0=(anima&&idade<1e8)?Date.now()-Math.max(0,idade-2400):null;
   mostrada=a.chave;$('msg').hidden=true;var n=$('nome');n.hidden=false;n.textContent=a.nome;$('curso').textContent=a.curso;
   n.className='nome';if(anima){void n.offsetWidth;n.className='nome pop';confete()}
 }
@@ -70,10 +70,15 @@ function tick(){
     if(!r.ok)return;
     $('foot').textContent=r.total+' cadastrados · '+r.restantes+' ainda concorrendo';
     $('ant').innerHTML=r.anteriores.length?'<b>Ganhadores anteriores:</b> '+r.anteriores.map(function(a){return esc(a.nome)}).join(' · '):'';
-    var a=r.atual;pres=!!(a&&a.presente);
+    var a=r.atual,p0=pres;pres=!!(a&&a.presente);
+    if(pres&&!p0)tPres=Date.now();
+    // o ganhador fica na tela durante o cronômetro e, depois da presença confirmada ou do tempo esgotado, a tela volta ao "Aguardando"
+    var LIM=TOTAL*1000+2400+VOLTA;
+    if(r.idade===99999)r.idade=1e9; // servidor sem horário do sorteio: considera antigo
+    var vis=a&&r.idade<LIM&&!(pres&&Date.now()-tPres>VOLTA);
     if(r.idade<2400){msg('Sorteando...',true)}
-    else if(r.ultimoAusente&&a&&a.chave===mostrada){msg('Sorteando outro...',true)}
-    else if(!a){msg('Aguardando o sorteio...')}
+    else if(r.ultimoAusente&&r.idade<LIM){msg('Sorteando outro...',true);mostrada=null}
+    else if(!vis){msg('Aguardando o sorteio...');mostrada=a?a.chave:null}
     else if(a.chave!==mostrada){revela(a,!primeira||r.idade<60000,r.idade)}
     primeira=false;
   }).catch(function(){});
