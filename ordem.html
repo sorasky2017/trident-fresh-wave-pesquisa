@@ -88,7 +88,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
     <p class="msg" id="msgHome"></p>
     <ul class="rules">
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🔊</span><span>As latas piscam e tocam uma nota. <b>Ligue o som!</b></span></li>
-      <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. A cada rodada ela cresce.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. São 10 rodadas, e a cada uma entra uma nota a mais (de 4 até 13).</span></li>
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🤝</span><span>Errou na mesma rodada que o amigo? <b>Empate!</b></span></li>
     </ul>
   </div>
@@ -226,7 +226,7 @@ function startRound0(){var seed=(Math.random()*1e9)|0;send({t:'start',seed:seed}
 
 /* ---------- jogo ---------- */
 var FLAV=[{n:'Laranja com Morango',c:'#F58A1F',i:'clube/lata1.png'},{n:'Morango com Maracujá',c:'#E94B5B',i:'clube/lata2.png'},{n:'Limão',c:'#7ED321',i:'clube/lata3.png'},{n:'Lichia',c:'#F58FB2',i:'clube/lata4.png'},{n:'Abacaxi e Hortelã',c:'#F2D13D',i:'clube/lata5.png'}];
-var MAXR=20,seq=[],round=1,idx=0,phase='idle',myRes={},opRes={},tapTimer=null,seqTimers=[],tiles=[];
+var MAXR=10,seq=[],round=1,idx=0,phase='idle',myRes={},opRes={},tapTimer=null,seqTimers=[],tiles=[];
 function buildPad(){
   var P=$('pad');P.innerHTML='';tiles=[];
   FLAV.forEach(function(f,i){
@@ -241,7 +241,7 @@ function setStatus(t,c){var s=$('status');s.textContent=t;s.className='status'+(
 function lock(v){tiles.forEach(function(t){t.classList.toggle('dis',v)})}
 function dotsFor(n,d){var h='';for(var k=0;k<n;k++)h+='<i class="'+(k<d?'d':'')+'"></i>';$('prog').innerHTML=h}
 function runRound(seed){
-  var r=rng(seed);seq=[];for(var i=0;i<MAXR+3;i++)seq.push(Math.floor(r()*5));
+  var r=rng(seed);seq=[];for(var i=0;i<MAXR+4;i++)seq.push(Math.floor(r()*5));
   // evita 3 notas iguais seguidas
   for(var k=2;k<seq.length;k++)if(seq[k]===seq[k-1]&&seq[k]===seq[k-2])seq[k]=(seq[k]+1+Math.floor(r()*4))%5;
   myRes={};opRes={};round=1;alive=true;wantAgain={me:false,op:false};
@@ -250,10 +250,10 @@ function runRound(seed){
   var n=3,c=$('count');c.classList.add('on');c.textContent=n;
   var iv=setInterval(function(){n--;if(n>0){c.textContent=n}else{clearInterval(iv);c.classList.remove('on');beginRound()}},800);seqTimers.push(iv);
 }
-function stepMs(){return Math.max(380,640-round*26)}        // começa tranquilo e acelera de leve
+function stepMs(){return Math.max(300,560-round*28)}        // começa tranquilo e acelera de leve
 function beginRound(){
   $('rd').textContent=round;lock(true);idx=0;phase='watch';$('myS').textContent='';
-  var len=round+2;dotsFor(len,0);setStatus('Escute…','');
+  var len=round+3;dotsFor(len,0);setStatus('Escute…','');
   var ms=stepMs();
   for(var i=0;i<len;i++)(function(i){
     seqTimers.push(setTimeout(function(){var f=seq[i];beep(f,ms/1000*0.85);lit(f,ms*0.7)},700+i*ms));
@@ -265,8 +265,8 @@ function onTap(i){
   if(phase!=='repeat')return;
   audio();clearTimeout(tapTimer);
   if(i!==seq[idx]){fail(i);return}
-  beep(i,0.28);lit(i,180);idx++;dotsFor(round+2,idx);
-  if(idx===round+2){phase='wait';lock(true);myRes[round]=1;send({t:'res',r:round,ok:1});$('myS').textContent='Acertou! Aguardando…';setStatus('Boa! Esperando o amigo…','');checkRound(round)}
+  beep(i,0.28);lit(i,180);idx++;dotsFor(round+3,idx);
+  if(idx===round+3){phase='wait';lock(true);myRes[round]=1;send({t:'res',r:round,ok:1});$('myS').textContent='Acertou! Aguardando…';setStatus('Boa! Esperando o amigo…','');checkRound(round)}
   else armTimeout();
 }
 function fail(i){
