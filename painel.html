@@ -8,7 +8,7 @@
 :root{--navy:#1E2B24;--blue:#00873D;--teal:#00BF63;--muted:#4A5F52}
 *{box-sizing:border-box}
 html{background:#C4EBD2}
-body{margin:0;min-height:100vh;min-height:100dvh;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:linear-gradient(180deg,#BDEBCB 0,#D6F1DF 45%,#EAF8EF 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,min(2.6vw,2.6vh),30px);padding:clamp(12px,min(3vw,3vh),36px);text-align:center;overflow-x:hidden}
+body{margin:0;min-height:100vh;min-height:100dvh;color:var(--navy);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;background:transparent;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(10px,min(2.6vw,2.6vh),30px);padding:clamp(12px,min(3vw,3vh),36px);text-align:center;overflow-x:hidden}
 .logos{display:flex;flex-direction:column;align-items:center;gap:6px}
 .logos .t{height:clamp(34px,min(8vw,8vh),100px)}.logos .f{height:clamp(26px,min(6vw,6vh),76px)}.logos .s{height:clamp(12px,min(2.4vw,2.4vh),30px)}
 .badge{padding:.5em 1.6em;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.05em;font-size:clamp(13px,min(2.2vw,3vh),30px)}
@@ -46,6 +46,10 @@ canvas#cf{position:fixed;inset:0;pointer-events:none;z-index:9}
 .gc.ph .nome,.gc.ph .curso,.gc.ph .tempo{display:none}
 .gc .ph-t{display:none;font-size:clamp(20px,3.4vw,48px);font-weight:800;font-style:italic;color:var(--muted)}
 .gc.ph .ph-t{display:block}
+html{background:#BFE9F5}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:url(fundo_v.jpg) center/cover no-repeat}
+@media (min-width:700px){body::before{background-image:url(fundo_h.jpg)}}
+.bub{display:none}
 </style>
 <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"><img class="s" src="clube/slogan.png" alt="Uma onda de frescor"></div>
 <div class="badge">SORTEIO DE ECOBAGS</div>
