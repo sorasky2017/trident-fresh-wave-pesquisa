@@ -73,7 +73,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
 <section class="screen on" id="home">
   <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
   <h1>Corrida Fresh Wave</h1>
-  <p class="sub">Duelo de 30 segundos para 2 jogadores</p>
+  <p class="sub">Duelo de 1 minuto para 2 jogadores</p>
   <div class="card">
     <label for="nome">Seu apelido</label>
     <input id="nome" maxlength="12" placeholder="Ex.: Duda" autocomplete="off">
@@ -133,7 +133,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)};
-var DUR=30, PFX='twfresh-corrida-';
+var DUR=60, PFX='twfresh-corrida-';
 var LOCAL=/[?&]local\b/.test(location.search);            // modo de teste: duas abas no mesmo aparelho
 var CANS=['clube/lata1.png','clube/lata2.png','clube/lata3.png','clube/lata4.png','clube/lata5.png'];
 CANS.forEach(function(s){var i=new Image();i.src=s});
