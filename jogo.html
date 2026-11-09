@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Pega-Lata · Trident Fresh Wave</title>
+<style>
+:root{--az:#018BEE;--g:#64C93F;--vw:#16A11D;--gd:#00873D;--nv:#092C50;--ink:#12261B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
+html{background:#BFE9F5}
+body{font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;color:var(--ink);position:relative}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:url(fundo_v.jpg) center/cover no-repeat}
+@media (min-width:700px){body::before{background-image:url(fundo_h.jpg)}}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.screen.on{display:flex}
+.logos{text-align:center;margin-top:6px}
+.logos img{display:block;margin:0 auto}
+.logos .t{height:54px}.logos .f{height:34px;margin-top:2px}
+h1{margin:14px 0 2px;font-size:1.9rem;font-style:italic;font-weight:900;color:var(--nv);text-align:center;line-height:1.1}
+.sub{margin:0 0 14px;text-align:center;color:var(--nv);font-weight:600}
+.card{width:min(440px,100%);background:rgba(255,255,255,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #fff;border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(9,44,80,.18)}
+label{display:block;font-weight:700;font-size:.85rem;margin:0 0 4px;color:var(--nv)}
+input{width:100%;font:inherit;font-size:1.1rem;padding:12px 14px;border:1.5px solid #cfe3d6;border-radius:12px;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-weight:800}
+.btn{width:100%;margin-top:12px;font:inherit;font-weight:800;font-style:italic;font-size:1.1rem;color:#fff;background:linear-gradient(90deg,var(--gd),var(--vw) 60%,var(--g));border:0;border-radius:999px;padding:14px;cursor:pointer;box-shadow:0 8px 18px rgba(0,135,61,.3)}
+.btn.alt{background:linear-gradient(90deg,var(--az),#25BDEB);box-shadow:0 8px 18px rgba(1,139,238,.3)}
+.btn.ghost{background:#fff;color:var(--gd);border:2px solid var(--gd);box-shadow:none}
+.or{text-align:center;color:#4A5F52;font-size:.85rem;margin:12px 0 0}
+.rules{margin:12px 0 0;padding:0;list-style:none;font-size:.88rem;color:#2c3f33}
+.rules li{display:flex;gap:10px;align-items:center;margin:6px 0}.rules svg,.rules img{flex:none}
+.rules img{height:26px}
+.msg{min-height:1.3em;margin:8px 0 0;text-align:center;font-weight:700;color:#c0392b;font-size:.9rem}
+.big{font-size:3rem;font-weight:900;letter-spacing:.3em;color:var(--gd);text-align:center;margin:6px 0 0;padding-left:.3em}
+.hint{text-align:center;color:#4A5F52;font-size:.9rem;margin:4px 0 0}
+.dots::after{content:'';animation:d 1.2s steps(4,end) infinite}
+@keyframes d{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+/* jogo */
+#play{padding:0}
+.hud{width:100%;display:flex;gap:8px;padding:max(10px,env(safe-area-inset-top)) 10px 6px;align-items:stretch;z-index:5}
+.pl{flex:1;background:rgba(255,255,255,.88);border-radius:16px;padding:6px 10px;text-align:center;box-shadow:0 4px 12px rgba(9,44,80,.2);min-width:0}
+.pl .n{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .s{font-size:1.7rem;font-weight:900;line-height:1.1;color:var(--gd)}
+.pl.opp .s{color:var(--az)}
+.timer{flex:0 0 64px;background:var(--nv);color:#fff;border-radius:16px;display:grid;place-items:center;font-size:1.6rem;font-weight:900;box-shadow:0 4px 12px rgba(9,44,80,.3)}
+.timer.low{background:#E94B5B}
+.field{position:relative;flex:1;width:100%;overflow:hidden}
+.it{position:absolute;top:0;left:0;will-change:transform;touch-action:manipulation;cursor:pointer}
+.it img,.it svg{display:block;width:100%;height:auto;pointer-events:none}
+.pop{position:absolute;font-weight:900;font-size:1.5rem;pointer-events:none;animation:up .7s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:4}
+@keyframes up{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-50px) scale(1.4)}}
+.flash{animation:fl .25s}
+@keyframes fl{0%{box-shadow:0 0 0 0 #E94B5B}50%{box-shadow:0 0 0 8px #E94B5B}100%{box-shadow:0 0 0 0 #E94B5B}}
+#count{position:absolute;inset:0;display:none;place-items:center;font-size:9rem;font-weight:900;color:#fff;text-shadow:0 6px 24px rgba(9,44,80,.6);z-index:9;background:rgba(9,44,80,.25)}
+#count.on{display:grid}
+.res{text-align:center}
+.res .win{font-size:2.2rem;font-weight:900;font-style:italic;color:var(--gd);margin:0}
+.res .win.lose{color:var(--az)}
+.vs{display:flex;gap:10px;margin:14px 0}
+.vs div{flex:1;border-radius:16px;padding:10px 6px;background:#f2faf4;border:2px solid #cfe3d6}
+.vs div.w{background:#eaffe8;border-color:var(--g)}
+.vs b{display:block;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs span{font-size:2.2rem;font-weight:900;color:var(--gd)}
+.note{font-size:.72rem;color:#4A5F52;text-align:center;margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<!-- Início -->
+<section class="screen on" id="home">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Pega-Lata</h1>
+  <p class="sub">Duelo de 30 segundos para 2 jogadores</p>
+  <div class="card">
+    <label for="nome">Seu apelido</label>
+    <input id="nome" maxlength="12" placeholder="Ex.: Duda" autocomplete="off">
+    <button class="btn" id="criar">Criar sala</button>
+    <p class="or">ou entre na sala do seu amigo</p>
+    <input class="code" id="cod" maxlength="4" placeholder="CÓDIGO" autocomplete="off" style="margin-top:8px">
+    <button class="btn alt" id="entrar">Entrar na sala</button>
+    <p class="msg" id="msgHome"></p>
+    <ul class="rules">
+      <li><img src="clube/lata1.png" alt=""><span>Toque nas latas Fresh Wave: <b>+10</b></span></li>
+      <li><svg width="26" height="26" viewBox="0 0 40 40"><path d="M6 14 20 7l14 7v16L20 37 6 30z" fill="#fff" stroke="#9aa" stroke-width="2"/><path d="M6 14 20 21l14-7M20 21v16" fill="none" stroke="#9aa" stroke-width="2"/></svg><span>Cubo de açúcar: <b>−5</b> (a Fresh Wave é sem açúcar!)</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.2rem">⭐</span><span>Lata dourada: <b>+30</b></span></li>
+    </ul>
+  </div>
+  <p class="note">Sem cadastro: o apelido só aparece durante a partida.</p>
+</section>
+
+<!-- Sala -->
+<section class="screen" id="lobby">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Sala criada!</h1>
+  <p class="sub">Passe este código para o seu amigo</p>
+  <div class="card">
+    <div class="big" id="codeShow">----</div>
+    <p class="hint" id="linkHint">Peça para ele abrir esta página e tocar em “Entrar na sala”.</p>
+    <button class="btn alt" id="share">Compartilhar convite</button>
+    <p class="hint" style="margin-top:14px">Aguardando o amigo<span class="dots"></span></p>
+    <button class="btn ghost" id="sairLobby">Cancelar</button>
+  </div>
+</section>
+
+<!-- Jogo -->
+<section class="screen" id="play">
+  <div class="hud">
+    <div class="pl"><div class="n" id="myN">Você</div><div class="s" id="myS">0</div></div>
+    <div class="timer" id="tm">30</div>
+    <div class="pl opp"><div class="n" id="opN">Amigo</div><div class="s" id="opS">0</div></div>
+  </div>
+  <div class="field" id="field"></div>
+  <div id="count"></div>
+</section>
+
+<!-- Resultado -->
+<section class="screen" id="end">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <div class="card res" style="margin-top:22px">
+    <p class="win" id="winTxt">Fim de jogo</p>
+    <p class="hint" id="winSub"></p>
+    <div class="vs"><div id="vsMe"><b></b><span>0</span></div><div id="vsOp"><b></b><span>0</span></div></div>
+    <button class="btn" id="again">Jogar de novo</button>
+    <button class="btn ghost" id="sair">Sair</button>
+    <p class="hint" id="againMsg"></p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var DUR=30, PFX='twfresh-pegalata-';
+var LOCAL=/[?&]local\b/.test(location.search);            // modo de teste: duas abas no mesmo aparelho
+var CANS=['clube/lata1.png','clube/lata2.png','clube/lata3.png','clube/lata4.png','clube/lata5.png'];
+CANS.forEach(function(s){var i=new Image();i.src=s});
+
+/* ---------- utilidades ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('on',s.id===id)})}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function clean(s){return (s||'').replace(/[<>&"]/g,'').trim().slice(0,12)}
+function newCode(){var a='ABCDEFGHJKMNPQRSTUVWXYZ',s='';for(var i=0;i<4;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function msg(t){$('msgHome').textContent=t||''}
+
+/* ---------- conexão (PeerJS ou BroadcastChannel no teste) ---------- */
+var peer=null,conn=null,isHost=false,code='',myName='',opName='',alive=false;
+var handlers={};
+function send(o){try{if(LOCAL){bc.postMessage({from:me,o:o})}else if(conn&&conn.open){conn.send(o)}}catch(e){}}
+var bc=null,me=Math.random().toString(36).slice(2);
+function onMsg(m){var h=handlers[m.t];if(h)h(m)}
+
+function hostRoom(){
+  isHost=true;code=newCode();
+  if(LOCAL){
+    bc=new BroadcastChannel(PFX+code);
+    bc.onmessage=function(e){if(e.data.from!==me)onMsg(e.data.o)};
+    lobbyReady();return;
+  }
+  peer=new Peer(PFX+code);
+  peer.on('open',lobbyReady);
+  peer.on('error',function(err){
+    if(err&&err.type==='unavailable-id'){peer.destroy();hostRoom()}   // código repetido: sorteia outro
+    else{backHome('Não consegui criar a sala. Confira sua internet e tente de novo.')}
+  });
+  peer.on('connection',function(c){
+    if(conn&&conn.open){c.close();return}
+    conn=c;wire(c);
+  });
+}
+function lobbyReady(){
+  $('codeShow').textContent=code;show('lobby');
+}
+function joinRoom(c){
+  isHost=false;code=c;
+  if(LOCAL){
+    bc=new BroadcastChannel(PFX+code);
+    bc.onmessage=function(e){if(e.data.from!==me)onMsg(e.data.o)};
+    send({t:'hello',name:myName});return;
+  }
+  peer=new Peer();
+  var to=setTimeout(function(){backHome('Sala não encontrada. Confira o código.')},12000);
+  peer.on('open',function(){
+    conn=peer.connect(PFX+code,{reliable:true});
+    conn.on('open',function(){clearTimeout(to);wire(conn);send({t:'hello',name:myName})});
+  });
+  peer.on('error',function(err){clearTimeout(to);backHome(err&&err.type==='peer-unavailable'?'Sala não encontrada. Confira o código.':'Falha na conexão. Tente de novo.')});
+}
+function wire(c){
+  c.on('data',onMsg);
+  c.on('close',function(){if(alive){alive=false;stopGame();endScreen(true)}else if($('lobby').classList.contains('on')){/* amigo saiu antes de começar */}});
+}
+function closeAll(){
+  try{if(conn)conn.close()}catch(e){}try{if(peer)peer.destroy()}catch(e){}try{if(bc)bc.close()}catch(e){}
+  conn=peer=bc=null;alive=false;
+}
+function backHome(m){closeAll();stopGame();show('home');msg(m||'')}
+
+/* ---------- mensagens ---------- */
+handlers.hello=function(m){
+  opName=clean(m.name)||'Amigo';
+  if(isHost){send({t:'hello',name:myName});startRound()}
+};
+handlers.start=function(m){opName=opName||'Amigo';runRound(m.seed)};
+handlers.score=function(m){$('opS').textContent=m.s};
+handlers.done=function(m){oppFinal=m.s;oppDone=true;tryResult()};
+handlers.again=function(m){wantAgain.op=true;checkAgain()};
+
+/* ---------- partida ---------- */
+var score=0,oppFinal=0,oppDone=false,myDone=false,items=[],raf=0,t0=0,timers=[],wantAgain={me:false,op:false};
+function startRound(){                 // só o anfitrião sorteia e dispara
+  var seed=(Math.random()*1e9)|0;
+  send({t:'start',seed:seed});runRound(seed);
+}
+function plan(seed){                   // sequência igual para os dois
+  var r=rng(seed),list=[],t=0.5;
+  while(t<DUR-1.2){
+    var p=r(),type=p<0.60?'can':p<0.84?'sugar':p<0.92?'gold':'can';
+    var prog=t/DUR;
+    list.push({t:t,x:0.06+r()*0.80,type:type,can:Math.floor(r()*5),v:0.30+0.17*prog+r()*0.10,s:0.17+r()*0.05,rot:(r()-0.5)*30});
+    t+=0.55-0.30*prog+r()*0.18;
+  }
+  return list;
+}
+function runRound(seed){
+  score=0;oppFinal=0;oppDone=false;myDone=false;wantAgain={me:false,op:false};
+  $('myN').textContent=myName||'Você';$('opN').textContent=opName||'Amigo';
+  $('myS').textContent='0';$('opS').textContent='0';$('tm').textContent=DUR;$('tm').classList.remove('low');
+  $('field').innerHTML='';items=plan(seed);alive=true;
+  show('play');
+  var n=3,c=$('count');c.classList.add('on');c.textContent=n;
+  var iv=setInterval(function(){n--;if(n>0){c.textContent=n}else{clearInterval(iv);c.textContent='VAI!';setTimeout(function(){c.classList.remove('on')},500);begin()}},900);
+  timers.push(iv);
+}
+function begin(){
+  t0=performance.now();var F=$('field'),idx=0,live=[];
+  function frame(now){
+    var el=(now-t0)/1000,H=F.clientHeight,W=F.clientWidth;
+    $('tm').textContent=Math.max(0,Math.ceil(DUR-el));
+    if(DUR-el<=5)$('tm').classList.add('low');
+    while(idx<items.length&&items[idx].t<=el){spawn(items[idx],W);live.push(items[idx]);idx++}
+    for(var i=live.length-1;i>=0;i--){
+      var it=live[i],y=(el-it.t)*it.v*H-it.w*3;
+      if(it.dead){live.splice(i,1);continue}
+      if(y>H){if(it.node.parentNode)it.node.parentNode.removeChild(it.node);live.splice(i,1);continue}
+      it.node.style.transform='translate('+it.px+'px,'+y+'px) rotate('+it.rot+'deg)';
+    }
+    if(el>=DUR){finish();return}
+    raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+}
+function sugarSVG(){return '<svg viewBox="0 0 60 60"><path d="M8 20 30 9l22 11v24L30 55 8 44z" fill="#fff" stroke="#8a97a0" stroke-width="2.5"/><path d="M8 20 30 32l22-12M30 32v23" fill="none" stroke="#8a97a0" stroke-width="2.5"/><circle cx="19" cy="24" r="1.6" fill="#bcc7cf"/><circle cx="40" cy="26" r="1.6" fill="#bcc7cf"/><text x="30" y="46" font-size="9" font-weight="800" text-anchor="middle" fill="#E94B5B">AÇÚCAR</text></svg>'}
+function spawn(it,W){
+  var d=document.createElement('div');d.className='it';
+  var w=it.type==='sugar'?W*0.20:W*0.17;it.w=w;
+  d.style.width=w+'px';
+  if(it.type==='sugar'){d.innerHTML=sugarSVG()}
+  else{d.innerHTML='<img src="'+CANS[it.can]+'" alt="">';if(it.type==='gold'){d.style.filter='drop-shadow(0 0 10px #F2D13D) drop-shadow(0 0 4px #fff) saturate(1.8) hue-rotate(-15deg) brightness(1.15)'}}
+  it.px=it.x*(W-w);it.node=d;
+  var hit=function(e){
+    e.preventDefault();if(it.dead||!alive)return;it.dead=true;
+    var pts=it.type==='sugar'?-5:it.type==='gold'?30:10;
+    score=Math.max(0,score+pts);$('myS').textContent=score;send({t:'score',s:score});
+    var r=d.getBoundingClientRect(),fr=$('field').getBoundingClientRect();
+    var p=document.createElement('div');p.className='pop';p.textContent=(pts>0?'+':'−')+Math.abs(pts);
+    p.style.left=(r.left-fr.left+r.width/2-16)+'px';p.style.top=(r.top-fr.top)+'px';p.style.color=pts<0?'#E94B5B':pts>10?'#F2D13D':'#fff';
+    $('field').appendChild(p);setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p)},700);
+    if(d.parentNode)d.parentNode.removeChild(d);
+    if(pts<0){var h=document.querySelector('.pl:not(.opp)');h.classList.remove('flash');void h.offsetWidth;h.classList.add('flash');if(navigator.vibrate)navigator.vibrate(80)}
+    else if(navigator.vibrate)navigator.vibrate(15);
+  };
+  d.addEventListener('pointerdown',hit);
+  $('field').appendChild(d);
+}
+function stopGame(){cancelAnimationFrame(raf);timers.forEach(clearInterval);timers=[]}
+function finish(){
+  stopGame();myDone=true;$('tm').textContent=0;
+  send({t:'done',s:score});tryResult();
+}
+function tryResult(){
+  if(myDone&&oppDone)endScreen(false);
+  else if(myDone){show('end');$('winTxt').textContent='Tempo esgotado!';$('winSub').innerHTML='Aguardando o fim da partida do amigo<span class="dots"></span>';$('vsMe').querySelector('b').textContent=myName||'Você';$('vsMe').querySelector('span').textContent=score;$('vsOp').querySelector('b').textContent=opName||'Amigo';$('vsOp').querySelector('span').textContent='…';$('vsMe').className=$('vsOp').className='';$('again').style.display='none'}
+}
+function endScreen(left){
+  alive=false;show('end');
+  var w=$('winTxt');w.classList.remove('lose');$('again').style.display='';$('againMsg').textContent='';
+  $('vsMe').querySelector('b').textContent=myName||'Você';$('vsMe').querySelector('span').textContent=score;
+  $('vsOp').querySelector('b').textContent=opName||'Amigo';$('vsOp').querySelector('span').textContent=left?'—':oppFinal;
+  if(left){w.textContent='Seu amigo saiu';$('winSub').textContent='A conexão foi encerrada.';$('again').style.display='none';return}
+  $('vsMe').className=score>oppFinal?'w':'';$('vsOp').className=oppFinal>score?'w':'';
+  if(score>oppFinal){w.textContent='Você venceu! 🏆';$('winSub').textContent='Mandou bem, essa onda foi sua.'}
+  else if(score<oppFinal){w.textContent=(opName||'O amigo')+' venceu!';w.classList.add('lose');$('winSub').textContent='Quer a revanche?'}
+  else{w.textContent='Empate!';$('winSub').textContent='Só uma nova rodada decide.'}
+}
+function checkAgain(){
+  if(wantAgain.me&&wantAgain.op&&isHost){startRound()}
+}
+
+/* ---------- botões ---------- */
+$('criar').onclick=function(){
+  myName=clean($('nome').value);if(!myName){msg('Digite seu apelido.');$('nome').focus();return}
+  msg('');hostRoom();
+};
+$('entrar').onclick=function(){
+  myName=clean($('nome').value);var c=($('cod').value||'').toUpperCase().trim();
+  if(!myName){msg('Digite seu apelido.');$('nome').focus();return}
+  if(c.length!==4){msg('Digite o código de 4 letras.');$('cod').focus();return}
+  msg('Conectando…');joinRoom(c);
+};
+$('sairLobby').onclick=function(){backHome('')};
+$('sair').onclick=function(){backHome('')};
+$('again').onclick=function(){
+  wantAgain.me=true;send({t:'again'});$('again').style.display='none';$('againMsg').innerHTML='Aguardando o amigo aceitar<span class="dots"></span>';checkAgain();
+};
+$('share').onclick=function(){
+  var url=location.origin+location.pathname,txt='Vem jogar Pega-Lata comigo! Abra '+url+' e use o código '+code;
+  if(navigator.share){navigator.share({title:'Pega-Lata · Trident Fresh Wave',text:txt}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){$('linkHint').textContent='Convite copiado! Cole no WhatsApp.'})}
+};
+// código na URL (?sala=ABCD) preenche o campo
+var m=location.search.match(/[?&]sala=([A-Za-z]{4})/);if(m)$('cod').value=m[1].toUpperCase();
+window.addEventListener('beforeunload',function(){closeAll()});
+})();
+</script>
+</body>
+</html>
