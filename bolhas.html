@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Bolhas Fresh Wave · Trident Fresh Wave</title>
+<style>
+:root{--az:#018BEE;--g:#64C93F;--vw:#16A11D;--gd:#00873D;--nv:#092C50;--ink:#12261B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
+html{background:#BFE9F5}
+body{font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;color:var(--ink);position:relative}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:url(fundo_v.jpg) center/cover no-repeat}
+@media (min-width:700px){body::before{background-image:url(fundo_h.jpg)}}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow-y:auto;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.screen>*{flex:none}
+.screen.on{display:flex}
+.logos{text-align:center;margin-top:6px}
+.logos img{display:block;margin:0 auto}
+.logos .t{height:54px}.logos .f{height:34px;margin-top:2px}
+h1{margin:14px 0 2px;font-size:1.9rem;font-style:italic;font-weight:900;color:var(--nv);text-align:center;line-height:1.1}
+.sub{margin:0 0 14px;text-align:center;color:var(--nv);font-weight:600}
+.card{width:min(440px,100%);background:rgba(255,255,255,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #fff;border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(9,44,80,.18)}
+label{display:block;font-weight:700;font-size:.85rem;margin:0 0 4px;color:var(--nv)}
+input{width:100%;font:inherit;font-size:1.1rem;padding:12px 14px;border:1.5px solid #cfe3d6;border-radius:12px;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-weight:800}
+.btn{width:100%;margin-top:12px;font:inherit;font-weight:800;font-style:italic;font-size:1.1rem;color:#fff;background:linear-gradient(90deg,var(--gd),var(--vw) 60%,var(--g));border:0;border-radius:999px;padding:14px;cursor:pointer;box-shadow:0 8px 18px rgba(0,135,61,.3)}
+.btn.alt{background:linear-gradient(90deg,var(--az),#25BDEB);box-shadow:0 8px 18px rgba(1,139,238,.3)}
+.btn.ghost{background:#fff;color:var(--gd);border:2px solid var(--gd);box-shadow:none}
+.or{text-align:center;color:#4A5F52;font-size:.85rem;margin:12px 0 0}
+.rules{margin:12px 0 0;padding:0;list-style:none;font-size:.88rem;color:#2c3f33}
+.rules li{display:flex;gap:10px;align-items:center;margin:6px 0}.rules svg,.rules img{flex:none}
+.rules img{height:26px}
+.msg{min-height:1.3em;margin:8px 0 0;text-align:center;font-weight:700;color:#c0392b;font-size:.9rem}
+.big{font-size:3rem;font-weight:900;letter-spacing:.3em;color:var(--gd);text-align:center;margin:6px 0 0;padding-left:.3em}
+.hint{text-align:center;color:#4A5F52;font-size:.9rem;margin:4px 0 0}
+.dots::after{content:'';animation:d 1.2s steps(4,end) infinite}
+@keyframes d{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+/* jogo */
+#play{padding:0;justify-content:flex-start;overflow:hidden}
+.hud{width:100%;max-width:420px;display:flex;gap:8px;padding:max(10px,env(safe-area-inset-top)) 10px 6px;align-items:stretch;z-index:5}
+.pl{flex:1;background:rgba(255,255,255,.88);border-radius:16px;padding:6px 10px;text-align:center;box-shadow:0 4px 12px rgba(9,44,80,.2);min-width:0}
+.pl .n{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .s{font-size:1.7rem;font-weight:900;line-height:1.1;color:var(--gd)}
+.pl.opp .s{color:var(--az)}
+.timer{flex:0 0 64px;background:var(--nv);color:#fff;border-radius:16px;display:grid;place-items:center;font-size:1.6rem;font-weight:900;box-shadow:0 4px 12px rgba(9,44,80,.3)}
+.timer.low{background:#E94B5B}
+.field{position:relative;flex:1;width:100%;max-width:420px;max-height:640px;margin-bottom:max(14px,env(safe-area-inset-bottom));overflow:hidden;border-radius:22px;box-shadow:0 0 0 3px rgba(255,255,255,.7),0 10px 30px rgba(9,44,80,.35);touch-action:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.keys{position:absolute;left:0;right:0;bottom:6px;text-align:center;color:#fff;font-weight:700;font-size:.8rem;text-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none}
+.it{position:absolute;top:0;left:0;will-change:transform;touch-action:manipulation;cursor:pointer}
+.it img,.it svg{display:block;width:100%;height:auto;pointer-events:none}
+.pop{position:absolute;font-weight:900;font-size:1.5rem;pointer-events:none;animation:up .7s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.35);z-index:4}
+@keyframes up{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-50px) scale(1.4)}}
+.flash{animation:fl .25s}
+@keyframes fl{0%{box-shadow:0 0 0 0 #E94B5B}50%{box-shadow:0 0 0 8px #E94B5B}100%{box-shadow:0 0 0 0 #E94B5B}}
+#count{position:absolute;inset:0;display:none;place-items:center;font-size:9rem;font-weight:900;color:#fff;text-shadow:0 6px 24px rgba(9,44,80,.6);z-index:9;background:rgba(9,44,80,.25)}
+#count.on{display:grid}
+.res{text-align:center}
+.res .win{font-size:2.2rem;font-weight:900;font-style:italic;color:var(--gd);margin:0}
+.res .win.lose{color:var(--az)}
+.vs{display:flex;gap:10px;margin:14px 0}
+.vs div{flex:1;border-radius:16px;padding:10px 6px;background:#f2faf4;border:2px solid #cfe3d6}
+.vs div.w{background:#eaffe8;border-color:var(--g)}
+.vs b{display:block;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs span{font-size:2.2rem;font-weight:900;color:var(--gd)}
+.note{font-size:.72rem;color:#4A5F52;text-align:center;margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<!-- Início -->
+<section class="screen on" id="home">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Bolhas Fresh Wave</h1>
+  <p class="sub">Duelo de 30 segundos · cada um com a sua cor</p>
+  <div class="card">
+    <label for="nome">Seu apelido</label>
+    <input id="nome" maxlength="12" placeholder="Ex.: Duda" autocomplete="off">
+    <button class="btn" id="criar">Criar sala</button>
+    <p class="or">ou entre na sala do seu amigo</p>
+    <input class="code" id="cod" maxlength="4" placeholder="CÓDIGO" autocomplete="off" style="margin-top:8px">
+    <button class="btn alt" id="entrar">Entrar na sala</button>
+    <p class="msg" id="msgHome"></p>
+    <ul class="rules">
+      <li><span style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#018BEE 60%);display:inline-block"></span><span>Quem cria a sala é <b>azul</b>; quem entra é <b>verde</b>.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Toque nas bolhas da <b>sua cor</b>: <b>+1</b> (dourada <b>+3</b>).</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">⚡</span><span>Estourar a bolha do rival tira a vez dele, mas custa <b>−1</b> para você.</span></li>
+    </ul>
+  </div>
+  <p class="note">Sem cadastro: o apelido só aparece durante a partida.</p>
+</section>
+
+<!-- Sala -->
+<section class="screen" id="lobby">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Sala criada!</h1>
+  <p class="sub">Passe este código para o seu amigo</p>
+  <div class="card">
+    <div class="big" id="codeShow">----</div>
+    <p class="hint" id="linkHint">Peça para ele abrir esta página e tocar em “Entrar na sala”.</p>
+    <button class="btn alt" id="share">Compartilhar convite</button>
+    <p class="hint" style="margin-top:14px">Aguardando o amigo<span class="dots"></span></p>
+    <button class="btn ghost" id="sairLobby">Cancelar</button>
+  </div>
+</section>
+
+<!-- Jogo -->
+<section class="screen" id="play">
+  <div class="hud">
+    <div class="pl"><div class="n" id="myN">Você</div><div class="s" id="myS">0</div></div>
+    <div class="timer" id="tm">30</div>
+    <div class="pl opp"><div class="n" id="opN">Amigo</div><div class="s" id="opS">0</div></div>
+  </div>
+  <div class="field" id="field"><canvas id="cv"></canvas><div class="keys" id="keys"></div></div>
+  <div id="count"></div>
+</section>
+
+<!-- Resultado -->
+<section class="screen" id="end">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <div class="card res" style="margin-top:22px">
+    <p class="win" id="winTxt">Fim de jogo</p>
+    <p class="hint" id="winSub"></p>
+    <div class="vs"><div id="vsMe"><b></b><span>0</span></div><div id="vsOp"><b></b><span>0</span></div></div>
+    <button class="btn" id="again">Jogar de novo</button>
+    <button class="btn ghost" id="sair">Sair</button>
+    <p class="hint" id="againMsg"></p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var DUR=30, PFX='twfresh-bolhas-';
+var LOCAL=/[?&]local\b/.test(location.search);            // modo de teste: duas abas no mesmo aparelho
+var CANS=['clube/lata1.png','clube/lata2.png','clube/lata3.png','clube/lata4.png','clube/lata5.png'];
+CANS.forEach(function(s){var i=new Image();i.src=s});
+
+/* ---------- utilidades ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('on',s.id===id)})}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function clean(s){return (s||'').replace(/[<>&"]/g,'').trim().slice(0,12)}
+function newCode(){var a='ABCDEFGHJKMNPQRSTUVWXYZ',s='';for(var i=0;i<4;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function msg(t){$('msgHome').textContent=t||''}
+
+/* ---------- conexão (PeerJS ou BroadcastChannel no teste) ---------- */
+var peer=null,conn=null,isHost=false,code='',myName='',opName='',alive=false;
+var handlers={};
+function send(o){try{if(LOCAL){bc.postMessage({from:me,o:o})}else if(conn&&conn.open){conn.send(o)}}catch(e){}}
+var bc=null,me=Math.random().toString(36).slice(2);
+function onMsg(m){var h=handlers[m.t];if(h)h(m)}
+
+function hostRoom(){
+  isHost=true;code=newCode();
+  if(LOCAL){
+    bc=new BroadcastChannel(PFX+code);
+    bc.onmessage=function(e){if(e.data.from!==me)onMsg(e.data.o)};
+    lobbyReady();return;
+  }
+  peer=new Peer(PFX+code);
+  peer.on('open',lobbyReady);
+  peer.on('error',function(err){
+    if(err&&err.type==='unavailable-id'){peer.destroy();hostRoom()}   // código repetido: sorteia outro
+    else{backHome('Não consegui criar a sala. Confira sua internet e tente de novo.')}
+  });
+  peer.on('connection',function(c){
+    if(conn&&conn.open){c.close();return}
+    conn=c;wire(c);
+  });
+}
+function lobbyReady(){
+  $('codeShow').textContent=code;show('lobby');
+}
+function joinRoom(c){
+  isHost=false;code=c;
+  if(LOCAL){
+    bc=new BroadcastChannel(PFX+code);
+    bc.onmessage=function(e){if(e.data.from!==me)onMsg(e.data.o)};
+    send({t:'hello',name:myName});return;
+  }
+  peer=new Peer();
+  var to=setTimeout(function(){backHome('Sala não encontrada. Confira o código.')},12000);
+  peer.on('open',function(){
+    conn=peer.connect(PFX+code,{reliable:true});
+    conn.on('open',function(){clearTimeout(to);wire(conn);send({t:'hello',name:myName})});
+  });
+  peer.on('error',function(err){clearTimeout(to);backHome(err&&err.type==='peer-unavailable'?'Sala não encontrada. Confira o código.':'Falha na conexão. Tente de novo.')});
+}
+function wire(c){
+  c.on('data',onMsg);
+  c.on('close',function(){if(alive){alive=false;stopGame();endScreen(true)}else if($('lobby').classList.contains('on')){/* amigo saiu antes de começar */}});
+}
+function closeAll(){
+  try{if(conn)conn.close()}catch(e){}try{if(peer)peer.destroy()}catch(e){}try{if(bc)bc.close()}catch(e){}
+  conn=peer=bc=null;alive=false;
+}
+function backHome(m){closeAll();stopGame();show('home');msg(m||'')}
+
+/* ---------- mensagens ---------- */
+handlers.hello=function(m){
+  opName=clean(m.name)||'Amigo';
+  if(isHost){send({t:'hello',name:myName});startRound()}
+};
+handlers.start=function(m){opName=opName||'Amigo';runRound(m.seed)};
+handlers.score=function(m){$('opS').textContent=m.s};
+handlers.done=function(m){oppFinal=m.s;oppDone=true;tryResult()};
+handlers.again=function(m){wantAgain.op=true;checkAgain()};
+
+/* ---------- partida: bolhas ---------- */
+var score=0,oppFinal=0,oppDone=false,myDone=false,raf=0,timers=[],wantAgain={me:false,op:false};
+var cv=$('cv'),cx=cv.getContext('2d'),CW=0,CH=0,DPR=1;
+var plan=[],t0=0,pops=[],parts=[],myCol='blue',COL={blue:{a:'#018BEE',b:'#7fd0ff',n:'AZUL'},green:{a:'#64C93F',b:'#c9f5a6',n:'VERDE'},gold:{a:'#F2B01E',b:'#fff1a8',n:'OURO'}};
+function resize(){var F=$('field');DPR=Math.min(window.devicePixelRatio||1,2);CW=F.clientWidth;CH=F.clientHeight;cv.width=CW*DPR;cv.height=CH*DPR;cx.setTransform(DPR,0,0,DPR,0,0)}
+window.addEventListener('resize',function(){if($('play').classList.contains('on'))resize()});
+function makePlan(seed){
+  var r=rng(seed),L=[],t=0.3,id=0;
+  while(t<DUR-0.8){
+    var p=r(),c=p<0.08?'gold':(p<0.54?'blue':'green');
+    L.push({id:id++,t:t,c:c,x:0.1+r()*0.8,r:0.050+r()*0.032+(c==='gold'?0.012:0),v:0.20+r()*0.14+0.10*(t/DUR),f:1.2+r()*1.6,ph:r()*6.28,amp:0.025+r()*0.05});
+    t+=0.27-0.08*(t/DUR)+r()*0.12;
+  }
+  return L;
+}
+function pos(b,el){var k=el-b.t,x=(b.x+Math.sin(k*b.f+b.ph)*b.amp)*CW,y=CH+b.r*CW-k*b.v*CH;return {x:x,y:y,r:b.r*CW}}
+function runRound(seed){
+  myCol=isHost?'blue':'green';
+  score=0;oppFinal=0;oppDone=false;myDone=false;wantAgain={me:false,op:false};
+  var dot=function(c){return '<i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+COL[c].a+';margin-right:5px"></i>'};
+  $('myN').innerHTML=dot(myCol)+(myName||'Você');$('opN').innerHTML=dot(myCol==='blue'?'green':'blue')+(opName||'Amigo');
+  $('myS').textContent='0';$('opS').textContent='0';$('tm').textContent=DUR;$('tm').classList.remove('low');
+  plan=makePlan(seed);alive=true;pops=[];parts=[];
+  show('play');resize();draw(0);
+  var n=3,c=$('count');c.classList.add('on');c.textContent=n;
+  var iv=setInterval(function(){n--;if(n>0){c.textContent=n}else{clearInterval(iv);c.textContent='VAI!';setTimeout(function(){c.classList.remove('on')},500);begin()}},900);
+  timers.push(iv);
+}
+function begin(){
+  t0=performance.now();var last=0;
+  function frame(now){
+    var el=(now-t0)/1000;last=el;
+    $('tm').textContent=Math.max(0,Math.ceil(DUR-el));if(DUR-el<=5)$('tm').classList.add('low');
+    draw(el);
+    if(el>=DUR){finish();return}
+    raf=requestAnimationFrame(frame);
+  }
+  raf=requestAnimationFrame(frame);
+}
+var tnow=function(){return (performance.now()-t0)/1000};
+function burst(x,y,col,big){
+  for(var i=0;i<(big?18:11);i++){var a=Math.random()*6.28,v=40+Math.random()*90;parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,t:0,c:col})}
+  pops.push({x:x,y:y,t:0,c:col})
+}
+function popLocal(b,by){            // by: 'me' | 'op'
+  b.dead=true;var p=pos(b,tnow()),c=COL[b.c].a;burst(p.x,p.y,c,b.c==='gold');
+  if(by==='me'){
+    var d=b.c==='gold'?3:(b.c===myCol?1:-1);
+    score=Math.max(0,score+d);$('myS').textContent=score;send({t:'score',s:score});
+    if(navigator.vibrate)navigator.vibrate(d>0?10:[40,30,40]);
+    pops.push({x:p.x,y:p.y-p.r,t:0,txt:(d>0?'+':'−')+Math.abs(d),c:d>0?'#fff':'#E94B5B',float:1});
+  }
+}
+handlers.pop=function(m){var b=plan[m.id];if(b&&!b.dead)popLocal(b,'op')};
+function tap(e){
+  if(!alive||myDone)return;
+  e.preventDefault();var r=cv.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top,el=tnow(),best=null,bd=1e9;
+  for(var i=0;i<plan.length;i++){var b=plan[i];if(b.dead||b.t>el)continue;var p=pos(b,el);
+    var d=Math.hypot(px-p.x,py-p.y);if(d<=p.r*1.15&&d<bd){bd=d;best=b}}
+  if(best){popLocal(best,'me');send({t:'pop',id:best.id})}
+}
+cv.addEventListener('pointerdown',tap);
+function draw(el){
+  var W=CW,H=CH;cx.clearRect(0,0,W,H);
+  var g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(220,245,255,.55)');g.addColorStop(1,'rgba(120,200,240,.55)');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  // brilhos de fundo
+  cx.fillStyle='rgba(255,255,255,.25)';for(var k=0;k<14;k++){var yy=((k*97+el*18)%H),xx=(k*53)%W;cx.beginPath();cx.arc(xx,H-yy,2+(k%3),0,6.28);cx.fill()}
+  for(var i=0;i<plan.length;i++){
+    var b=plan[i];if(b.dead||b.t>el)continue;var p=pos(b,el);if(p.y<-p.r)continue;
+    var c=COL[b.c],mine=b.c===myCol||b.c==='gold';
+    var rg=cx.createRadialGradient(p.x-p.r*.35,p.y-p.r*.4,p.r*.1,p.x,p.y,p.r);
+    rg.addColorStop(0,'rgba(255,255,255,.95)');rg.addColorStop(.35,c.b+'cc');rg.addColorStop(1,c.a+'dd');
+    cx.fillStyle=rg;cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.28);cx.fill();
+    cx.lineWidth=mine?3.5:1.5;cx.strokeStyle=mine?'#fff':'rgba(255,255,255,.55)';cx.stroke();
+    if(mine){cx.lineWidth=2;cx.strokeStyle=c.a;cx.beginPath();cx.arc(p.x,p.y,p.r+3.5,0,6.28);cx.stroke()}
+    cx.fillStyle='rgba(255,255,255,.8)';cx.beginPath();cx.ellipse(p.x-p.r*.38,p.y-p.r*.42,p.r*.2,p.r*.12,-0.6,0,6.28);cx.fill();
+    if(b.c==='gold'){cx.fillStyle='#fff';cx.font='900 '+Math.round(p.r*.8)+'px sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('3',p.x,p.y+1)}
+  }
+  for(var q=parts.length-1;q>=0;q--){var a=parts[q];a.t+=0.016;if(a.t>0.5){parts.splice(q,1);continue}a.x+=a.vx*0.016;a.y+=a.vy*0.016;cx.globalAlpha=1-a.t/0.5;cx.fillStyle=a.c;cx.beginPath();cx.arc(a.x,a.y,3,0,6.28);cx.fill();cx.globalAlpha=1}
+  for(var w=pops.length-1;w>=0;w--){var o=pops[w];o.t+=0.016;if(o.t>0.7){pops.splice(w,1);continue}
+    if(o.txt){cx.globalAlpha=1-o.t/0.7;cx.fillStyle=o.c;cx.font='900 '+Math.round(W*0.06)+'px sans-serif';cx.textAlign='center';cx.textBaseline='alphabetic';cx.fillText(o.txt,o.x,o.y-o.t*60);cx.globalAlpha=1}
+    else{cx.globalAlpha=1-o.t/0.7;cx.strokeStyle=o.c;cx.lineWidth=3;cx.beginPath();cx.arc(o.x,o.y,10+o.t*60,0,6.28);cx.stroke();cx.globalAlpha=1}}
+}
+function stopGame(){cancelAnimationFrame(raf);timers.forEach(clearInterval);timers=[]}
+function finish(){stopGame();myDone=true;$('tm').textContent=0;send({t:'done',s:score});tryResult()}
+function tryResult(){
+  if(myDone&&oppDone)endScreen(false);
+  else if(myDone){show('end');$('winTxt').textContent='Tempo esgotado!';$('winSub').innerHTML='Aguardando o fim da partida do amigo<span class="dots"></span>';$('vsMe').querySelector('b').textContent=myName||'Você';$('vsMe').querySelector('span').textContent=score;$('vsOp').querySelector('b').textContent=opName||'Amigo';$('vsOp').querySelector('span').textContent='…';$('vsMe').className=$('vsOp').className='';$('again').style.display='none'}
+}
+function endScreen(left){
+  alive=false;show('end');
+  var w=$('winTxt');w.classList.remove('lose');$('again').style.display='';$('againMsg').textContent='';
+  $('vsMe').querySelector('b').textContent=myName||'Você';$('vsMe').querySelector('span').textContent=score;
+  $('vsOp').querySelector('b').textContent=opName||'Amigo';$('vsOp').querySelector('span').textContent=left?'—':oppFinal;
+  if(left){w.textContent='Seu amigo saiu';$('winSub').textContent='A conexão foi encerrada.';$('again').style.display='none';return}
+  $('vsMe').className=score>oppFinal?'w':'';$('vsOp').className=oppFinal>score?'w':'';
+  if(score>oppFinal){w.textContent='Você venceu! 🏆';$('winSub').textContent='Que mira! Essa onda foi sua.'}
+  else if(score<oppFinal){w.textContent=(opName||'O amigo')+' venceu!';w.classList.add('lose');$('winSub').textContent='Quer a revanche?'}
+  else{w.textContent='Empate!';$('winSub').textContent='Só uma nova rodada decide.'}
+}
+function checkAgain(){if(wantAgain.me&&wantAgain.op&&isHost){startRound()}}
+function startRound(){var seed=(Math.random()*1e9)|0;send({t:'start',seed:seed});runRound(seed)}
+
+/* ---------- botões ---------- */
+$('criar').onclick=function(){
+  myName=clean($('nome').value);if(!myName){msg('Digite seu apelido.');$('nome').focus();return}
+  msg('');hostRoom();
+};
+$('entrar').onclick=function(){
+  myName=clean($('nome').value);var c=($('cod').value||'').toUpperCase().trim();
+  if(!myName){msg('Digite seu apelido.');$('nome').focus();return}
+  if(c.length!==4){msg('Digite o código de 4 letras.');$('cod').focus();return}
+  msg('Conectando…');joinRoom(c);
+};
+$('sairLobby').onclick=function(){backHome('')};
+$('sair').onclick=function(){backHome('')};
+$('again').onclick=function(){
+  wantAgain.me=true;send({t:'again'});$('again').style.display='none';$('againMsg').innerHTML='Aguardando o amigo aceitar<span class="dots"></span>';checkAgain();
+};
+$('share').onclick=function(){
+  var url=location.origin+location.pathname,txt='Vem estourar bolhas comigo no Bolhas Fresh Wave! Abra '+url+' e use o código '+code;
+  if(navigator.share){navigator.share({title:'Bolhas Fresh Wave · Trident',text:txt}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){$('linkHint').textContent='Convite copiado! Cole no WhatsApp.'})}
+};
+// código na URL (?sala=ABCD) preenche o campo
+var m=location.search.match(/[?&]sala=([A-Za-z]{4})/);if(m)$('cod').value=m[1].toUpperCase();
+window.addEventListener('beforeunload',function(){closeAll()});
+})();
+</script>
+</body>
+</html>
