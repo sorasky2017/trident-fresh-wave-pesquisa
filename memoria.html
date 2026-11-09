@@ -46,7 +46,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
 .pl.turn{border-color:#F2D13D;box-shadow:0 0 0 3px rgba(242,209,61,.5),0 4px 12px rgba(9,44,80,.2);transform:translateY(-1px)}
 .turnbar{width:100%;max-width:520px;text-align:center;font-weight:900;font-style:italic;color:#fff;background:var(--nv);padding:6px;border-radius:12px;margin:0 10px 6px;font-size:.95rem;width:calc(100% - 20px)}
 .turnbar.me{background:var(--gd)}
-.board{flex:1;width:100%;max-width:520px;min-height:0;padding:6px 10px max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,1fr);gap:6px}
+.board{flex:1;width:100%;max-width:520px;min-height:0;padding:6px 10px max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
 .card3{position:relative;perspective:600px;cursor:pointer;min-height:0;min-width:0}
 .card3 .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
 .card3.up .in,.card3.ok .in{transform:rotateY(180deg)}
@@ -54,8 +54,8 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
 .back{background:linear-gradient(135deg,#018BEE,#64C93F);border:2px solid rgba(255,255,255,.85)}
 .back svg{width:60%;opacity:.9}
 .front{background:#fff;transform:rotateY(180deg);border:2px solid #cfe3d6}
-.front img{max-width:90%;height:92%;width:auto;object-fit:contain}
-.front svg{width:86%;height:auto;max-height:90%}
+.front img{max-width:72%;height:78%;width:auto;object-fit:contain}
+.front svg{width:84%;height:auto;max-height:84%}
 .front .emo{font-size:min(8vw,2.6rem);line-height:1}
 .card3.ok .front{background:#eaffe8;border-color:var(--g)}
 .card3.mine .front{border-color:var(--gd)}.card3.theirs .front{border-color:var(--az)}
@@ -81,7 +81,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
 <section class="screen on" id="home">
   <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
   <h1>Memória Fresh Wave</h1>
-  <p class="sub">Duelo de memória para 2 jogadores · 30 cartas</p>
+  <p class="sub">Duelo de memória para 2 jogadores · 20 cartas</p>
   <div class="card">
     <label for="nome">Seu apelido</label>
     <input id="nome" maxlength="12" placeholder="Ex.: Duda" autocomplete="off">
@@ -93,7 +93,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
     <ul class="rules">
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🃏</span><span>Cada um joga na sua vez: vire 2 cartas e ache o par.</span></li>
       <li><span style="width:26px;text-align:center;font-size:1.1rem">✅</span><span>Acertou? Ganha o par e <b>joga de novo</b>.</span></li>
-      <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Vence quem juntar mais pares dos 15.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Vence quem juntar mais pares dos 10.</span></li>
     </ul>
   </div>
   <p class="note">Sem cadastro: o apelido só aparece durante a partida.</p>
@@ -215,14 +215,9 @@ var ITEMS=[
  {i:'clube/lata1.png'},{i:'clube/lata2.png'},{i:'clube/lata3.png'},{i:'clube/lata4.png'},{i:'clube/lata5.png'},
  {v:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#F58A1F"/><circle cx="50" cy="50" r="38" fill="#FFE0B0"/><circle cx="50" cy="50" r="34" fill="#FFA43A"/><path d="M50 50 L84.0 50.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L74.0 74.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L50.0 84.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L26.0 74.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L16.0 50.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L26.0 26.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L50.0 16.0" stroke="#FFE0B0" stroke-width="2.5"/><path d="M50 50 L74.0 26.0" stroke="#FFE0B0" stroke-width="2.5"/><circle cx="50" cy="50" r="4" fill="#FFE0B0"/></svg>'},
  {v:'<svg viewBox="0 0 100 100"><path d="M50 92C22 72 10 50 14 34 18 22 34 20 50 30 66 20 82 22 86 34 90 50 78 72 50 92Z" fill="#E94B5B"/><g fill="#FFE27A"><ellipse cx="34" cy="44" rx="2.2" ry="3.2"/><ellipse cx="50" cy="48" rx="2.2" ry="3.2"/><ellipse cx="66" cy="44" rx="2.2" ry="3.2"/><ellipse cx="42" cy="62" rx="2.2" ry="3.2"/><ellipse cx="58" cy="62" rx="2.2" ry="3.2"/><ellipse cx="50" cy="76" rx="2.2" ry="3.2"/><ellipse cx="28" cy="58" rx="2.2" ry="3.2"/><ellipse cx="72" cy="58" rx="2.2" ry="3.2"/></g><path d="M50 30 38 16 46 24 50 10 54 24 62 16Z" fill="#3E9B2C"/><path d="M30 28 50 32 70 28 60 36 50 34 40 36Z" fill="#3E9B2C"/></svg>'},
- {v:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#8C2F6E"/><circle cx="50" cy="50" r="38" fill="#FFF1D6"/><circle cx="50" cy="50" r="33" fill="#F2B01E"/><g fill="#3b2a12"><ellipse cx="50" cy="32" rx="4" ry="6"/><ellipse cx="34" cy="42" rx="4" ry="6" transform="rotate(-50 34 42)"/><ellipse cx="66" cy="42" rx="4" ry="6" transform="rotate(50 66 42)"/><ellipse cx="38" cy="62" rx="4" ry="6" transform="rotate(-140 38 62)"/><ellipse cx="62" cy="62" rx="4" ry="6" transform="rotate(140 62 62)"/><ellipse cx="50" cy="52" rx="4" ry="6"/><ellipse cx="50" cy="70" rx="4" ry="6"/></g></svg>'},
  {v:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#4FA81C"/><circle cx="50" cy="50" r="38" fill="#E6F5B8"/><circle cx="50" cy="50" r="34" fill="#9BE04A"/><path d="M50 50 L84.0 50.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L74.0 74.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L50.0 84.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L26.0 74.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L16.0 50.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L26.0 26.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L50.0 16.0" stroke="#E6F5B8" stroke-width="2.5"/><path d="M50 50 L74.0 26.0" stroke="#E6F5B8" stroke-width="2.5"/><circle cx="50" cy="50" r="4" fill="#E6F5B8"/></svg>'},
  {v:'<svg viewBox="0 0 100 100"><circle cx="50" cy="56" r="38" fill="#D9475B"/><g fill="#B5303F"><circle cx="30" cy="40" r="2.5"/><circle cx="42" cy="32" r="2.5"/><circle cx="58" cy="32" r="2.5"/><circle cx="70" cy="40" r="2.5"/><circle cx="24" cy="56" r="2.5"/><circle cx="76" cy="56" r="2.5"/><circle cx="30" cy="72" r="2.5"/><circle cx="70" cy="72" r="2.5"/><circle cx="42" cy="82" r="2.5"/><circle cx="58" cy="82" r="2.5"/></g><circle cx="52" cy="54" r="22" fill="#FFFDF4"/><circle cx="46" cy="48" r="6" fill="#fff" opacity=".7"/><path d="M50 18c0-8 6-12 12-12" stroke="#5a7a2a" stroke-width="4" fill="none" stroke-linecap="round"/></svg>'},
- {v:'<svg viewBox="0 0 100 100"><g fill="#2F8F2E"><path d="M50 30 40 6 48 20 50 2 52 20 60 6Z"/><path d="M50 30 28 14 42 26Z"/><path d="M50 30 72 14 58 26Z"/></g><ellipse cx="50" cy="64" rx="28" ry="34" fill="#F2C230"/><g stroke="#C98F10" stroke-width="2.5" fill="none"><path d="M26 48 70 90M26 66 56 94M34 38 74 78M50 32 76 58"/><path d="M74 48 30 90M74 66 44 94M66 38 26 78M50 32 24 58"/></g></svg>'},
- {v:'<svg viewBox="0 0 100 100"><path d="M50 92V50" stroke="#2F7D2E" stroke-width="5" stroke-linecap="round"/><path d="M50 56C26 56 12 40 14 22 34 20 50 34 50 56Z" fill="#3FB24A"/><path d="M50 56C74 56 88 40 86 22 66 20 50 34 50 56Z" fill="#2E9A3E"/><path d="M50 40C38 34 36 16 50 6 64 16 62 34 50 40Z" fill="#59C857"/><path d="M50 56 24 30M50 56 76 30M50 40V14" stroke="#1d6b2c" stroke-width="2" fill="none"/></svg>'},
- {v:'<svg viewBox="0 0 100 100"><path d="M6 34a44 44 0 0 0 88 0Z" fill="#2E9A3E"/><path d="M12 34a38 38 0 0 0 76 0Z" fill="#E9F6D0"/><path d="M16 34a34 34 0 0 0 68 0Z" fill="#F0455A"/><g fill="#2b1b14"><ellipse cx="34" cy="48" rx="2.6" ry="4" transform="rotate(20 34 48)"/><ellipse cx="50" cy="56" rx="2.6" ry="4"/><ellipse cx="66" cy="48" rx="2.6" ry="4" transform="rotate(-20 66 48)"/><ellipse cx="42" cy="68" rx="2.6" ry="4"/><ellipse cx="58" cy="68" rx="2.6" ry="4"/></g></svg>'},
- {v:'<svg viewBox="0 0 100 100"><g fill="#7B3FA0"><circle cx="34" cy="40" r="12"/><circle cx="58" cy="40" r="12"/><circle cx="46" cy="58" r="12"/><circle cx="70" cy="58" r="12"/><circle cx="22" cy="58" r="12"/><circle cx="58" cy="76" r="12"/><circle cx="34" cy="76" r="12"/></g><g fill="#fff" opacity=".35"><circle cx="30" cy="36" r="3.5"/><circle cx="54" cy="36" r="3.5"/><circle cx="42" cy="54" r="3.5"/><circle cx="66" cy="54" r="3.5"/><circle cx="18" cy="54" r="3.5"/></g><path d="M46 28C46 16 54 10 64 8" stroke="#5a7a2a" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M60 12c8-8 22-4 24 4-10 4-20 2-24-4Z" fill="#3FB24A"/></svg>'},
- {v:'<svg viewBox="0 0 100 100"><path d="M32 62C32 40 46 22 62 10M70 66C70 44 62 26 62 10" stroke="#3E7D2A" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="32" cy="72" r="20" fill="#D41F3A"/><circle cx="70" cy="74" r="20" fill="#E8344D"/><circle cx="25" cy="65" r="5" fill="#fff" opacity=".45"/><circle cx="63" cy="67" r="5" fill="#fff" opacity=".45"/><path d="M62 10c10-6 22-2 26 6-12 4-22 2-26-6Z" fill="#3FB24A"/></svg>'}
+ {v:'<svg viewBox="0 0 100 100"><g fill="#2F8F2E"><path d="M50 30 40 6 48 20 50 2 52 20 60 6Z"/><path d="M50 30 28 14 42 26Z"/><path d="M50 30 72 14 58 26Z"/></g><ellipse cx="50" cy="64" rx="28" ry="34" fill="#F2C230"/><g stroke="#C98F10" stroke-width="2.5" fill="none"><path d="M26 48 70 90M26 66 56 94M34 38 74 78M50 32 76 58"/><path d="M74 48 30 90M74 66 44 94M66 38 26 78M50 32 24 58"/></g></svg>'}
 ];
 ITEMS.forEach(function(o){if(o.i){var im=new Image();im.src=o.i}});
 var deck=[],state=[],first=-1,busy=false,turnHost=true,sc={host:0,guest:0},matched=0,inbox=[],resolving=false;
