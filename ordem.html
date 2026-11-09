@@ -88,7 +88,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
     <p class="msg" id="msgHome"></p>
     <ul class="rules">
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🔊</span><span>As latas piscam e tocam uma nota. <b>Ligue o som!</b></span></li>
-      <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. São 10 rodadas, e a cada uma entra uma nota a mais (de 4 até 13).</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. São 10 rodadas, e a cada uma entra uma nota a mais (de 2 até 11).</span></li>
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Só um errou? O outro <b>vence na hora</b>. Os dois erraram? Segue a próxima rodada.</span></li>
     </ul>
   </div>
@@ -253,7 +253,7 @@ function runRound(seed){
 function stepMs(){return Math.max(300,560-round*28)}        // começa tranquilo e acelera de leve
 function beginRound(){
   $('rd').textContent=round;lock(true);idx=0;phase='watch';$('myS').textContent='';
-  var len=round+3;dotsFor(len,0);setStatus('Escute…','');
+  var len=round+1;dotsFor(len,0);setStatus('Escute…','');
   var ms=stepMs();
   for(var i=0;i<len;i++)(function(i){
     seqTimers.push(setTimeout(function(){var f=seq[i];beep(f,ms/1000*0.85);lit(f,ms*0.7)},700+i*ms));
@@ -265,8 +265,8 @@ function onTap(i){
   if(phase!=='repeat')return;
   audio();clearTimeout(tapTimer);
   if(i!==seq[idx]){fail(i);return}
-  beep(i,0.28);lit(i,180);idx++;dotsFor(round+3,idx);
-  if(idx===round+3){phase='wait';lock(true);myRes[round]=1;send({t:'res',r:round,ok:1});$('myS').textContent='Acertou! Aguardando…';setStatus('Boa! Esperando o amigo…','');checkRound(round)}
+  beep(i,0.28);lit(i,180);idx++;dotsFor(round+1,idx);
+  if(idx===round+1){phase='wait';lock(true);myRes[round]=1;send({t:'res',r:round,ok:1});$('myS').textContent='Acertou! Aguardando…';setStatus('Boa! Esperando o amigo…','');checkRound(round)}
   else armTimeout();
 }
 function fail(i){
