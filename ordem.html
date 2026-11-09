@@ -89,7 +89,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
     <ul class="rules">
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🔊</span><span>As latas piscam e tocam uma nota. <b>Ligue o som!</b></span></li>
       <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. São 10 rodadas, e a cada uma entra uma nota a mais (de 4 até 13).</span></li>
-      <li><span style="width:26px;text-align:center;font-size:1.1rem">🤝</span><span>Errou na mesma rodada que o amigo? <b>Empate!</b></span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Só um errou? O outro <b>vence na hora</b>. Os dois erraram? Segue a próxima rodada.</span></li>
     </ul>
   </div>
   <p class="note">Sem cadastro: o apelido só aparece durante a partida.</p>
@@ -275,11 +275,11 @@ function fail(i){
 }
 function checkRound(r){
   if(r!==round||myRes[r]===undefined||opRes[r]===undefined)return;
-  if(myRes[r]&&opRes[r]){
-    if(r>=MAXR){finishGame(r,true,true);return}
-    setStatus('Rodada '+r+' completa!','go');
-    seqTimers.push(setTimeout(function(){round++;$('opS').textContent='';beginRound()},1100));
-  }else finishGame(r,!!myRes[r],!!opRes[r]);
+  var m=!!myRes[r],o=!!opRes[r];
+  if(m!==o){finishGame(r,m,o);return}                 // só um errou: o outro vence na hora
+  if(r>=MAXR){finishGame(r,m,o);return}                // chegaram juntos ao fim das 10 rodadas: empate
+  setStatus(m?'Rodada '+r+' completa!':'Os dois erraram! Próxima rodada…',m?'go':'bad');
+  seqTimers.push(setTimeout(function(){round++;$('opS').textContent='';beginRound()},1300));
 }
 function finishGame(r,meOk,opOk){
   phase='over';alive=false;
@@ -295,7 +295,7 @@ function endScreen(left,me,op,meOk,opOk){
   $('vsMe').className=me>op?'w':'';$('vsOp').className=op>me?'w':'';
   if(me>op){w.textContent='Você venceu! 🏆';$('winSub').textContent='Ouvido afiado! Essa onda foi sua.';win()}
   else if(op>me){w.textContent=(opName||'O amigo')+' venceu!';w.classList.add('lose');$('winSub').textContent='Quer a revanche?'}
-  else{w.textContent='Empate! 🤝';w.classList.add('tie');$('winSub').textContent=(meOk?'Vocês completaram todas as rodadas.':'Os dois erraram na mesma rodada.')}
+  else{w.textContent='Empate! 🤝';w.classList.add('tie');$('winSub').textContent=(meOk?'Vocês completaram todas as 10 rodadas.':'Os dois erraram na última rodada.')}
 }
 /* ---------- botões ---------- */
 $('criar').onclick=function(){audio();myName=clean($('nome').value);if(!myName){msg('Digite seu apelido.');$('nome').focus();return}msg('');hostRoom()};
