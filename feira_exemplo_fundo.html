@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Sorteio de ecobags · Trident Fresh Wave</title>
+<style>
+:root{--navy:#1E2B24;--blue:#00873D;--teal:#00BF63;--green:#00BF63;--ink:#12261B;--muted:#4A5F52;--line:#d6eecf;--card:rgba(255,255,255,.82)}
+*{box-sizing:border-box}
+html{background:#EAF8EF}
+body{margin:0;color:var(--ink);font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;
+ background:linear-gradient(180deg,#EAF8EF 0,#DDF3E5 50%,#BDEBCB 100%);isolation:isolate;min-height:100vh;position:relative;overflow-x:hidden}
+.bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.75),rgba(255,255,255,.12));pointer-events:none}
+main{position:relative;max-width:480px;margin:0 auto;padding:0 16px 32px;display:flex;flex-direction:column;gap:18px}
+.hero{text-align:center;padding:34px 0 6px}
+.top{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--navy);font-weight:600}
+.logo{display:block;margin:14px auto 0}
+.logo.t{width:180px}.logo.f{width:290px;margin-top:2px}.logo.s{width:270px;margin-top:6px}
+.badge{display:inline-block;margin-top:18px;padding:9px 22px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--teal));color:#fff;font-weight:800;font-style:italic;letter-spacing:.04em;font-size:1.15rem;box-shadow:0 6px 16px rgba(0,135,61,.28)}
+.lead{margin:12px auto 0;max-width:340px;color:var(--navy)}
+.card{background:var(--card);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.9);border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(30,43,36,.12)}
+.chip{display:inline-block;background:var(--blue);color:#fff;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:6px 14px;border-radius:999px;margin-bottom:14px}
+.chip.g{background:var(--teal)}
+h2{margin:0 0 4px;font-size:1.25rem;font-style:italic;font-weight:800;color:var(--navy);line-height:1.2}
+.sub{margin:0 0 14px;color:var(--muted);font-size:.92rem}
+label.f{display:block;font-size:.85rem;font-weight:700;color:var(--navy);margin:12px 0 4px}
+input[type=text],input[type=email],input[type=tel]{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+input:focus,button:focus-visible,.tile:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:2px}
+.tiles{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;margin:0 -4px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.tile{flex:0 0 88px;scroll-snap-align:center;border:3px solid transparent;border-radius:18px;background:#fff;padding:0;cursor:pointer;overflow:hidden;text-align:center;font:inherit;box-shadow:0 4px 12px rgba(30,43,36,.15);transition:transform .15s}
+.pic{height:104px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;background:radial-gradient(circle at 24% 18%,rgba(255,255,255,.9) 0 7px,transparent 8px),radial-gradient(circle at 80% 30%,rgba(255,255,255,.7) 0 5px,transparent 6px),radial-gradient(circle at 70% 72%,rgba(255,255,255,.6) 0 9px,transparent 10px),radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.55),transparent 60%),linear-gradient(180deg,var(--a),var(--b))}
+.tile img{display:block;height:86px;width:auto;filter:drop-shadow(0 6px 6px rgba(20,35,47,.3))}
+.tile span{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:7px 4px 9px;color:#fff}
+.tile[aria-checked=true]{transform:translateY(-3px);border-color:var(--navy)}
+.tile[aria-checked=true] span::before{content:"✓ "}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.82rem;color:var(--muted);margin-top:12px}
+.check input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--blue)}
+.btn{width:100%;margin-top:16px;font:inherit;font-weight:800;font-style:italic;letter-spacing:.03em;font-size:1.05rem;color:#fff;background:linear-gradient(90deg,var(--blue),var(--teal) 60%,var(--green));border:0;border-radius:999px;padding:15px;cursor:pointer;box-shadow:0 8px 18px rgba(0,135,61,.3)}
+.err{color:#b3261e;font-size:.85rem;margin:10px 0 0;min-height:1em}
+.ticket{position:relative;border-radius:18px;padding:18px;text-align:center;color:#fff;background:linear-gradient(135deg,var(--blue),var(--teal));overflow:hidden}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:#e2f8d9;transform:translateY(-50%)}
+.ticket::before{left:-11px}.ticket::after{right:-11px}
+.ticket small{display:block;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;opacity:.92}
+.ticket b{display:block;font-size:2rem;font-style:italic;letter-spacing:.06em;margin:4px 0}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.steps li{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:10px 12px;font-size:.93rem}
+.steps i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-style:normal;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--teal))}
+.offers{display:grid;gap:8px}
+.offer{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:10px 12px;font-size:.92rem}
+.dot{width:16px;height:16px;border-radius:50%;flex:none}
+.offer em{margin-left:auto;font-style:normal;font-size:.78rem;font-weight:700;color:var(--blue);text-align:right}
+.note{font-size:.75rem;color:var(--muted);text-align:center;margin:0 8px}
+[hidden]{display:none!important}
+@media (min-width:820px){
+main{max-width:760px;gap:24px;padding-bottom:48px}
+.hero{padding-top:48px}
+.logo.t{width:230px}.logo.f{width:370px}.logo.s{width:340px}
+.lead{max-width:460px;font-size:1.1rem}
+.card{padding:30px 34px}
+h2{font-size:1.5rem}
+.tiles{overflow:visible;gap:14px;scroll-snap-type:none}
+.tile{flex:1 1 0;min-width:0}
+.pic{height:130px}.tile img{height:108px}
+.tile span{font-size:.78rem}
+.btn{max-width:420px;display:block;margin-left:auto;margin-right:auto}
+.steps{grid-template-columns:1fr 1fr}
+.tile:hover{transform:translateY(-3px)}
+}
+.stars{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}
+.stars button{font:inherit;font-size:2.6rem;line-height:1;background:none;border:0;padding:2px 4px;cursor:pointer;color:#c5d9cc;transition:transform .12s,color .12s}
+.stars button.on{color:#F2D13D;text-shadow:0 2px 6px rgba(160,120,0,.35)}
+.stars button:hover{transform:scale(1.12)}
+.stars button:focus-visible{outline:3px solid rgba(0,135,61,.45);outline-offset:2px;border-radius:8px}
+body::before{content:'';position:absolute;left:0;right:0;top:0;height:300px;z-index:-1;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20480%20300%27%20preserveAspectRatio%3D%27none%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27a%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%270%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23018BEE%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%2364C93F%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id%3D%27b%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%270%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%2364C93F%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%2316A11D%27/%3E%3C/linearGradient%3E%3C/defs%3E%0A%3Cpath%20d%3D%27M0%200H480V62C400%20100%20330%2030%20240%2055C150%2080%2080%20110%200%2080Z%27%20fill%3D%27url%28%23a%29%27/%3E%0A%3Cpath%20d%3D%27M0%200H480V32C400%2070%20330%205%20240%2025C150%2045%2080%2075%200%2048Z%27%20fill%3D%27%23018BEE%27%20opacity%3D%27.6%27/%3E%0A%3Cpath%20d%3D%27M0%20100C80%20130%20150%2090%20240%20112C330%20134%20400%2092%20480%20118V138C400%20112%20330%20154%20240%20132C150%20110%2080%20150%200%20120Z%27%20fill%3D%27%2364C93F%27%20opacity%3D%27.35%27/%3E%0A%3Cg%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%272%27%20opacity%3D%27.7%27%3E%3Cpath%20d%3D%27M0%20210C80%20180%20150%20240%20240%20210C330%20180%20400%20240%20480%20210%27/%3E%3Cpath%20d%3D%27M0%20240C80%20210%20150%20270%20240%20240C330%20210%20400%20270%20480%20240%27%20opacity%3D%27.6%27/%3E%3C/g%3E%0A%3Cg%20fill%3D%27%23fff%27%3E%3Ccircle%20cx%3D%2760%27%20cy%3D%27160%27%20r%3D%278%27%20opacity%3D%27.6%27/%3E%3Ccircle%20cx%3D%27430%27%20cy%3D%27180%27%20r%3D%276%27%20opacity%3D%27.6%27/%3E%3Ccircle%20cx%3D%27390%27%20cy%3D%2720%27%20r%3D%277%27%20opacity%3D%27.5%27/%3E%3Ccircle%20cx%3D%2780%27%20cy%3D%2720%27%20r%3D%275%27%20opacity%3D%27.5%27/%3E%3C/g%3E%3C/svg%3E") 0 0/100% 100% no-repeat;pointer-events:none}
+body::after{content:'';position:absolute;left:0;right:0;bottom:0;height:160px;z-index:-1;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20480%20160%27%20preserveAspectRatio%3D%27none%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27a%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%270%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%23018BEE%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%2364C93F%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id%3D%27b%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%270%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%2364C93F%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%2316A11D%27/%3E%3C/linearGradient%3E%3C/defs%3E%0A%3Cpath%20d%3D%27M0%20160V70C80%2020%20160%20120%20250%2070C340%2020%20410%2080%20480%2040V160Z%27%20fill%3D%27url%28%23b%29%27%20opacity%3D%27.85%27/%3E%0A%3Cpath%20d%3D%27M0%20160V105C90%2065%20170%20135%20260%20105C350%2075%20420%20110%20480%2090V160Z%27%20fill%3D%27%2300873D%27%20opacity%3D%27.85%27/%3E%0A%3Cpath%20d%3D%27M0%20160V138C100%20112%20180%20150%20270%20132C360%20114%20430%20138%20480%20128V160Z%27%20fill%3D%27%23018BEE%27%20opacity%3D%27.8%27/%3E%3C/svg%3E") 0 0/100% 100% no-repeat;pointer-events:none}
+.bub{display:none}
+main{padding-bottom:150px}
+.top{color:#fff;text-shadow:0 1px 6px rgba(9,44,80,.45)}
+</style>
+<body>
+<span class="bub" style="width:70px;height:70px;left:-20px;top:120px"></span>
+<span class="bub" style="width:34px;height:34px;right:14px;top:70px"></span>
+<span class="bub" style="width:22px;height:22px;right:60px;top:380px"></span>
+<span class="bub" style="width:48px;height:48px;left:6px;top:900px"></span>
+<main>
+  <header class="hero">
+    <div class="top">Feira de projetos</div>
+    <img class="logo t" src="clube/trident.png" alt="Trident">
+    <img class="logo f" src="clube/freshwave.png" alt="Fresh Wave">
+    <img class="logo s" src="clube/slogan.png" alt="Uma onda de frescor">
+    <div class="badge">SORTEIO DE ECOBAGS</div>
+    <p class="lead">Cadastre-se e concorra a uma ecobag Fresh Wave.</p>
+  </header>
+
+  <section class="card" id="cadastro">
+    <span class="chip">Cadastro para o sorteio</span>
+    <h2>Participe do sorteio</h2>
+    <p class="sub">Preencha seus dados e avalie o estande para concorrer.</p>
+    <form id="form" novalidate>
+      <label class="f" for="nome">Nome completo</label>
+      <input id="nome" type="text" autocomplete="name">
+      <label class="f" for="curso">Curso</label>
+      <input id="curso" type="text" autocomplete="off" placeholder="Ex.: Propaganda e Marketing">
+      <label class="f" for="tel">Telefone com WhatsApp <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 91234-5678">
+      <p style="margin:6px 2px 0;font-size:.82rem;color:var(--muted)">Se você ganhar, avisamos pelo WhatsApp.</p>
+      <label class="f" id="al">Avalie o estande</label>
+      <div class="stars" role="radiogroup" aria-labelledby="al" id="stars">
+        <button type="button" role="radio" aria-checked="false" aria-label="1 estrela" data-v="1">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="2 estrelas" data-v="2">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="3 estrelas" data-v="3">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="4 estrelas" data-v="4">★</button>
+        <button type="button" role="radio" aria-checked="false" aria-label="5 estrelas" data-v="5">★</button>
+      </div>
+      <label class="check"><input id="lgpd" type="checkbox"><span>Concordo em usar meu nome, curso, avaliação do estande e, se informado, meu telefone só para participar do sorteio de ecobags e receber o aviso caso eu ganhe.</span></label>
+      <p class="err" id="err" role="alert"></p>
+      <button class="btn" type="submit">Quero concorrer</button>
+    </form>
+  </section>
+
+  <section class="card" id="ok" hidden>
+    <span class="chip g">Cadastro feito</span>
+    <h2>Aguarde o sorteio</h2>
+    <p class="sub" id="msg"></p>
+    <div class="ticket" id="cod" hidden><small>Seu código do sorteio</small><b id="codv"></b><small>Tire um print e guarde. Se for sorteado, mostre este código no estande</small></div>
+    <div class="ticket" id="boa"><small>Sorteio de ecobags</small><b>Boa sorte!</b><small>Fique por perto: o resultado sai aqui no estande</small></div>
+  </section>
+
+  <section class="card info">
+    <span class="chip">Como funciona</span>
+    <ol class="steps">
+      <li><i>1</i>Informe nome completo e curso.</li>
+      <li><i>2</i>Avalie o estande de 1 a 5 estrelas.</li>
+      <li><i>3</i>Aguarde o sorteio das ecobags no estande.</li>
+    </ol>
+  </section>
+
+  <p class="note">Ação do projeto Trident Fresh Wave, Propaganda e Marketing, UNIP. Os dados informados são usados apenas para o sorteio de ecobags e podem ser apagados a pedido do participante.</p>
+</main>
+<script>
+var nota=0;
+var stars=[].slice.call(document.querySelectorAll('#stars button'));
+function pinta(v){stars.forEach(function(s){var on=Number(s.getAttribute('data-v'))<=v;s.classList.toggle('on',on);s.setAttribute('aria-checked',Number(s.getAttribute('data-v'))===nota?'true':'false')})}
+stars.forEach(function(s){s.addEventListener('click',function(){nota=Number(s.getAttribute('data-v'));pinta(nota)});s.addEventListener('mouseenter',function(){pinta(Number(s.getAttribute('data-v')))});s.addEventListener('mouseleave',function(){pinta(nota)})});
+var API='https://script.google.com/macros/s/AKfycbzjTIP9Xidsa3iBuh1OlVdImGOGUZhOu7MwuUbchFzWtvQNu5C5qmWO65RLDKFQeCbkVg/exec';
+document.getElementById('form').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('nome').value.trim().replace(/\s+/g,' '),c=document.getElementById('curso').value.trim().replace(/\s+/g,' '),
+      tl=document.getElementById('tel').value.trim(),td=tl.replace(/\D/g,''),l=document.getElementById('lgpd').checked,er=document.getElementById('err'),bt=document.querySelector('#form button[type=submit]');
+  var f=[(n.split(' ').length<2)&&'o nome completo',!c&&'o curso',!nota&&'a avaliação do estande',!l&&'o aceite'].filter(Boolean);
+  if(!f.length&&tl&&td.length<10){er.textContent='Confira o telefone: inclua o DDD, por exemplo (11) 91234-5678.';return;}
+  if(f.length){er.textContent='Falta: '+f.join(', ')+'.';return;}
+  er.textContent='Enviando...';bt.disabled=true;
+  fetch(API+'?action=feira&nome='+encodeURIComponent(n)+'&curso='+encodeURIComponent(c)+'&avaliacao='+nota+(tl?'&telefone='+encodeURIComponent(tl):'')+'&lgpd=1')
+    .then(function(r){return r.json()})
+    .then(function(r){
+      if(!r.ok){er.textContent=r.motivo==='telefone'?'Telefone inválido. Inclua o DDD.':'Não foi possível cadastrar agora. Confira os dados.';return;}
+      er.textContent='';
+      document.getElementById('msg').textContent=r.jaExistia?'Esse nome já estava na lista, '+r.nome.split(' ')[0]+'. Use o código que você recebeu no primeiro cadastro.':'Cadastro feito, '+r.nome.split(' ')[0]+'! Obrigado pela avaliação. Vamos sortear as ecobags entre os cadastrados.';
+      document.getElementById('cod').hidden=!r.codigo;document.getElementById('boa').hidden=!!r.codigo;
+      if(r.codigo)document.getElementById('codv').textContent=r.codigo;
+      document.getElementById('cadastro').hidden=true;
+      document.getElementById('ok').hidden=false;
+      [].forEach.call(document.querySelectorAll('.info'),function(s){s.hidden=true});
+      window.scrollTo({top:0,behavior:'smooth'});
+    })
+    .catch(function(){er.textContent='Sem conexão. Tente de novo.'})
+    .then(function(){bt.disabled=false});
+});
+</script>
+</html>
