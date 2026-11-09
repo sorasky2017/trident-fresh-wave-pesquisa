@@ -89,7 +89,7 @@ input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-
     <ul class="rules">
       <li><span style="width:26px;text-align:center;font-size:1.1rem">🔊</span><span>As latas piscam e tocam uma nota. <b>Ligue o som!</b></span></li>
       <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. São 10 rodadas, e a cada uma entra uma nota a mais (de 2 até 11).</span></li>
-      <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Só um errou? O outro <b>vence na hora</b>. Os dois erraram? Segue a próxima rodada.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Só um errou? O outro <b>vence na hora</b>. Os dois erraram? Segue a próxima rodada (2 erros duplos seguidos = empate).</span></li>
     </ul>
   </div>
   <p class="note">Sem cadastro: o apelido só aparece durante a partida.</p>
@@ -226,7 +226,7 @@ function startRound0(){var seed=(Math.random()*1e9)|0;send({t:'start',seed:seed}
 
 /* ---------- jogo ---------- */
 var FLAV=[{n:'Laranja com Morango',c:'#F58A1F',i:'clube/lata1.png'},{n:'Morango com Maracujá',c:'#E94B5B',i:'clube/lata2.png'},{n:'Limão',c:'#7ED321',i:'clube/lata3.png'},{n:'Lichia',c:'#F58FB2',i:'clube/lata4.png'},{n:'Abacaxi e Hortelã',c:'#F2D13D',i:'clube/lata5.png'}];
-var MAXR=10,seq=[],round=1,idx=0,phase='idle',myRes={},opRes={},tapTimer=null,seqTimers=[],tiles=[];
+var bothFail=0,lastR=0,MAXR=10,seq=[],round=1,idx=0,phase='idle',myRes={},opRes={},tapTimer=null,seqTimers=[],tiles=[];
 function buildPad(){
   var P=$('pad');P.innerHTML='';tiles=[];
   FLAV.forEach(function(f,i){
@@ -244,7 +244,7 @@ function runRound(seed){
   var r=rng(seed);seq=[];for(var i=0;i<MAXR+4;i++)seq.push(Math.floor(r()*5));
   // evita 3 notas iguais seguidas
   for(var k=2;k<seq.length;k++)if(seq[k]===seq[k-1]&&seq[k]===seq[k-2])seq[k]=(seq[k]+1+Math.floor(r()*4))%5;
-  myRes={};opRes={};round=1;alive=true;wantAgain={me:false,op:false};
+  myRes={};opRes={};round=1;bothFail=0;alive=true;wantAgain={me:false,op:false};
   $('myN').textContent=myName||'Você';$('opN').textContent=opName||'Amigo';$('myS').textContent='';$('opS').textContent='';
   buildPad();show('play');audio();
   var n=3,c=$('count');c.classList.add('on');c.textContent=n;
@@ -277,12 +277,13 @@ function checkRound(r){
   if(r!==round||myRes[r]===undefined||opRes[r]===undefined)return;
   var m=!!myRes[r],o=!!opRes[r];
   if(m!==o){finishGame(r,m,o);return}                 // só um errou: o outro vence na hora
+  if(!m&&!o){bothFail++;if(bothFail>=2){finishGame(r,false,false);return}}else bothFail=0;   // 2 erros duplos seguidos: empate
   if(r>=MAXR){finishGame(r,m,o);return}                // chegaram juntos ao fim das 10 rodadas: empate
   setStatus(m?'Rodada '+r+' completa!':'Os dois erraram! Próxima rodada…',m?'go':'bad');
   seqTimers.push(setTimeout(function(){round++;$('opS').textContent='';beginRound()},1300));
 }
 function finishGame(r,meOk,opOk){
-  phase='over';alive=false;
+  phase='over';alive=false;lastR=r;
   var me=meOk?r:r-1,op=opOk?r:r-1;
   setTimeout(function(){endScreen(false,me,op,meOk,opOk)},900);
 }
@@ -295,7 +296,7 @@ function endScreen(left,me,op,meOk,opOk){
   $('vsMe').className=me>op?'w':'';$('vsOp').className=op>me?'w':'';
   if(me>op){w.textContent='Você venceu! 🏆';$('winSub').textContent='Ouvido afiado! Essa onda foi sua.';win()}
   else if(op>me){w.textContent=(opName||'O amigo')+' venceu!';w.classList.add('lose');$('winSub').textContent='Quer a revanche?'}
-  else{w.textContent='Empate! 🤝';w.classList.add('tie');$('winSub').textContent=(meOk?'Vocês completaram todas as 10 rodadas.':'Os dois erraram na última rodada.')}
+  else{w.textContent='Empate! 🤝';w.classList.add('tie');$('winSub').textContent=(meOk?'Vocês completaram todas as 10 rodadas.':(lastR>=MAXR?'Os dois erraram na última rodada.':'Os dois erraram 2 rodadas seguidas.'))}
 }
 /* ---------- botões ---------- */
 $('criar').onclick=function(){audio();myName=clean($('nome').value);if(!myName){msg('Digite seu apelido.');$('nome').focus();return}msg('');hostRoom()};
