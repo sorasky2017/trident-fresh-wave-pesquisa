@@ -53,7 +53,7 @@ nav a:hover,nav a:focus-visible{outline:2px solid var(--navy)}
 .bars.sc li{grid-template-columns:2.2em 1fr 5.4em}
 .calc .n{margin:0 0 6px}.calc .n:last-child{margin-top:10px;margin-bottom:0}
 html{background:#C4EBD2}
-body{background:linear-gradient(180deg,#BDEBCB 0,#D6F1DF 420px,#EAF8EF 900px,#D9F2E4 100%);position:relative;overflow-x:hidden}
+body{background:transparent;isolation:isolate;position:relative;overflow-x:hidden}
 .bub{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.75),rgba(255,255,255,.12));pointer-events:none}
 main{position:relative}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -80,6 +80,10 @@ section#criterio-brasil h2,section#projecao h2{background:var(--teal)}
 .bars li.top b{color:#2f8a3a}
 thead th{background:linear-gradient(90deg,#00873D,#00BF63)}
 footer{text-align:center}
+html{background:#BFE9F5}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:url(fundo_v.jpg) center/cover no-repeat}
+@media (min-width:700px){body::before{background-image:url(fundo_h.jpg)}}
+.bub{display:none}
 </style>
 <body><span class="bub" style="width:70px;height:70px;left:-20px;top:140px"></span><span class="bub" style="width:34px;height:34px;right:14px;top:80px"></span><span class="bub" style="width:22px;height:22px;right:60px;top:420px"></span><span class="bub" style="width:48px;height:48px;left:8px;top:1100px"></span><main>
 <header class="hero"><p class="eyebrow">Pesquisa com o público</p><h1 class="sr">Trident Fresh Wave</h1><div class="logos"><img class="lt" src="clube/trident.png" alt="Trident"><img class="lf" src="clube/freshwave.png" alt="Fresh Wave"></div><img class="ls" src="clube/slogan.png" alt="Uma onda de frescor"><div class="badge">RESULTADOS DA PESQUISA</div><p class="lead">Resultados das 45 perguntas do questionário aplicado a 50 pessoas de 18 a 34 anos. Os números mostram o total de cada resposta, sem dados individuais.</p></header>
