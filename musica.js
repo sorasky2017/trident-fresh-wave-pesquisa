@@ -32,11 +32,12 @@
     timer=setTimeout(schedule,120);
   }
   function start(){
-    if(started||muted)return;
+    if(muted)return;
+    if(started&&ctx&&ctx.state==='running')return;
     try{
       ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
       if(!master){master=ctx.createGain();master.gain.value=VOL;master.connect(ctx.destination);window.__musica={ctx:ctx,master:master}}
-      ctx.resume();started=true;nextT=ctx.currentTime+0.1;schedule();
+      ctx.resume();if(!started){started=true;nextT=ctx.currentTime+0.1;schedule()}
     }catch(e){}
   }
   function stop(){started=false;clearTimeout(timer);if(ctx){try{ctx.suspend()}catch(e){}}}
@@ -48,10 +49,19 @@
     e.stopPropagation();muted=!muted;try{localStorage.setItem(KEY,muted?'1':'0')}catch(x){}
     if(muted)stop();else{started=false;start()}paint();
   });
+  var ducked=false;
+  window.TWMusic={duck:function(v){ducked=!!v;btn.style.display=v?'none':'grid';if(master&&ctx){master.gain.cancelScheduledValues(ctx.currentTime);master.gain.linearRampToValueAtTime(v?0:VOL,ctx.currentTime+0.4)}}};
   paint();
   function ready(){document.body.appendChild(btn)}
   if(document.body)ready();else document.addEventListener('DOMContentLoaded',ready);
-  var first=function(){start();window.removeEventListener('pointerdown',first,true);window.removeEventListener('keydown',first,true)};
-  window.addEventListener('pointerdown',first,true);window.addEventListener('keydown',first,true);
+  var EV=['pointerdown','touchstart','touchend','click','keydown','mousedown'];
+  var first=function(){
+    start();
+    if(ctx&&ctx.state==='running'){EV.forEach(function(e){window.removeEventListener(e,first,true)})}
+  };
+  EV.forEach(function(e){window.addEventListener(e,first,true)});
+  // tenta tocar assim que a página abre; se o navegador bloquear, começa no primeiro toque
+  try{start()}catch(e){}
+  window.addEventListener('load',function(){try{if(!started||(ctx&&ctx.state!=='running'))start()}catch(e){}});
   document.addEventListener('visibilitychange',function(){if(muted||!ctx)return;if(document.hidden){try{ctx.suspend()}catch(e){}}else if(started){try{ctx.resume()}catch(e){}}});
 })();
