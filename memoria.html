@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Memória Fresh Wave · Trident</title>
+<style>
+:root{--az:#018BEE;--g:#64C93F;--vw:#16A11D;--gd:#00873D;--nv:#092C50;--ink:#12261B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
+html{background:#BFE9F5}
+body{font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;color:var(--ink);position:relative}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:url(fundo_v.jpg) center/cover no-repeat}
+@media (min-width:700px){body::before{background-image:url(fundo_h.jpg)}}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow-y:auto;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.screen>*{flex:none}
+.screen.on{display:flex}
+.logos{text-align:center;margin-top:6px}
+.logos img{display:block;margin:0 auto}
+.logos .t{height:54px}.logos .f{height:34px;margin-top:2px}
+h1{margin:14px 0 2px;font-size:1.9rem;font-style:italic;font-weight:900;color:var(--nv);text-align:center;line-height:1.1}
+.sub{margin:0 0 14px;text-align:center;color:var(--nv);font-weight:600}
+.card{width:min(440px,100%);background:rgba(255,255,255,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #fff;border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(9,44,80,.18)}
+label{display:block;font-weight:700;font-size:.85rem;margin:0 0 4px;color:var(--nv)}
+input{width:100%;font:inherit;font-size:1.1rem;padding:12px 14px;border:1.5px solid #cfe3d6;border-radius:12px;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-weight:800}
+.btn{width:100%;margin-top:12px;font:inherit;font-weight:800;font-style:italic;font-size:1.1rem;color:#fff;background:linear-gradient(90deg,var(--gd),var(--vw) 60%,var(--g));border:0;border-radius:999px;padding:14px;cursor:pointer;box-shadow:0 8px 18px rgba(0,135,61,.3)}
+.btn.alt{background:linear-gradient(90deg,var(--az),#25BDEB);box-shadow:0 8px 18px rgba(1,139,238,.3)}
+.btn.ghost{background:#fff;color:var(--gd);border:2px solid var(--gd);box-shadow:none}
+.or{text-align:center;color:#4A5F52;font-size:.85rem;margin:12px 0 0}
+.rules{margin:12px 0 0;padding:0;list-style:none;font-size:.88rem;color:#2c3f33}
+.rules li{display:flex;gap:10px;align-items:center;margin:6px 0}.rules svg,.rules img{flex:none}
+.rules img{height:26px}
+.msg{min-height:1.3em;margin:8px 0 0;text-align:center;font-weight:700;color:#c0392b;font-size:.9rem}
+.big{font-size:3rem;font-weight:900;letter-spacing:.3em;color:var(--gd);text-align:center;margin:6px 0 0;padding-left:.3em}
+.hint{text-align:center;color:#4A5F52;font-size:.9rem;margin:4px 0 0}
+.dots::after{content:'';animation:d 1.2s steps(4,end) infinite}
+@keyframes d{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+/* jogo */
+#play{padding:0;justify-content:flex-start;overflow:hidden}
+.hud{width:100%;max-width:520px;display:flex;gap:8px;padding:max(10px,env(safe-area-inset-top)) 10px 6px;align-items:stretch}
+.pl{flex:1;background:rgba(255,255,255,.88);border-radius:16px;padding:6px 10px;text-align:center;box-shadow:0 4px 12px rgba(9,44,80,.2);min-width:0;border:3px solid transparent;transition:.2s}
+.pl .n{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .s{font-size:1.7rem;font-weight:900;line-height:1.1;color:var(--gd)}
+.pl.opp .s{color:var(--az)}
+.pl.turn{border-color:#F2D13D;box-shadow:0 0 0 3px rgba(242,209,61,.5),0 4px 12px rgba(9,44,80,.2);transform:translateY(-1px)}
+.turnbar{width:100%;max-width:520px;text-align:center;font-weight:900;font-style:italic;color:#fff;background:var(--nv);padding:6px;border-radius:12px;margin:0 10px 6px;font-size:.95rem;width:calc(100% - 20px)}
+.turnbar.me{background:var(--gd)}
+.board{flex:1;width:100%;max-width:520px;min-height:0;padding:6px 10px max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(6,1fr);gap:7px}
+.card3{position:relative;perspective:600px;cursor:pointer;min-height:0;min-width:0}
+.card3 .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.card3.up .in,.card3.ok .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;display:grid;place-items:center;overflow:hidden;box-shadow:0 3px 8px rgba(9,44,80,.3)}
+.back{background:linear-gradient(135deg,#018BEE,#64C93F);border:2px solid rgba(255,255,255,.85)}
+.back svg{width:60%;opacity:.9}
+.front{background:#fff;transform:rotateY(180deg);border:2px solid #cfe3d6}
+.front img{max-width:84%;max-height:84%;object-fit:contain}
+.front .emo{font-size:min(8vw,2.6rem);line-height:1}
+.card3.ok .front{background:#eaffe8;border-color:var(--g)}
+.card3.mine .front{border-color:var(--gd)}.card3.theirs .front{border-color:var(--az)}
+.card3.ok{pointer-events:none}
+.card3.lock{pointer-events:none}
+.card3.shake .front{animation:sh .35s}
+@keyframes sh{0%,100%{transform:rotateY(180deg) translateX(0)}25%{transform:rotateY(180deg) translateX(-4px)}75%{transform:rotateY(180deg) translateX(4px)}}
+#count{position:absolute;inset:0;display:none;place-items:center;font-size:9rem;font-weight:900;color:#fff;text-shadow:0 6px 24px rgba(9,44,80,.6);z-index:9;background:rgba(9,44,80,.25)}
+#count.on{display:grid}
+.res{text-align:center}
+.res .win{font-size:2.2rem;font-weight:900;font-style:italic;color:var(--gd);margin:0}
+.res .win.lose{color:var(--az)}
+.vs{display:flex;gap:10px;margin:14px 0}
+.vs div{flex:1;border-radius:16px;padding:10px 6px;background:#f2faf4;border:2px solid #cfe3d6}
+.vs div.w{background:#eaffe8;border-color:var(--g)}
+.vs b{display:block;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs span{font-size:2.2rem;font-weight:900;color:var(--gd)}
+.note{font-size:.72rem;color:#4A5F52;text-align:center;margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<section class="screen on" id="home">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Memória Fresh Wave</h1>
+  <p class="sub">Duelo de memória para 2 jogadores · 30 cartas</p>
+  <div class="card">
+    <label for="nome">Seu apelido</label>
+    <input id="nome" maxlength="12" placeholder="Ex.: Duda" autocomplete="off">
+    <button class="btn" id="criar">Criar sala</button>
+    <p class="or">ou entre na sala do seu amigo</p>
+    <input class="code" id="cod" maxlength="4" placeholder="CÓDIGO" autocomplete="off" style="margin-top:8px">
+    <button class="btn alt" id="entrar">Entrar na sala</button>
+    <p class="msg" id="msgHome"></p>
+    <ul class="rules">
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">🃏</span><span>Cada um joga na sua vez: vire 2 cartas e ache o par.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">✅</span><span>Acertou? Ganha o par e <b>joga de novo</b>.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">🏆</span><span>Vence quem juntar mais pares dos 15.</span></li>
+    </ul>
+  </div>
+  <p class="note">Sem cadastro: o apelido só aparece durante a partida.</p>
+</section>
+
+<section class="screen" id="lobby">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Sala criada!</h1>
+  <p class="sub">Passe este código para o seu amigo</p>
+  <div class="card">
+    <div class="big" id="codeShow">----</div>
+    <p class="hint" id="linkHint">Peça para ele abrir esta página e tocar em “Entrar na sala”.</p>
+    <button class="btn alt" id="share">Compartilhar convite</button>
+    <p class="hint" style="margin-top:14px">Aguardando o amigo<span class="dots"></span></p>
+    <button class="btn ghost" id="sairLobby">Cancelar</button>
+  </div>
+</section>
+
+<section class="screen" id="play">
+  <div class="hud">
+    <div class="pl" id="plMe"><div class="n" id="myN">Você</div><div class="s" id="myS">0</div></div>
+    <div class="pl opp" id="plOp"><div class="n" id="opN">Amigo</div><div class="s" id="opS">0</div></div>
+  </div>
+  <div class="turnbar" id="turnbar">Sua vez!</div>
+  <div class="board" id="board"></div>
+  <div id="count"></div>
+</section>
+
+<section class="screen" id="end">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <div class="card res" style="margin-top:22px">
+    <p class="win" id="winTxt">Fim de jogo</p>
+    <p class="hint" id="winSub"></p>
+    <div class="vs"><div id="vsMe"><b></b><span>0</span></div><div id="vsOp"><b></b><span>0</span></div></div>
+    <button class="btn" id="again">Jogar de novo</button>
+    <button class="btn ghost" id="sair">Sair</button>
+    <p class="hint" id="againMsg"></p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var DUR=30, PFX='twfresh-memoria-';
+var LOCAL=/[?&]local\b/.test(location.search);
+/* ---------- utilidades ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('on',s.id===id)})}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function clean(s){return (s||'').replace(/[<>&"]/g,'').trim().slice(0,12)}
+function newCode(){var a='ABCDEFGHJKMNPQRSTUVWXYZ',s='';for(var i=0;i<4;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function msg(t){$('msgHome').textContent=t||''}
+
+/* ---------- conexão (PeerJS ou BroadcastChannel no teste) ---------- */
+var peer=null,conn=null,isHost=false,code='',myName='',opName='',alive=false;
+var handlers={};
+function send(o){try{if(LOCAL){bc.postMessage({from:me,o:o})}else if(conn&&conn.open){conn.send(o)}}catch(e){}}
+var bc=null,me=Math.random().toString(36).slice(2);
+function onMsg(m){var h=handlers[m.t];if(h)h(m)}
+
+function hostRoom(){
+  isHost=true;code=newCode();
+  if(LOCAL){
+    bc=new BroadcastChannel(PFX+code);
+    bc.onmessage=function(e){if(e.data.from!==me)onMsg(e.data.o)};
+    lobbyReady();return;
+  }
+  peer=new Peer(PFX+code);
+  peer.on('open',lobbyReady);
+  peer.on('error',function(err){
+    if(err&&err.type==='unavailable-id'){peer.destroy();hostRoom()}   // código repetido: sorteia outro
+    else{backHome('Não consegui criar a sala. Confira sua internet e tente de novo.')}
+  });
+  peer.on('connection',function(c){
+    if(conn&&conn.open){c.close();return}
+    conn=c;wire(c);
+  });
+}
+function lobbyReady(){
+  $('codeShow').textContent=code;show('lobby');
+}
+function joinRoom(c){
+  isHost=false;code=c;
+  if(LOCAL){
+    bc=new BroadcastChannel(PFX+code);
+    bc.onmessage=function(e){if(e.data.from!==me)onMsg(e.data.o)};
+    send({t:'hello',name:myName});return;
+  }
+  peer=new Peer();
+  var to=setTimeout(function(){backHome('Sala não encontrada. Confira o código.')},12000);
+  peer.on('open',function(){
+    conn=peer.connect(PFX+code,{reliable:true});
+    conn.on('open',function(){clearTimeout(to);wire(conn);send({t:'hello',name:myName})});
+  });
+  peer.on('error',function(err){clearTimeout(to);backHome(err&&err.type==='peer-unavailable'?'Sala não encontrada. Confira o código.':'Falha na conexão. Tente de novo.')});
+}
+function wire(c){
+  c.on('data',onMsg);
+  c.on('close',function(){if(alive){alive=false;endScreen(true)}else if($('lobby').classList.contains('on')){/* amigo saiu antes de começar */}});
+}
+function closeAll(){
+  try{if(conn)conn.close()}catch(e){}try{if(peer)peer.destroy()}catch(e){}try{if(bc)bc.close()}catch(e){}
+  conn=peer=bc=null;alive=false;
+}
+function backHome(m){closeAll();show('home');msg(m||'')}
+
+
+/* ---------- mensagens ---------- */
+handlers.hello=function(m){opName=clean(m.name)||'Amigo';if(isHost){send({t:'hello',name:myName});startRound()}};
+handlers.start=function(m){runRound(m.seed,false)};
+handlers.flip=function(m){inbox.push(m.i);pump()};
+handlers.again=function(){wantAgain.op=true;checkAgain()};
+var wantAgain={me:false,op:false};
+function checkAgain(){if(wantAgain.me&&wantAgain.op&&isHost)startRound()}
+function startRound(){var seed=(Math.random()*1e9)|0;send({t:'start',seed:seed});runRound(seed,true)}
+
+/* ---------- jogo da memória (30 cartas = 15 pares) ---------- */
+var ITEMS=[
+ {i:'clube/lata1.png'},{i:'clube/lata2.png'},{i:'clube/lata3.png'},{i:'clube/lata4.png'},{i:'clube/lata5.png'},
+ {i:'clube/trident.png'},{i:'clube/freshwave.png'},{i:'clube/chiclete.png'},{i:'clube/mochila.png'},{i:'clube/chaveiro.png'},
+ {e:'🍊'},{e:'🍓'},{e:'🍋'},{e:'🍍'},{e:'🌿'}
+];
+ITEMS.forEach(function(o){if(o.i){var im=new Image();im.src=o.i}});
+var deck=[],state=[],first=-1,busy=false,turnHost=true,sc={host:0,guest:0},matched=0,inbox=[],resolving=false;
+var WAVE='<svg viewBox="0 0 60 40"><path d="M2 22C12 8 20 8 30 22S48 36 58 18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M2 34C12 20 20 20 30 34S48 46 58 30" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg>';
+function myTurn(){return turnHost===isHost}
+function runRound(seed,iAmHost){
+  wantAgain={me:false,op:false};
+  var r=rng(seed);deck=[];ITEMS.forEach(function(_,k){deck.push(k,k)});
+  for(var i=deck.length-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=deck[i];deck[i]=deck[j];deck[j]=t}
+  if(LOCAL)window.__deck=deck;state=deck.map(function(){return 0});first=-1;busy=false;resolving=false;inbox=[];matched=0;sc={host:0,guest:0};turnHost=true;alive=true;
+  $('myN').textContent=myName||'Você';$('opN').textContent=opName||'Amigo';
+  var B=$('board');B.innerHTML='';
+  deck.forEach(function(k,idx){
+    var c=document.createElement('div');c.className='card3';c.dataset.i=idx;
+    var o=ITEMS[k];
+    c.innerHTML='<div class="in"><div class="face back">'+WAVE+'</div><div class="face front">'+(o.i?'<img src="'+o.i+'" alt="">':'<span class="emo">'+o.e+'</span>')+'</div></div>';
+    c.addEventListener('click',function(){onTap(idx)});
+    B.appendChild(c);
+  });
+  show('play');updateHud();
+  var n=3,cc=$('count');cc.classList.add('on');cc.textContent=n;
+  var iv=setInterval(function(){n--;if(n>0)cc.textContent=n;else{clearInterval(iv);cc.textContent='VAI!';setTimeout(function(){cc.classList.remove('on')},450);ready=true;pump()}},800);
+  ready=false;
+}
+var ready=false;
+function mineKey(){return isHost?'host':'guest'}
+function updateHud(){
+  var me=sc[mineKey()],op=sc[isHost?'guest':'host'];
+  $('myS').textContent=me;$('opS').textContent=op;
+  var t=myTurn();$('plMe').classList.toggle('turn',t);$('plOp').classList.toggle('turn',!t);
+  var tb=$('turnbar');tb.textContent=t?'Sua vez! Vire duas cartas':'Vez de '+(opName||'seu amigo')+'…';tb.classList.toggle('me',t);
+}
+function onTap(i){
+  if(!alive||!ready||!myTurn()||resolving||state[i]!==0)return;
+  send({t:'flip',i:i});apply(i);
+}
+function pump(){                 // aplica jogadas recebidas, uma por vez
+  if(!ready||resolving||!inbox.length)return;
+  var i=inbox.shift();if(state[i]!==0){pump();return}apply(i);
+}
+function el(i){return $('board').children[i]}
+function apply(i){
+  state[i]=1;el(i).classList.add('up');
+  if(first<0){first=i;return}
+  var a=first,b=i;first=-1;resolving=true;
+  var who=turnHost?'host':'guest',mine=(turnHost===isHost);
+  if(deck[a]===deck[b]){
+    setTimeout(function(){
+      [a,b].forEach(function(x){state[x]=2;var c=el(x);c.classList.remove('up');c.classList.add('ok',mine?'mine':'theirs')});
+      sc[who]++;matched++;resolving=false;updateHud();
+      if(matched===ITEMS.length){finishGame()}else pump();
+    },650);
+  }else{
+    setTimeout(function(){[a,b].forEach(function(x){el(x).classList.add('shake')})},450);
+    setTimeout(function(){
+      [a,b].forEach(function(x){state[x]=0;var c=el(x);c.classList.remove('up','shake')});
+      turnHost=!turnHost;resolving=false;updateHud();pump();
+    },1100);
+  }
+}
+function finishGame(){
+  alive=false;setTimeout(function(){endScreen(false)},700);
+}
+function endScreen(left){
+  show('end');var w=$('winTxt');w.classList.remove('lose');$('again').style.display='';$('againMsg').textContent='';
+  var me=sc[mineKey()],op=sc[isHost?'guest':'host'];
+  $('vsMe').querySelector('b').textContent=myName||'Você';$('vsMe').querySelector('span').textContent=me;
+  $('vsOp').querySelector('b').textContent=opName||'Amigo';$('vsOp').querySelector('span').textContent=op;
+  $('vsMe').className=me>op?'w':'';$('vsOp').className=op>me?'w':'';
+  if(left&&matched<ITEMS.length){w.textContent='Seu amigo saiu';$('winSub').textContent='A conexão foi encerrada.';$('again').style.display='none';return}
+  if(me>op){w.textContent='Você venceu! 🏆';$('winSub').textContent='Que memória! Essa onda foi sua.'}
+  else if(me<op){w.textContent=(opName||'O amigo')+' venceu!';w.classList.add('lose');$('winSub').textContent='Quer a revanche?'}
+  else{w.textContent='Empate!';$('winSub').textContent='Só uma nova rodada decide.'}
+}
+function stopGame(){}
+/* ---------- botões ---------- */
+$('criar').onclick=function(){myName=clean($('nome').value);if(!myName){msg('Digite seu apelido.');$('nome').focus();return}msg('');hostRoom()};
+$('entrar').onclick=function(){myName=clean($('nome').value);var c=($('cod').value||'').toUpperCase().trim();if(!myName){msg('Digite seu apelido.');$('nome').focus();return}if(c.length!==4){msg('Digite o código de 4 letras.');$('cod').focus();return}msg('Conectando…');joinRoom(c)};
+$('sairLobby').onclick=function(){backHome('')};
+$('sair').onclick=function(){backHome('')};
+$('again').onclick=function(){wantAgain.me=true;send({t:'again'});$('again').style.display='none';$('againMsg').innerHTML='Aguardando o amigo aceitar<span class="dots"></span>';checkAgain()};
+$('share').onclick=function(){
+  var url=location.origin+location.pathname,txt='Vem jogar Memória Fresh Wave comigo! Abra '+url+' e use o código '+code;
+  if(navigator.share){navigator.share({title:'Memória Fresh Wave · Trident',text:txt}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){$('linkHint').textContent='Convite copiado! Cole no WhatsApp.'})}
+};
+var mm=location.search.match(/[?&]sala=([A-Za-z]{4})/);if(mm)$('cod').value=mm[1].toUpperCase();
+window.addEventListener('beforeunload',function(){closeAll()});
+})();
+</script>
+</body>
+</html>
