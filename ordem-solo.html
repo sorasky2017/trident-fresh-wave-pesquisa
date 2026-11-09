@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Ordem das Latas Solo · Trident Fresh Wave</title>
+<style>
+:root{--az:#018BEE;--g:#64C93F;--vw:#16A11D;--gd:#00873D;--nv:#092C50;--ink:#12261B}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
+html{background:#BFE9F5}
+body{font-family:"Segoe UI","IBM Plex Sans",system-ui,-apple-system,sans-serif;color:var(--ink);position:relative}
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:url(fundo_v.jpg) center/cover no-repeat}
+@media (min-width:700px){body::before{background-image:url(fundo_h.jpg)}}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;overflow-y:auto;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
+.screen>*{flex:none}
+.screen.on{display:flex}
+.logos{text-align:center;margin-top:6px}
+.logos img{display:block;margin:0 auto}
+.logos .t{height:54px}.logos .f{height:34px;margin-top:2px}
+h1{margin:14px 0 2px;font-size:1.9rem;font-style:italic;font-weight:900;color:var(--nv);text-align:center;line-height:1.1}
+.sub{margin:0 0 14px;text-align:center;color:var(--nv);font-weight:600}
+.card{width:min(440px,100%);background:rgba(255,255,255,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #fff;border-radius:22px;padding:20px 18px;box-shadow:0 10px 28px rgba(9,44,80,.18)}
+label{display:block;font-weight:700;font-size:.85rem;margin:0 0 4px;color:var(--nv)}
+input{width:100%;font:inherit;font-size:1.1rem;padding:12px 14px;border:1.5px solid #cfe3d6;border-radius:12px;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+input.code{text-align:center;letter-spacing:.35em;text-transform:uppercase;font-weight:800}
+.btn{width:100%;margin-top:12px;font:inherit;font-weight:800;font-style:italic;font-size:1.1rem;color:#fff;background:linear-gradient(90deg,var(--gd),var(--vw) 60%,var(--g));border:0;border-radius:999px;padding:14px;cursor:pointer;box-shadow:0 8px 18px rgba(0,135,61,.3)}
+.btn.alt{background:linear-gradient(90deg,var(--az),#25BDEB);box-shadow:0 8px 18px rgba(1,139,238,.3)}
+.btn.ghost{background:#fff;color:var(--gd);border:2px solid var(--gd);box-shadow:none}
+.or{text-align:center;color:#4A5F52;font-size:.85rem;margin:12px 0 0}
+.rules{margin:12px 0 0;padding:0;list-style:none;font-size:.88rem;color:#2c3f33}
+.rules li{display:flex;gap:10px;align-items:center;margin:6px 0}.rules svg,.rules img{flex:none}
+.rules img{height:26px}
+.msg{min-height:1.3em;margin:8px 0 0;text-align:center;font-weight:700;color:#c0392b;font-size:.9rem}
+.big{font-size:3rem;font-weight:900;letter-spacing:.3em;color:var(--gd);text-align:center;margin:6px 0 0;padding-left:.3em}
+.hint{text-align:center;color:#4A5F52;font-size:.9rem;margin:4px 0 0}
+.dots::after{content:'';animation:d 1.2s steps(4,end) infinite}
+@keyframes d{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+/* jogo */
+#play{padding:0;justify-content:center;overflow:hidden}
+.hud{width:100%;max-width:440px;display:flex;gap:8px;padding:10px 10px 6px;align-items:stretch}
+.pl{flex:1;background:rgba(255,255,255,.88);border-radius:16px;padding:6px 10px;text-align:center;box-shadow:0 4px 12px rgba(9,44,80,.2);min-width:0}
+.pl .n{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl .s{font-size:.9rem;font-weight:800;line-height:1.3;color:var(--gd);min-height:1.3em}
+.pl.opp .s{color:var(--az)}
+.timer{flex:0 0 66px;background:var(--nv);color:#fff;border-radius:16px;display:grid;place-items:center;font-size:.75rem;font-weight:800;line-height:1.1;text-align:center;box-shadow:0 4px 12px rgba(9,44,80,.3)}
+.timer b{display:block;font-size:1.7rem;font-weight:900}
+.status{width:calc(100% - 20px);max-width:420px;text-align:center;font-weight:900;font-style:italic;color:#fff;background:var(--nv);padding:8px;border-radius:12px;margin:2px 0 14px;font-size:1.05rem;transition:.2s}
+.status.go{background:var(--gd)}.status.bad{background:#E94B5B}
+.pad{width:100%;max-width:420px;padding:0 10px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.tile{position:relative;aspect-ratio:1/2.1;border:0;border-radius:18px;cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:0 6px 14px rgba(9,44,80,.3);border:3px solid rgba(255,255,255,.8);transition:transform .08s,filter .08s,box-shadow .08s;filter:brightness(.78) saturate(.85)}
+.tile img{width:70%;height:auto;max-height:88%;object-fit:contain;pointer-events:none}
+.tile:not(.dis){filter:brightness(1) saturate(1)}
+.tile.on{filter:brightness(1.25) saturate(1.3);transform:scale(1.07);box-shadow:0 0 0 4px #fff,0 0 26px 8px var(--g)}
+.tile.dis{pointer-events:none}
+.tile.err{animation:sh .3s}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.dots2{margin-top:16px;display:flex;gap:6px;justify-content:center}
+.dots2 i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.6);display:block}
+.dots2 i.d{background:var(--gd)}
+#count{position:absolute;inset:0;display:none;place-items:center;font-size:9rem;font-weight:900;color:#fff;text-shadow:0 6px 24px rgba(9,44,80,.6);z-index:9;background:rgba(9,44,80,.25)}
+#count.on{display:grid}
+.res{text-align:center}
+.res .win{font-size:2.2rem;font-weight:900;font-style:italic;color:var(--gd);margin:0}
+.res .win.lose{color:var(--az)}.res .win.tie{color:var(--nv)}
+.vs{display:flex;gap:10px;margin:14px 0}
+.vs div{flex:1;border-radius:16px;padding:10px 6px;background:#f2faf4;border:2px solid #cfe3d6}
+.vs div.w{background:#eaffe8;border-color:var(--g)}
+.vs b{display:block;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--nv);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs span{font-size:2.2rem;font-weight:900;color:var(--gd)}
+.vs small{display:block;font-size:.7rem;color:#4A5F52}
+.note{font-size:.72rem;color:#4A5F52;text-align:center;margin:10px 0 0}
+</style>
+</head>
+<body>
+
+<section class="screen on" id="home">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <h1>Ordem das Latas</h1>
+  <p class="sub">Modo solo · 7 rodadas</p>
+  <div class="card">
+    <ul class="rules" style="margin-top:0">
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">🔊</span><span>As latas piscam e tocam uma nota. <b>Ligue o som!</b></span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">👆</span><span>Repita a sequência na mesma ordem. Começa com <b>1 nota</b> e ganha uma a cada rodada, até <b>7</b>.</span></li>
+      <li><span style="width:26px;text-align:center;font-size:1.1rem">⚠️</span><span>Errou ou ficou 5 segundos parado? Fim de jogo.</span></li>
+    </ul>
+    <button class="btn" id="go">Jogar</button>
+    <p class="hint" id="rec"></p>
+  </div>
+  <p class="note">Sem cadastro: nada é enviado nem guardado fora do seu aparelho.</p>
+</section>
+
+<section class="screen" id="play">
+  <div class="hud">
+    <div class="pl"><div class="n">Você</div><div class="s" id="myS">&nbsp;</div></div>
+    <div class="timer"><div>RODADA<b id="rd">1</b></div></div>
+    <div class="pl opp"><div class="n">Meta</div><div class="s" style="color:var(--az)">7 rodadas</div></div>
+  </div>
+  <div class="status" id="status">Escute…</div>
+  <div class="pad" id="pad"></div>
+  <div class="dots2" id="prog"></div>
+  <div id="count"></div>
+</section>
+
+<section class="screen" id="end">
+  <div class="logos"><img class="t" src="clube/trident.png" alt="Trident"><img class="f" src="clube/freshwave.png" alt="Fresh Wave"></div>
+  <div class="card res" style="margin-top:22px">
+    <p class="win" id="winTxt">Fim de jogo</p>
+    <p class="hint" id="winSub"></p>
+    <div class="vs"><div id="vsMe" style="flex:1"><b>Rodadas completas</b><span id="score">0</span><small id="of">de 7</small></div></div>
+    <button class="btn" id="again">Jogar de novo</button>
+    <button class="btn ghost" id="sair">Voltar ao início</button>
+  </div>
+</section>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var TOTAL=7,KEY='twfresh-ordem-solo-recorde';
+function show(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('on',s.id===id)});if(window.TWMusic)window.TWMusic.duck(id==='play')}
+var AC=null;
+function audio(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}return AC}
+var NOTES=[261.63,329.63,392.00,440.00,523.25];
+function beep(i,dur){
+  var a=audio();if(!a)return;var t=a.currentTime,o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain();
+  o.type='triangle';o.frequency.value=NOTES[i];o2.type='sine';o2.frequency.value=NOTES[i]*2;
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.38,t+0.015);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  var g2=a.createGain();g2.gain.value=0.25;o2.connect(g2);g2.connect(g);o.connect(g);g.connect(a.destination);o.start(t);o2.start(t);o.stop(t+dur+0.05);o2.stop(t+dur+0.05);
+}
+function buzz(){var a=audio();if(!a)return;var t=a.currentTime,o=a.createOscillator(),g=a.createGain();o.type='sawtooth';o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(70,t+0.35);g.gain.setValueAtTime(0.25,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.4);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+0.45)}
+function winSnd(){[0,2,4,3,4].forEach(function(n,k){setTimeout(function(){beep(n,0.25)},k*140)})}
+var FLAV=[{n:'Laranja com Morango',c:'#F58A1F',i:'clube/lata1.png'},{n:'Morango com Maracujá',c:'#E94B5B',i:'clube/lata2.png'},{n:'Limão',c:'#7ED321',i:'clube/lata3.png'},{n:'Lichia',c:'#F58FB2',i:'clube/lata4.png'},{n:'Abacaxi e Hortelã',c:'#F2D13D',i:'clube/lata5.png'}];
+var seq=[],round=1,idx=0,phase='idle',tapTimer=null,timers=[],tiles=[],alive=false;
+function buildPad(){
+  var P=$('pad');P.innerHTML='';tiles=[];
+  FLAV.forEach(function(f,i){
+    var b=document.createElement('button');b.className='tile dis';b.style.background='linear-gradient(180deg,'+f.c+',#ffffffaa 140%)';b.setAttribute('aria-label',f.n);
+    b.innerHTML='<img src="'+f.i+'" alt="">';
+    b.addEventListener('pointerdown',function(e){e.preventDefault();onTap(i)});P.appendChild(b);tiles.push(b);
+  });
+}
+function lit(i,ms){tiles[i].classList.add('on');setTimeout(function(){tiles[i].classList.remove('on')},ms)}
+function setStatus(t,c){var s=$('status');s.textContent=t;s.className='status'+(c?' '+c:'')}
+function lock(v){tiles.forEach(function(t){t.classList.toggle('dis',v)})}
+function dotsFor(n,d){var h='';for(var k=0;k<n;k++)h+='<i class="'+(k<d?'d':'')+'"></i>';$('prog').innerHTML=h}
+function start(){
+  seq=[];for(var i=0;i<TOTAL;i++){var v;do{v=Math.floor(Math.random()*5)}while(i>=2&&v===seq[i-1]&&v===seq[i-2]);seq.push(v)}
+  round=1;alive=true;$('myS').innerHTML='&nbsp;';buildPad();show('play');audio();
+  var n=3,c=$('count');c.classList.add('on');c.textContent=n;
+  var iv=setInterval(function(){n--;if(n>0)c.textContent=n;else{clearInterval(iv);c.classList.remove('on');beginRound()}},800);timers.push(iv);
+}
+function stepMs(){return Math.max(340,580-round*30)}
+function beginRound(){
+  $('rd').textContent=round;lock(true);idx=0;phase='watch';
+  var len=round;dotsFor(len,0);setStatus('Escute…','');var ms=stepMs();
+  for(var i=0;i<len;i++)(function(i){timers.push(setTimeout(function(){var f=seq[i];beep(f,ms/1000*0.85);lit(f,ms*0.7)},700+i*ms))})(i);
+  timers.push(setTimeout(function(){phase='repeat';lock(false);setStatus('Sua vez! Repita','go');arm()},700+len*ms+150));
+}
+function arm(){clearTimeout(tapTimer);tapTimer=setTimeout(function(){if(phase==='repeat')fail(-1)},5000)}
+function onTap(i){
+  if(phase!=='repeat')return;audio();clearTimeout(tapTimer);
+  if(i!==seq[idx]){fail(i);return}
+  beep(i,0.28);lit(i,180);idx++;dotsFor(round,idx);
+  if(idx===round){
+    phase='wait';lock(true);$('myS').textContent='Rodada '+round+' ✓';
+    if(round>=TOTAL){setStatus('Perfeito!','go');setTimeout(function(){end(TOTAL,true)},900)}
+    else{setStatus('Boa! Próxima rodada…','go');timers.push(setTimeout(function(){round++;beginRound()},1100))}
+  }else arm();
+}
+function fail(i){
+  phase='over';lock(true);buzz();if(i>=0){tiles[i].classList.add('err');setTimeout(function(){tiles[i].classList.remove('err')},320)}
+  setStatus('Errou a sequência','bad');setTimeout(function(){end(round-1,false)},1100);
+}
+function best(){var b=0;try{b=parseInt(localStorage.getItem(KEY)||'0',10)||0}catch(e){}return b}
+function save(n){try{if(n>best())localStorage.setItem(KEY,String(n))}catch(e){}}
+function end(n,won){
+  alive=false;timers.forEach(function(t){clearTimeout(t);clearInterval(t)});timers=[];clearTimeout(tapTimer);
+  var prev=best();save(n);show('end');
+  $('score').textContent=n;$('of').textContent='de '+TOTAL;
+  var w=$('winTxt');w.className='win';
+  if(won){w.textContent='Perfeito! 🏆';$('winSub').textContent='Você completou as 7 rodadas.';winSnd()}
+  else{w.textContent=n>=5?'Quase lá!':n>=3?'Boa tentativa!':'Tente de novo!';$('winSub').textContent='Você parou na rodada '+(n+1)+'.'}
+  if(n>prev&&n>0)$('winSub').textContent+=' Novo recorde!';
+  showRec();
+}
+function showRec(){var b=best();$('rec').textContent=b?'Seu recorde neste aparelho: '+b+' de '+TOTAL+' rodadas.':''}
+$('go').onclick=start;$('again').onclick=start;$('sair').onclick=function(){show('home');showRec()};
+showRec();
+})();
+</script>
+<script src="musica.js"></script>
+</body>
+</html>
